@@ -18,7 +18,7 @@ with cd, go to the file where you want to put the file (within your computer: ex
 Enter the initial Pull
 > git clone <link>
 if required: enter your git user and pw.
-New Folder on Desktop: CrossCutting
+New Folder on Desktop: 203_CC_Index_Constructor
 
 ### CONFIGURE YOUR GIT SPACE
 >git config --global user.email "you@example.com”
