@@ -30,7 +30,6 @@ def get_benchmark(tick,y1,m1,d1,y2,m2,d2):
 SP100=get_benchmark("^OEX",2015,8,14,2016,2,2)
 SP500=get_benchmark("^GSPC",2015,8,14,2016,2,2)
 
-
 # Create the application.
 Server = flask.Flask(__name__)
 

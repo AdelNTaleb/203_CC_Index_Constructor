@@ -4,6 +4,10 @@
 
 just run pip install -r requiuerement.txt
 
+## Things to implement 
+
+- Histogram chart of daily returns distribution
+
 ## How to use Git-Hub
 
 https://www.youtube.com/playlist?list=PLfdtiltiRHWFEbt9V04NrbmksLV4Pdf3j
