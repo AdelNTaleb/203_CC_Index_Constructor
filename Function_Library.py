@@ -209,7 +209,7 @@ def Number_of_Securities_Index(Ranked_Zscore_df, MktCap_df):
 
                 Final_Index= Data_Universe.head(Temp_Nb_Sec)
                 
-                while Final_Index["MarketCap"].sum()<0.2*Data_Universe["MarketCap"].sum():
+                while Final_Index['MktCap'].sum()<0.2*Data_Universe['MktCap'].sum():
                     Temp_Nb_Sec=Temp_Nb_Sec+1
 
                 Number_of_Securities_Index=RoundOff(Temp_Nb_Sec)

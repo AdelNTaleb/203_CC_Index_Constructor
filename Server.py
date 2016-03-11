@@ -5,14 +5,12 @@ import time
 import matplotlib.finance as finance
 import datetime
 from pandas import read_csv
-from pandas import json
-
 
 
 #Adel I modified your function so that we can get the correct format
 def get_benchmark(tick,y1,m1,d1,y2,m2,d2):
     startdate = datetime.date(y1, m1, d1)
-    enddate = datetime.date(y2, m2, d1)
+    enddate = datetime.date(y2, m2, d2)
     ticker= tick
     benchmark_df= read_csv(finance.fetch_historical_yahoo(ticker, startdate, enddate),index_col='Date')
     benchmark_Index=benchmark_df['Close']
@@ -27,12 +25,13 @@ def get_benchmark(tick,y1,m1,d1,y2,m2,d2):
     benchmark_Index=benchmark_Index.divide(benchmark_Index.ix[0])
     return benchmark_Index
 
-SP100=get_benchmark("^OEX",2015,8,14,2016,2,2)
-SP500=get_benchmark("^GSPC",2015,8,14,2016,2,2)
 
-# Create the application.
-Server = flask.Flask(__name__)
+# Get benchmark
+#SP100=get_benchmark("^OEX",2015,8,14,2016,2,2)
+#SP500=get_benchmark("^GSPC",2015,8,14,2016,2,2)
+NKY225=get_benchmark("^N225",2013,5,28,2016,3,01)
 
+from pandas import *
 
 # Import Python Library
 import json
@@ -41,9 +40,14 @@ from urllib2 import urlopen  # python 2 syntax
 # Import users' define function
 from Function_Library import *
 
+
+
 # Import data
-Prices_df=read_excel('Data SP100 Values.xlsx',0)
-MktCap_df=read_excel('Data SP100 Values.xlsx',1)
+#Prices_df=read_excel('Data SP100 Values.xlsx',0)
+#MktCap_df=read_excel('Data SP100 Values.xlsx',1)
+# Test Nikkei 225
+Prices_df=read_excel('NKY225 - Prices.xlsx')
+MktCap_df=read_excel('NKY225 - MktCap.xlsx')
 
 Prices_df_return=Prices_df/Prices_df.shift(1)-1
 Prices_df_return=Prices_df_return.ix[1:]
@@ -60,13 +64,18 @@ global Nb_Month_2
 
 # Correspond to the backtest period.
 global t
-t=6
+t=12*3
 
 # Constraint function : in our case, volatility is the constraint.
 
 
                                 #### Server set-up #### 
 
+
+
+# Create the application.
+Server = flask.Flask(__name__)
+    
 global Max_Weight_Allowed
 global Max_Vol
 @Server.errorhandler(404)
@@ -156,12 +165,12 @@ def index():
     pricing_year= time.strftime("%Y")
     pricing_hour= time.strftime("%X")
 
-    underlying="S&P 100"
+    underlying="Nikkei 225"
     #get the benchmark
-    if underlying=="S&P 100":
-        benchmark=SP100
+    if underlying=="Nikkei 225":
+        benchmark=NKY225
         #this is complete tweaking, apparently yahoo is missing some data, so I tweaked the dataset so that we have the same data (ideal: use a merge so that we only select the same data in both dataset)
-        benchmark=benchmark.head(t*20-4)
+        benchmark=benchmark.head(t*20)
         benchmark=benchmark.reset_index()
         benchmark = json.dumps([[date,val] for date, val in zip(benchmark['Date'], benchmark['values'])])
     #next part is just for fun

@@ -7,6 +7,7 @@ just run pip install -r requiuerement.txt
 ## Things to implement 
 
 - Histogram chart of daily returns distribution
+- Libor : risk free rate - try to find a way to get it online? Moving with time ?
 
 ## How to use Git-Hub
 
