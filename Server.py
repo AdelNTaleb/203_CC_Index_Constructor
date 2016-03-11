@@ -64,11 +64,7 @@ global Nb_Month_2
 
 # Correspond to the backtest period.
 global t
-<<<<<<< HEAD
 
-=======
-t=12*3
->>>>>>> 754b82f59aedf255258e5a1a175e96481b706716
 
 # Constraint function : in our case, volatility is the constraint.
 
@@ -110,12 +106,8 @@ def index():
         return flask.render_template('Index_Generator.html')
     Method=flask.request.args.get('method')
 
-<<<<<<< HEAD
     t=int(flask.request.args.get('backtest_len'))
     print t
-
-=======
->>>>>>> 754b82f59aedf255258e5a1a175e96481b706716
     #the following lines prevent the code from bugging if the Ranking method is selected
     if Method=="Ranking":
         Max_Weight_Allowed=0
