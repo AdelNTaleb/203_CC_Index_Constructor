@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="shortcut icon" href="../static/leonteq_favicon.ico">
+    <title>Creator</title>
+    <meta charset="utf-8" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+    <title>Leonteq - Msc 203 Index Generator</title>
+    <script src="../static/tabcontent.js" type="text/javascript"></script>
+    <link href="../static/tabcontent.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../static/table.css">
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="../static/js/highstock.js"></script>
+
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    
+
+    <script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+
+    var my_data_line = {{ data_graph_line|safe }};
+    var my_data_line_2 ={{ benchmark|safe }};
+    $(function() {
+       // Create the chart
+       window.chart = new Highcharts.StockChart({
+           plotOptions: {
+                series: {
+                    lineWidth: 1.5,
+                   
+                      states: {
+                    hover: {
+                        enabled: true,
+                        lineWidth: 1.5
+                    }
+                }
+                }
+            },
+        credits: {
+            enabled:false
+        },
+
+        chart : {
+            backgroundColor: null,
+            plotBackgroundColor: '#fcfaf5',
+            renderTo : 'chart_test'
+        },
+        navigator: {
+            maskFill: 'rgba(251, 239, 168, 0.60)',
+            series: {
+                color: '#51555f',
+                
+            }
+        },
+        legend: {
+            align: 'center',
+            
+        },
+        rangeSelector : {
+                 buttonTheme: { // styles for the buttons
+                    fill: '#f4f4f4',
+                    stroke: 'none',
+                    'stroke-width': 0,
+
+                    style: {
+
+                        color: '#58535c',
+                        fontWeight: 'bold'
+                    },
+                    states: {
+                        hover: {
+                        },
+                        select: {
+                            fill: '#fbefa8',
+                            style: {
+                                color: '#58535c'
+                            }
+                        }
+                    // disabled: { ... }
+                }
+            },
+
+            selected : 5
+        },
+        colors: ['#f0a800','#757b8a'],
+        title : {
+           text : '{{name | safe}} vs {{underlying | safe}} ',
+           style:{color: "#51555f"},
+       },
+
+
+       series : [{
+        name:"{{name | safe}}",
+        data: my_data_line,
+    },{
+        name:"Benchmark",
+        data: my_data_line_2
+    }],
+    tooltip: {
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+                valueDecimals: 5
+            },
+       
+        
+   })
+   })
+    var my_data_pie = {{ data_graph_pie|safe }};
+    $(function () {
+        Highcharts.setOptions({
+            colors: ['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']
+        });
+        $('#container').highcharts({
+
+            credits: {
+
+                enabled:false
+            },
+
+            chart: {
+                backgroundColor: null,
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45
+                }
+            },
+            title: {
+                text: '{{name | safe}}\'s composition',
+                style:{color: "#ffffff"},
+
+            },
+            legend:{
+
+            itemStyle: {
+
+                color: 'white'}},
+                    plotOptions: {
+                        pie: {
+                            borderColor: '#ffffff',
+                            innerSize: 50,
+                            depth: 45,
+                            dataLabels: {enabled: false},
+                            showInLegend:true},
+                                    style:{
+                                        color:(['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']),
+                                    }
+                                },
+                                series: [{
+                                    name: 'Weight',
+                                    data: my_data_pie
+                                }]
+                            });
+    });
+});
+//]]>
+</script> 
+<script type="text/javascript">
+    function loading()
+    {
+
+        var isValidForm = document.forms['formulaire'].checkValidity();
+        if (isValidForm)
+        {
+            $("#loading").show();
+        }
+        else
+        {
+
+            return false;
+        }
+
+    }
+    
+// ]]>
+</script>
+</head>
+<body id="main_body" onload="HideLoadingDiv()">
+
+
+    <!--<div class="loader"></div>-->
+    <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
+    <div id="content">
+        <div id="header" style="background-image: url(../static/header_bg.jpg);border-bottom-style: solid;border-bottom-color: #f0a800; border-bottom-width: 4px;height: 100px;">
+            <div id="header_logo" ></div>
+            <a title="Leonteq" href="/main" style="z-index: 0;position: absolute;">
+                <img
+                src="../static/logo_header.png"
+                width="262"
+                height="95"
+                alt="Leonteq"
+                style="display: block"
+                />
+            </a>
+        </div>
+        <div style=" margin:0 auto; background-color: #fff;">
+            <div style="background:-webkit-linear-gradient(#8e8e95 , #6c6d76) ; font-family:Arial;">
+                <ul class="tabs" data-persist="true">
+                    <li><a href="#view1">Equity</a></li>
+                    <li><a href="#view2">Credit</a></li>
+                    <li><a href="#view3">Rates</a></li>
+                </ul>
+            </div>
+            <div class="tabcontents">
+                <div id="view1">
+                    <div style="background-color: white; margin-top: 20px;">
+                        <div style="border-top: 3px solid #51555E;padding-bottom: 0px"></div>
+                        <div>
+                            <h1 style="clear: both; color: #51555E;font-size: 14px;font-height: 18px;padding: 5px">YOUR INDEX</h1>
+                        </div>
+
+
+                        <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
+
+
+                        <div class="container" style="background-color: white;min-height: 240px;padding: 10px;">
+
+                           <div id="row">
+                               <div class='left' style="border-right-style: solid;border-right-width: 2px ;border-right-color:#8e8e95;width: 50%">
+                                <div>
+
+                                    <div style="background:#ffffff;min-height: 240px;width: 100%;">  
+
+                                        <form name="formulaire" style="padding-top: 1px;padding-left: 10px;padding-bottom: 10px;"class ="table"> 
+                                            <div class="row">
+                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Strategy:</p>
+                                                <script>
+
+                                                    function check(elem) {
+
+
+                                                        if (elem[elem.selectedIndex].value == "momentum") {
+                                                            document.getElementById("warning_msg").style.display = 'none';
+                                                            document.getElementById("input1").style.display = 'inline';
+                                                            document.getElementById("info_momentum").style.display = 'inline';
+                                                        } else if (elem[elem.selectedIndex].value =="carry" ) {
+                                                            document.getElementById("warning_msg").style.display = 'inline';
+                                                            document.getElementById("input1").style.display = 'none';
+                                                            document.getElementById("info_momentum").style.display = 'none';
+                                                        } else {
+                                                            document.getElementById("input1").style.display = 'none';
+                                                            document.getElementById("warning_msg").style.display = 'none';
+                                                            document.getElementById("info_momentum").style.display = 'none';
+                                                        }
+                                                    }
+                                                </script>
+                                                <select class"selecto"name="strategy" style=" background-image: url(../static/bg_custom_selectbox.png);width: 138px;height: 20px; cursor: pointer;color:#58534d;" required id="drop1" onChange="check(this)"> 
+                                                    <option selected value="">Please choose </option> 
+                                                    <option value="momentum">Momentum</option> 
+                                                    <option value="carry">Carry</option> 
+
+                                                </select> 
+                                                <div id='input1'style='display: none;margin-left: 0px;'class="">
+                                                    <div>
+                                                        <p class="form_title">Month Number 1:</p>
+                                                        <input class="momentum_input"  name="NbMonth1"  placeholder="Month Number 1"  type="number" min="1" step="1" value="3" />                    
+                                                    </div>
+                                                    <div>
+                                                        <p class="form_title">Month Number 2:</p>
+                                                        <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
+                                                    </div>
+                                                </div>
+                                                <div id="warning_msg" style='display: none;margin-left: 0px;'class=""><p class="warning_func">Function not implemented yet</p></div>
+
+                                            </div>
+                                                 <!--   
+                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;">Number of Securities</p>
+
+                                                <input name="num_sec" type="number" placeholder="Number of Securities" required> </input>
+                                            -->
+
+
+
+                                            <div class="row">
+                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Risk Constrained:</p>
+
+                                                <select class"selecto" name="method" style="background-image: url(../static/bg_custom_selectbox.png);width: 138px;height: 20px; cursor: pointer;color:#58534d;"  id="drop2" required> 
+                                                    <option selected value="">Please choose</option> 
+                                                    <option value="Constrained">Yes</option>
+                                                    <option value="Ranking" onclick="dynInput(this)">No</option>
+                                                </select>
+                                                <div id='input2'style='display: none;margin-left: 0px;'class="">
+                                                    <div>
+                                                        <p class="form_title">Volatility Cap (in %):</p>
+                                                        <input class="rc_input"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" //>
+                                                    </div>
+                                                    <div>
+                                                        <p class="form_title">Max Weight (in %):</p>
+                                                        <input  class="rc_input" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
+                                                    </div>
+                                                </div>
+
+                                                <script>
+                                                    document.getElementById('drop2').onchange = function() {
+                                                        var display = this.selectedIndex == 1 ? "inline" : "none";
+                                                        document.getElementById('input2').style.display = display;
+                                                    }
+                                                </script>
+                                             
+                                         </div>
+                                         <div class="row">
+                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest lenght:</p>
+                                                <input required class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6"/>
+                                                   <div name"generate_button" style="padding-top: 10px">
+                                                 <input id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                             </div>
+                                                </div>
+                                     </form> 
+                                 </div>
+                             </div>
+                         </div>
+
+
+                         <div class='right' style="width: 50%;min-height: 240px;height: 100%;background:url(../static/logo2.png) center no-repeat;background-color: #fcfaf5">
+                                        <!--<div>
+                                            <p style="clear: both; font-size: 14px;font-height: 18px"><b>Back testing:</b></p>
+                                        </div>-->
+                                        {% if back_tested_data|length > 0 %}
+                                        <div style="height: 100%;background-color: #fcfaf5;">
+                                            <div id="logoImg"></div>
+                                            <div id="resultPanel" class="content">
+                                                <div id="resultBox" style="display: block;">
+                                                   <div class="resultTitle">
+                                                    <h3 id="summary">INDEX SUMMARY</h3>
+                                                </div>
+                                                <div class="pricingResults">
+                                                    <table id "tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr> <td id="line" width="160" align="left">Creation Date:</td><td id="line" align="left">{{pricing_day | safe}} {{pricing_month | safe}} {{pricing_year | safe}}  - {{pricing_hour | safe}}</td></tr> 
+                                                            <tr><td id="line" width="160" align="left" style="color:#58534d;">Index:</td>
+                                                                <td id="line" align="left"><b> {{name | safe}}</b> </td>
+                                                            </tr>
+                                                            <tr>
+                                                             <td id="line" width="160" align="left">Parent Index:</td>
+                                                             <td id="line" align="left"><a href="http://us.spindices.com/indices/equity/sp-100">{{underlying | safe}}</a></td>   
+                                                         </tr>
+                                                         <tr>
+                                                          <td id="line" width="160" align="left">Number of Components:</td> 
+                                                          <td id="line" align="left"> {{number_component | safe}} </td>
+                                                      </tr>
+                                                  </tbody>
+
+                                              </table>
+                                              <div class="resultMessage">
+                                                <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
+                                                            <td id="resultWarning" style="vertical-align: middle;">The Index displayed above is for illustration purposes only and is not calculated using current market data. This Index is subject to change without any notice in line with the applicable market conditions, and is likely to have changed by the time you present this idea to your banker or investment advisor. They will contact us for refreshed Index summary.</td> 
+                                                        </tr>   
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                            {% else %}
+                            <div id='info_momentum'style='display: none;margin-left: 0px;background: white'class=""><div class="info_page" style="background: white">
+                                <a class="info_header" href="https://www.msci.com/eqb/methodology/meth_docs/MSCI_Momentum_Indices_Methodology.pdf">
+                                    <img src="../static/MSCI_header.png" style="width: 100%;">
+                                </a>
+                                <span >
+                                    <p class="info_title">
+                                        Momentum Index Methodology from MSCI:
+                                    </p>
+                                    <p class="Characteristics">
+                                        The MSCI Momentum Indexes aim to reflect the performance of an Equity Momentum strategy. High
+                                        Momentum companies are characterized in the literature as companies with high price performance in
+                                        the recent history, up to 12-months. High Momentum companies tend to continue their high price
+                                        performance over the near term, typically over a 6 -12 month period. Many active equity strategies
+                                        emphasize Momentum factor as an important factor in security selection and portfolio construction.
+                                        MSCI categorizes the MSCI Momentum Indexes as part of the family of MSCI Factor Indexes (Risk
+                                        Premia), which reflect the systematic elements of particular investment styles or strategies. While
+                                        capitalization weighted indexes represent the broad market beta, investors increasingly recognize that
+                                        there are additional sources of systematic return associated with particular investment styles and
+                                        strategies, such as value, momentum, volatility, quality etc. that could be represented through
+                                        alternatively weighted indexes. The Momentum factor is complementary to other systematic factors
+                                        such as Size, Value and Low Volatility and may provide diversification to a factor portfolio
+                                    </p>
+                                    <p class="disclaimer">
+                                        The methodology currently implemented is the MSCI Momentum Methodology. It is not in any case the work of the students of the master 203. This has just been implemented as a proof of concept for the Index Creator©
+                                    </p>
+                                </span>    
+                            </div>
+                        </div>
+
+                                        <!--
+                                        <img src="../static/bg.png" style="border-style: solid; border-color: #51555E;border-width:1px;width:100%;height:240px;background-color: #fcfaf5">
+                                    -->
+                                    {% endif %}
+
+                                </div>
+                                <!--</div>-->
+
+
+
+                            </div>
+                        </div>
+                        <!-- </div>-->
+
+                    </div>
+                    {% if current_composition_df|length > 0 %}
+                    <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
+                    <div>
+                        <h1 style="clear: both; color: #51555E;font-size: 14px;font-height: 18px;padding: 5px;">INDEX COMPOSITION AND BACKTEST AS OF TODAY</h1>
+                    </div>
+                    <div  style="border-top: 3px solid #51555e;padding: 10px;background-color: white;">
+                        <div id="row" style="background-color:#fcfaf5;">
+                            <div class="left" style="width:50%;background-color: #fcfaf5">
+                                        <!--<div>
+                                            <p style="clear: both; font-size: 14px;font-height: 18px"><b>Back testing:</b></p>
+                                        </div>-->
+                                        {% if back_tested_data|length > 0 %}
+                                        <div style="height: 100%;background-color: #fcfaf5;">
+
+                                            <div id="resultPanel" class="content">
+                                                <div id="resultBox" style="display: block;">
+                                                   <div class="resultTitle" style="padding-top: 0px">
+                                                    <h3 id="summary2">BACKTEST OVER THE LAST {{backtest_date | safe}} MONTHS </h3>
+                                                </div>
+                                                <div class="pricingResults">
+                                                    <table id "tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr> <td id="line" width="200" align="left">Backtest duration:</td><td id="line" align="left">{{backtest_date | safe}} Months</td></tr> 
+                                                            <tr><td id="line" width="200" align="left">Number of observations:</td>
+                                                                <td id="line" align="left"> {{number_observation_bt | safe}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                             <td id="line" width="200" align="left">Average level observed:</td>
+                                                             <td id="line" align="left">{{average_level_bt | safe}}</td>   
+                                                         </tr>
+                                                         <tr>
+                                                          <td id="line" width="200" align="left">Average volatility:</td> 
+                                                          <td id="line" align="left"> {{volatility_bt | safe}} %</td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td id="line" width="200" align="left">Maximum level reached:</td> 
+                                                          <td id="line" align="left"> {{maximum_bt | safe}} </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td id="line" width="200" align="left">Minimum level reached:</td> 
+                                                          <td id="line" align="left"> {{minimum_bt | safe}} </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td id="line" width="200" align="left">25th Percentile:</td> 
+                                                          <td id="line" align="left"> {{pt25_bt | safe}} </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td id="line" width="200" align="left">50th Percentile:</td> 
+                                                          <td id="line" align="left"> {{pt50_bt | safe}} </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td id="line" width="200" align="left">75th Percentile:</td> 
+                                                          <td id="line" align="left"> {{pt75_bt | safe}} </td>
+                                                      </tr>
+                                                  </tbody>
+
+                                              </table>
+                                              <div class="resultMessage">
+                                                <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
+                                                            <td id="resultWarning" style="vertical-align: middle;">The Backtest displayed above is for illustration purposes only and is not calculated using current market data. It has been computed using monthly rebalancement. It is not possible, yet, to change the frequence of the rebalancement.</td> 
+                                                        </tr>   
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                                        <!--
+                                        <img src="../static/bg.png" style="border-style: solid; border-color: #51555E;border-width:1px;width:100%;height:240px;background-color: #fcfaf5">
+                                    -->
+                                    {% endif %}
+
+                                </div>
+                                <div id="chart_test" style="height: 100%;width: 100%"></div>
+                                <!--<div  id="linechart" style="background-color: #fcfaf5;height: 100%;width: 50%;b">
+                                    <svg style="width:100%;height:240px;"></svg>
+
+                                </div>-->
+
+                            </div>
+                            
+                            <div id="row" style="border-color: #f0a800;background-color: #3a3d44;background-image: url(../static/bg.png);margin-top: 10px;">
+
+                                <div class="left" style="padding: 20px;height: auto; display: table;width: auto">
+
+                                    <div style="width: 100%;float: left ;"> 
+
+                                        <div id="floater">
+                                            <center>
+                                                {% block content %}
+                                                {{current_data | safe}}
+                                                {% endblock %}
+                                            </center>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div style="padding: 20px;height: auto; display: table;width: 30%">
+                                    {% if current_composition_df|length < 11 %}
+                                    <div id="floater" style="width: auto;height: 100%;display: table">
+
+                                       <div id="container" style="height: 400px"></div>
+
+                                       {% elif current_composition_df|length > 10 %}
+                                       <div id="floater" style="width: auto;height: 100%;display: table">
+                                         <div id="container" style="height: 400px"></div>
+                                     </div>
+                                     {% elif current_composition_df|length == 0  %}
+                                     <div id="floater">
+                                        <img src="../static/logo2.png">
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+
+
+                        </div>
+                        
+                    </div>
+                    {% endif %}
+                    <div Align="right" style="background-color: #f3f3f3;padding: 20px">
+
+                    </div>
+                </div>
+                <div id="view2">
+
+               
+
+
+
+             </div>
+             <div id="view3">
+
+
+
+             </div>
+
+         </div>
+
+
+        
+
+    </div>
+</body>
+<footer >
+    <div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
+    <div id="contact_info" style="padding-left: 10px;">
+        <h4>Contact Info</h4>
+        <p id="contact">
+            Phone: +33 7 81 22 99 72
+        </p>
+    </div>
+    <div id="under_footer">
+        <div id="diclaimer_bottom">
+            <p>2016, Master 203 - Leonteq Securities AG | Creator Beta 1.0 |</p>
+        </div>
+    </div>
+</footer>
+
+</html>
