@@ -1,6 +1,4 @@
 ﻿/* Tab Content - menucool.com */
-
-
 .test path
 { 
     stroke: black;
@@ -114,38 +112,9 @@ div.tabcontents
     overflow: hidden;
 }
 
-.styled-select {
-   
-   background-image: url(/images/leonteq/bg_custom_selectbox.png);
-   background-position-x: 0%;
-   background-position-y: 0%;
-   background-size: initial;
-   background-origin: initial;
-   background-clip: initial;
-   background-color: transparent;
-   font-size: 11px;
-   height: 20px;
-   line-height: 20px;
-   margin-top: 5px;
-   
-   width: 128px;
-   cursor: pointer;
-   }
 
-select {
-    padding:3px;
-    margin: 0;
-    -webkit-border-radius:0px;
-    -moz-border-radius:0px;
-    border-radius:0px;
-    border:none;
-    outline:none;
-    display: inline-block;
-    -webkit-appearance:none;
-    -moz-appearance:none;
-    appearance:none;
-    cursor:pointer;
-}
+
+
 #logos .head-languages {
     position:absolute;
     right:100px;

@@ -185,9 +185,10 @@ $(document).ready(function() {
     <!--<div class="loader"></div>-->
     <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
     <div id="content">
-        <div id="header" style="background-image: url(../static/header_bg.jpg);border-bottom-style: solid;border-bottom-color: #f0a800; border-bottom-width: 4px;height: 100px;">
+    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the student from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+        <div id="header">
             <div id="header_logo" ></div>
-            <a title="Leonteq" href="/main" style="z-index: 0;position: absolute;">
+            <a id="link1" title="Leonteq" href="/main">
                 <img
                 src="../static/logo_header.png"
                 width="262"
@@ -197,37 +198,37 @@ $(document).ready(function() {
                 />
             </a>
         </div>
-        <div style=" margin:0 auto; background-color: #fff;">
-            <div style="background:-webkit-linear-gradient(#8e8e95 , #6c6d76) ; font-family:Arial;">
+        <div id="background1">
+            <div id="background2">
                 <ul class="tabs" data-persist="true">
                     <li><a href="#view1">Equity</a></li>
                     <li><a href="#view2">Credit</a></li>
                     <li><a href="#view3">Rates</a></li>
                 </ul>
             </div>
-            <div class="tabcontents">
+                <div class="tabcontents">
                 <div id="view1">
-                    <div style="background-color: white; margin-top: 20px;">
-                        <div style="border-top: 3px solid #51555E;padding-bottom: 0px"></div>
+                    <div id="top_bar">
+                        <div id="border1"></div>
                         <div>
-                            <h1 style="clear: both; color: #51555E;font-size: 14px;font-height: 18px;padding: 5px">YOUR INDEX</h1>
+                            <h1 id="header2">YOUR INDEX</h1>
                         </div>
 
 
-                        <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
+                        <div id="borderx"></div>
 
 
-                        <div class="container" style="background-color: white;min-height: 240px;padding: 10px;">
+                        <div class="container">
 
                            <div id="row">
-                               <div class='left' style="border-right-style: solid;border-right-width: 2px ;border-right-color:#8e8e95;width: 50%">
+                               <div id="random" class='left'>
                                 <div>
 
-                                    <div style="background:#ffffff;min-height: 240px;width: 100%;">  
+                                    <div id="background3">  
 
-                                        <form name="formulaire" style="padding-top: 1px;padding-left: 10px;padding-bottom: 10px;"class ="table"> 
+                                        <form id="selection_table" name="formulaire" class ="table"> 
                                             <div class="row">
-                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Strategy:</p>
+                                                <p id="strategy" class="cell">Strategy:</p>
                                                 <script>
 
                                                     function check(elem) {
@@ -248,7 +249,7 @@ $(document).ready(function() {
                                                         }
                                                     }
                                                 </script>
-                                                <select class"selecto"name="strategy" style=" background-image: url(../static/bg_custom_selectbox.png);width: 138px;height: 20px; cursor: pointer;color:#58534d;" required id="drop1" onChange="check(this)"> 
+                                                <select id="select1" class="selecto" name="strategy" required id="drop1" onChange="check(this)"> 
                                                     <option selected value="">Please choose </option> 
                                                     <option value="momentum">Momentum</option> 
                                                     <option value="carry">Carry</option> 
@@ -264,7 +265,7 @@ $(document).ready(function() {
                                                         <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
                                                     </div>
                                                 </div>
-                                                <div id="warning_msg" style='display: none;margin-left: 0px;'class=""><p class="warning_func">Function not implemented yet</p></div>
+                                                <div id="warning_msg" style='display: none;margin-left: 0px;'class=""><p class="warning_func">Function not implemented yet</p> </div>
 
                                             </div>
                                                  <!--   
@@ -276,17 +277,17 @@ $(document).ready(function() {
 
 
                                             <div class="row">
-                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Risk Constrained:</p>
+                                                <p id="select2" class="cell">Risk Constrained:</p>
 
-                                                <select class"selecto" name="method" style="background-image: url(../static/bg_custom_selectbox.png);width: 138px;height: 20px; cursor: pointer;color:#58534d;"  id="drop2" required> 
+                                                <select class="selecto" name="method" id="drop2" required> 
                                                     <option selected value="">Please choose</option> 
                                                     <option value="Constrained">Yes</option>
                                                     <option value="Ranking" onclick="dynInput(this)">No</option>
                                                 </select>
-                                                <div id='input2'style='display: none;margin-left: 0px;'class="">
+                                                <div id='input2'class="cell">
                                                     <div>
                                                         <p class="form_title">Volatility Cap (in %):</p>
-                                                        <input class="rc_input"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" //>
+                                                        <input class="rc_input"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
                                                     </div>
                                                     <div>
                                                         <p class="form_title">Max Weight (in %):</p>
@@ -300,11 +301,10 @@ $(document).ready(function() {
                                                         document.getElementById('input2').style.display = display;
                                                     }
                                                 </script>
-                                             
                                          </div>
-                                         <div class="row">
+                                        <div class="row">
                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest lenght:</p>
-                                                <input required class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6"/>
+                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6"/>
                                                    <div name"generate_button" style="padding-top: 10px">
                                                  <input id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
                                              </div>
@@ -315,23 +315,23 @@ $(document).ready(function() {
                          </div>
 
 
-                         <div class='right' style="width: 50%;min-height: 240px;height: 100%;background:url(../static/logo2.png) center no-repeat;background-color: #fcfaf5">
+                         <div id="table2" class='right'>
                                         <!--<div>
                                             <p style="clear: both; font-size: 14px;font-height: 18px"><b>Back testing:</b></p>
                                         </div>-->
                                         {% if back_tested_data|length > 0 %}
-                                        <div style="height: 100%;background-color: #fcfaf5;">
+                                        <div id="background4">
                                             <div id="logoImg"></div>
                                             <div id="resultPanel" class="content">
-                                                <div id="resultBox" style="display: block;">
+                                                <div id="resultBox">
                                                    <div class="resultTitle">
                                                     <h3 id="summary">INDEX SUMMARY</h3>
                                                 </div>
                                                 <div class="pricingResults">
-                                                    <table id "tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <table id="tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
                                                         <tbody>
                                                             <tr> <td id="line" width="160" align="left">Creation Date:</td><td id="line" align="left">{{pricing_day | safe}} {{pricing_month | safe}} {{pricing_year | safe}}  - {{pricing_hour | safe}}</td></tr> 
-                                                            <tr><td id="line" width="160" align="left" style="color:#58534d;">Index:</td>
+                                                            <tr><td id="line" width="160" align="left">Index:</td>
                                                                 <td id="line" align="left"><b> {{name | safe}}</b> </td>
                                                             </tr>
                                                             <tr>
@@ -349,8 +349,8 @@ $(document).ready(function() {
                                                 <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
                                                     <tbody>
                                                         <tr>
-                                                            <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
-                                                            <td id="resultWarning" style="vertical-align: middle;">The Index displayed above is for illustration purposes only and is not calculated using current market data. This Index is subject to change without any notice in line with the applicable market conditions, and is likely to have changed by the time you present this idea to your banker or investment advisor. They will contact us for refreshed Index summary.</td> 
+                                                            <td class="warningLabel" ><span class="iconWarning"></span></td>
+                                                            <td id="resultWarning">The Index displayed above is for illustration purposes only and is not calculated using current market data. This Index is subject to change without any notice in line with the applicable market conditions, and is likely to have changed by the time you present this idea to your banker or investment advisor. They will contact us for refreshed Index summary.</td> 
                                                         </tr>   
                                                     </tbody>
                                                 </table>
@@ -358,15 +358,15 @@ $(document).ready(function() {
                                         </div>
                                     </div>
                                 </div>
-
-
+                            </div>
+                                  
 
 
                             </div>
                             {% else %}
-                            <div id='info_momentum'style='display: none;margin-left: 0px;background: white'class=""><div class="info_page" style="background: white">
+                            <div id='info_momentum' class=""><div class="info_page">
                                 <a class="info_header" href="https://www.msci.com/eqb/methodology/meth_docs/MSCI_Momentum_Indices_Methodology.pdf">
-                                    <img src="../static/MSCI_header.png" style="width: 100%;">
+                                    <img id="HeaderMSCI" src="../static/MSCI_header.png">
                                 </a>
                                 <span >
                                     <p class="info_title">
@@ -398,16 +398,16 @@ $(document).ready(function() {
                                     -->
                                     {% endif %}
 
-                                </div>
-                                <!--</div>-->
+                            
+                            </div>
+                            
 
 
 
                             </div>
                         </div>
-                        <!-- </div>-->
+                       
 
-                    </div>
                     {% if current_composition_df|length > 0 %}
                     <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
                     <div>
@@ -428,7 +428,7 @@ $(document).ready(function() {
                                                     <h3 id="summary2">BACKTEST OVER THE LAST {{backtest_date | safe}} MONTHS </h3>
                                                 </div>
                                                 <div class="pricingResults">
-                                                    <table id "tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <table id="tableResult" width="100%" border="0" cellpadding="0" cellspacing="0">
                                                         <tbody>
                                                             <tr> <td id="line" width="200" align="left">Backtest duration:</td><td id="line" align="left">{{backtest_date | safe}} Months</td></tr> 
                                                             <tr><td id="line" width="200" align="left">Number of observations:</td>
@@ -530,12 +530,9 @@ $(document).ready(function() {
                                 </div>
 
                             </div>
-
-
-
-
-                        </div>
                         
+                        </div>
+                     
                     </div>
                     {% endif %}
                     <div Align="right" style="background-color: #f3f3f3;padding: 20px">
@@ -543,10 +540,6 @@ $(document).ready(function() {
                     </div>
                 </div>
                 <div id="view2">
-
-               
-
-
 
              </div>
              <div id="view3">
@@ -557,9 +550,7 @@ $(document).ready(function() {
 
          </div>
 
-
-        
-
+    </div>
     </div>
 </body>
 <footer >
@@ -572,9 +563,10 @@ $(document).ready(function() {
     </div>
     <div id="under_footer">
         <div id="diclaimer_bottom">
-            <p>2016, Master 203 - Leonteq Securities AG | Creator Beta 1.0 |</p>
+            <p>2016, Master 203 | Creator Beta 1.0 |</p>
         </div>
     </div>
+    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the student from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
 </footer>
 
 </html>

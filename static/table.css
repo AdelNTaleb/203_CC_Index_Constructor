@@ -1,9 +1,30 @@
-
+#disclaimer{
+  color: #4c525c;
+  
+  text-align: center;
+  vertical-align: middle;
+  background-color: white;
+  height: 50px;
+  border: solid 3px #eaa800;
+}
+select {
+    padding:3px;
+    margin: 0;
+    -webkit-border-radius:0px;
+    -moz-border-radius:0px;
+    border-radius:0px;
+    border:none;
+    outline:none;
+    display: inline-block;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    cursor:pointer;
+}
 #main_body{
-  background:#6a6b74 ;
+  background:#6a6b74;
   font-family:Arial;
 }
-
 
 #floater{
   background-color:rgba(229, 229, 230,0.60);
@@ -53,11 +74,11 @@ table.dataframe, .dataframe th, .dataframe td {
 }
 .weights thead{
   color: #f5f5f5;
-	background-color:background-color:transparent;
+  background-color:background-color:transparent;
 
 }
-.weights tr:nth-child(odd)		{ background-color:transparent; }
-.weights tr:nth-child(even)	{ background-color:transparent; }
+.weights tr:nth-child(odd)    { background-color:transparent; }
+.weights tr:nth-child(even) { background-color:transparent; }
 
 .weights th {
     color: #f5f5f5;
@@ -151,9 +172,10 @@ input:focus {
 }
 
 .form_title{
+  font-size: 20px;
   color:#58534d;
-  line-height: 0.2;
-  font-size: 20%;
+  line-height: 0.5;
+  
 }
 .warning_func{
   color:red;
@@ -187,10 +209,12 @@ input:focus {
 }
 .disclaimer{
   color:#58534d;
-  font-size: 20%;
+  font-size: 60%;
+  padding-left: 10px
 }
 .Characteristics{
-  font-size: 50%;
+  font-size: 80%;
+  padding-left: 10px;
 }
 
 #header_logo {
@@ -206,6 +230,11 @@ input:focus {
     -o-transition: 1s ease-in-out;
 }
 #header {
+  background-image: url(../static/header_bg.jpg);
+  border-bottom-style: solid;
+  border-bottom-color: #f0a800; 
+  border-bottom-width: 4px;
+  height: 100px;
     overflow: hidden;
     position: relative;
     -webkit-box-shadow: inset 1px 10px 5px -3px rgba(97,97,97,0.39);
@@ -218,6 +247,138 @@ box-shadow: inset 1px 10px 5px -3px rgba(97,97,97,0.39);
     -o-transform: translate(20px, -20px);
     -webkit-transform: translate(20px, -20px);
 }
+#link1 {
+  z-index: 0;
+  position: absolute;
+}
+
+#top_bar {
+  background-color: white; 
+  margin-top: 20px;
+}
+#header2 {
+  clear: both;
+  color: #51555E;
+  font-size: 14px;
+  height: 18px;
+  padding: 5px
+}
+#border1{border-top: 3px solid #51555E;
+  padding-bottom: 0px
+}
+#borderx{border-top: 3px solid #51555E;
+  padding-bottom: 0px
+}
+.container {
+  background-color: white;
+  min-height: 240px;
+  padding: 10px;
+}
+#random {border-right-style: solid;
+  border-right-width: 2px ;
+  border-right-color:#8e8e95;
+  width: 50%
+}
+#background1{
+  margin:0 auto; 
+  background-color: #fff;
+}
+#background2{
+  background:-webkit-linear-gradient(#8e8e95 , #6c6d76) ;
+   font-family:Arial;
+}
+#background3{
+  background:#ffffff;
+  min-height: 240px;
+  width: 100%;
+}
+#table_selection{
+  padding-top: 1px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+#strategy{
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100px;
+  color:#58534d;
+}
+#select1{
+  background-image: url(../static/bg_custom_selectbox.png);
+  width: 138px;
+  height: 20px; 
+  cursor: pointer;
+  color:#58534d;
+}
+#input1 {
+  display: none;
+  margin-left: 0px;
+}
+#warning_msg {
+  display: none;
+  margin-left: 0px;
+}
+
+#select2{
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100px;
+  color:#58534d;
+}
+#drop2{
+  background-image: url(../static/bg_custom_selectbox.png);
+  width: 138px;
+  height: 20px;
+  cursor: pointer;
+  color:#58534d;
+}
+#input2{
+  display: none;
+  margin-left: 0px;
+}
+#generate_button{
+  padding-top: 10px
+}
+#submit_btn{
+  text-align: right
+}
+#table2{
+  width: 50%;
+  min-height: 240px;
+  height: 100%;
+  background:url(../static/logo2.png) center no-repeat;
+  background-color: #fcfaf5
+}
+#background4 {
+  height: 100%;
+  background-color: #fcfaf5;
+}
+#resultBox{
+  display: block;
+}
+#line{
+  color:#58534d;
+}
+#info_momentum{
+  display: none;
+  margin-left: 0px;
+  background: white
+}
+.info_page{
+  background: white
+}
+.warningLabel{
+  vertical-align: top;
+  padding: 4px
+}
+#resultWarning{
+  vertical-align: middle;
+}
+#HeaderMSCI{
+  width: 100%;
+}
+
+
 h4 {
     text-shadow: 0px -1px 0px #51555e;
     color:#bbbbbb;
