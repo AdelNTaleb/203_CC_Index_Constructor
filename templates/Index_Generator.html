@@ -109,6 +109,67 @@ $(document).ready(function() {
         
    })
    })
+    $(function () {
+        Highcharts.setOptions({
+            colors: ['#eaa800','#767b8b']
+        });
+    $('#bar_chart').highcharts({
+       
+        credits: {
+            enabled:false
+        },
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '{{name | safe}}\'s Daily Return Distribution'
+        },
+       
+        xAxis: {
+            categories: {{ index_bins_js|safe }},
+            crosshair: {
+                color:"#fbefa8",
+                enabled:true,
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Frequency'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0,
+                states:{
+                    hover:{
+                        fill: "#fbefa8",
+                    
+                    }
+                }
+            }
+        },
+        series: [{
+            name: '{{name | safe}}',
+            data: {{ index_freq_js|safe }}
+
+        }, {
+            name: '{{underlying | safe}}',
+            data: {{ ben_freq_js|safe }}
+
+        }]
+    });
+});
+
     var my_data_pie = {{ data_graph_pie|safe }};
     $(function () {
         Highcharts.setOptions({
@@ -185,7 +246,7 @@ $(document).ready(function() {
     <!--<div class="loader"></div>-->
     <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
     <div id="content">
-    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the student from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
         <div id="header">
             <div id="header_logo" ></div>
             <a id="link1" title="Leonteq" href="/main">
@@ -220,7 +281,7 @@ $(document).ready(function() {
 
                         <div class="container">
 
-                           <div id="row">
+                           <div id="row" class="yourindex">
                                <div id="random" class='left'>
                                 <div>
 
@@ -540,7 +601,9 @@ $(document).ready(function() {
                     </div>
                 </div>
                 <div id="view2">
-
+               
+<div>
+<div id="bar_chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div></div>
              </div>
              <div id="view3">
 
@@ -566,7 +629,7 @@ $(document).ready(function() {
             <p>2016, Master 203 | Creator Beta 1.0 |</p>
         </div>
     </div>
-    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the student from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
 </footer>
 
 </html>

@@ -17,6 +17,12 @@ def Returns_df(Prices_df):
     df_return=df_return.ix[1:]
     return df_return
 
+def histo_func(df,nbr_bins):
+    df_return=df/df.shift(1)-1
+    df_return=df_return.ix[1:]
+    hist_data=np.histogram(df_return,bins=nbr_bins)
+    return hist_data
+    
 def dataToJson(a):
     b=a.to_frame()
     b.columns=["values"]
