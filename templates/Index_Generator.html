@@ -15,12 +15,13 @@
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="../static/js/highstock.js"></script>
-
+    <script src="../static/js/sly.min.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/highcharts-3d.js"></script>
     
 
     <script type="text/javascript">
+
 //<![CDATA[
 $(document).ready(function() {
 
@@ -119,10 +120,13 @@ $(document).ready(function() {
             enabled:false
         },
         chart: {
+            backgroundColor: null,
+            plotBackgroundColor: '#fcfaf5',
             type: 'column'
         },
         title: {
-            text: '{{name | safe}}\'s Daily Return Distribution'
+            text: '{{name | safe}}\'s Daily Return Distribution',
+            style:{color: "white"},
         },
        
         xAxis: {
@@ -158,6 +162,12 @@ $(document).ready(function() {
                 }
             }
         },
+        legend:{
+
+            itemStyle: {
+
+                color: 'white'}},
+
         series: [{
             name: '{{name | safe}}',
             data: {{ index_freq_js|safe }}
@@ -241,7 +251,6 @@ $(document).ready(function() {
 </script>
 </head>
 <body id="main_body" onload="HideLoadingDiv()">
-
 
     <!--<div class="loader"></div>-->
     <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
@@ -556,23 +565,30 @@ $(document).ready(function() {
 
                             </div>
                             
-                            <div id="row" style="border-color: #f0a800;background-color: #3a3d44;background-image: url(../static/bg.png);margin-top: 10px;">
+                            <div class="carrousel"  id="row" style="border-color: #f0a800;background-color: #3a3d44;background-image: url(../static/bg.png);margin-top: 10px;">
+                            <table>
+                            <tr>
+                            <td>
+                                
 
-                                <div class="left" style="padding: 20px;height: auto; display: table;width: auto">
-
-                                    <div style="width: 100%;float: left ;"> 
-
-                                        <div id="floater">
+                                    <div id="smartdisplay" > 
+                                    <span class="smartitle">Weights</span>
+                                        <div id="floater" >
+                                        <div id="component_list">
                                             <center>
                                                 {% block content %}
                                                 {{current_data | safe}}
                                                 {% endblock %}
                                             </center>
                                         </div>
+                                        </div>
                                     </div>
                                     
-                                </div>
-                                <div style="padding: 20px;height: auto; display: table;width: 30%">
+                                
+                                </td>
+                                <td>
+                                <div id="smartdisplay" >
+                                <span class="smartitle">{{name | safe}}'s composition</span>
                                     {% if current_composition_df|length < 11 %}
                                     <div id="floater" style="width: auto;height: 100%;display: table">
 
@@ -580,7 +596,7 @@ $(document).ready(function() {
 
                                        {% elif current_composition_df|length > 10 %}
                                        <div id="floater" style="width: auto;height: 100%;display: table">
-                                         <div id="container" style="height: 400px"></div>
+                                         <div id="container" style="height: 400px;margin: 0 auto"></div>
                                      </div>
                                      {% elif current_composition_df|length == 0  %}
                                      <div id="floater">
@@ -589,8 +605,21 @@ $(document).ready(function() {
                                     {% endif %}
 
                                 </div>
-
+                                </div>
+                                </td>
+                                <td>
+                                
+                                <div id="smartdisplay">
+                                <span class="smartitle">{{name | safe}}'s Daily Return Distribution</span>
+                                <div id="floater" style="width: auto;height: 100%;display: table">
+                            <div id="bar_chart" style="min-width: 500px; height: 400px; margin: 0 auto"></div></div></div>
+                            </td>
+                            </tr>
+                            </table>
                             </div>
+                            </div>
+
+                            
                         
                         </div>
                      
@@ -601,15 +630,17 @@ $(document).ready(function() {
                     </div>
                 </div>
                 <div id="view2">
-               
-<div>
-<div id="bar_chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div></div>
-             </div>
-             <div id="view3">
+               <script>
+    (function($){
+        $(window).load(function(){
+            $(".content").mCustomScrollbar();
+        });
+    })(jQuery);
+</script>
+<div class="mCustomScrollbar" data-mcs-theme="dark">
+  <!-- your content -->
+</div>
 
-
-
-             </div>
 
          </div>
 
