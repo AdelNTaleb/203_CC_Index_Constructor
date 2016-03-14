@@ -30,18 +30,18 @@ $(document).ready(function() {
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
-           plotOptions: {
-                series: {
-                    lineWidth: 1.5,
-                   
-                      states: {
+         plotOptions: {
+            series: {
+                lineWidth: 1.5,
+
+                states: {
                     hover: {
                         enabled: true,
                         lineWidth: 1.5
                     }
                 }
-                }
-            },
+            }
+        },
         credits: {
             enabled:false
         },
@@ -90,12 +90,12 @@ $(document).ready(function() {
         },
         colors: ['#f0a800','#757b8a'],
         title : {
-           text : '{{name | safe}} vs {{underlying | safe}} ',
-           style:{color: "#51555f"},
-       },
+         text : '{{name | safe}} vs {{underlying | safe}} ',
+         style:{color: "#51555f"},
+     },
 
 
-       series : [{
+     series : [{
         name:"{{name | safe}}",
         data: my_data_line,
     },{
@@ -103,82 +103,82 @@ $(document).ready(function() {
         data: my_data_line_2
     }],
     tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
-                valueDecimals: 5
-            },
-       
-        
-   })
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+        valueDecimals: 5
+    },
+
+
+})
    })
     $(function () {
         Highcharts.setOptions({
             colors: ['#eaa800','#767b8b']
         });
-    $('#bar_chart').highcharts({
-       
-        credits: {
-            enabled:false
-        },
-        chart: {
-            backgroundColor: null,
-            plotBackgroundColor: '#fcfaf5',
-            type: 'column'
-        },
-        title: {
-            text: '{{name | safe}}\'s Daily Return Distribution',
-            style:{color: "white"},
-        },
-       
-        xAxis: {
-            categories: {{ index_bins_js|safe }},
-            crosshair: {
-                color:"#fbefa8",
-                enabled:true,
-            }
-        },
-        yAxis: {
-            min: 0,
+        $('#bar_chart').highcharts({
+
+            credits: {
+                enabled:false
+            },
+            chart: {
+                backgroundColor: null,
+                plotBackgroundColor: '#fcfaf5',
+                type: 'column'
+            },
             title: {
-                text: 'Frequency'
-            }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                text: '{{name | safe}}\'s Daily Return Distribution',
+                style:{color: "white"},
+            },
+
+            xAxis: {
+                categories: {{ index_bins_js|safe }},
+                crosshair: {
+                    color:"#fbefa8",
+                    enabled:true,
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Frequency'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
                 '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0,
-                states:{
-                    hover:{
-                        fill: "#fbefa8",
-                    
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0,
+                    states:{
+                        hover:{
+                            fill: "#fbefa8",
+
+                        }
                     }
                 }
-            }
-        },
-        legend:{
+            },
+            legend:{
 
-            itemStyle: {
+                itemStyle: {
 
-                color: 'white'}},
+                    color: 'white'}},
 
-        series: [{
-            name: '{{name | safe}}',
-            data: {{ index_freq_js|safe }}
+                    series: [{
+                        name: '{{name | safe}}',
+                        data: {{ index_freq_js|safe }}
 
-        }, {
-            name: '{{underlying | safe}}',
-            data: {{ ben_freq_js|safe }}
+                    }, {
+                        name: '{{underlying | safe}}',
+                        data: {{ ben_freq_js|safe }}
 
-        }]
+                    }]
+                });
     });
-});
 
     var my_data_pie = {{ data_graph_pie|safe }};
     $(function () {
@@ -207,9 +207,9 @@ $(document).ready(function() {
             },
             legend:{
 
-            itemStyle: {
+                itemStyle: {
 
-                color: 'white'}},
+                    color: 'white'}},
                     plotOptions: {
                         pie: {
                             borderColor: '#ffffff',
@@ -217,15 +217,15 @@ $(document).ready(function() {
                             depth: 45,
                             dataLabels: {enabled: false},
                             showInLegend:true},
-                                    style:{
-                                        color:(['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']),
-                                    }
-                                },
-                                series: [{
-                                    name: 'Weight',
-                                    data: my_data_pie
-                                }]
-                            });
+                            style:{
+                                color:(['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']),
+                            }
+                        },
+                        series: [{
+                            name: 'Weight',
+                            data: my_data_pie
+                        }]
+                    });
     });
 });
 //]]>
@@ -255,7 +255,7 @@ $(document).ready(function() {
     <!--<div class="loader"></div>-->
     <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
     <div id="content">
-    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+        <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
         <div id="header">
             <div id="header_logo" ></div>
             <a id="link1" title="Leonteq" href="/main">
@@ -276,7 +276,7 @@ $(document).ready(function() {
                     <li><a href="#view3">Rates</a></li>
                 </ul>
             </div>
-                <div class="tabcontents">
+            <div class="tabcontents">
                 <div id="view1">
                     <div id="top_bar">
                         <div id="border1"></div>
@@ -290,8 +290,8 @@ $(document).ready(function() {
 
                         <div class="container">
 
-                           <div id="row" class="yourindex">
-                               <div id="random" class='left'>
+                         <div id="row" class="yourindex">
+                             <div id="random" class='left'>
                                 <div>
 
                                     <div id="background3">  
@@ -371,21 +371,21 @@ $(document).ready(function() {
                                                         document.getElementById('input2').style.display = display;
                                                     }
                                                 </script>
-                                         </div>
-                                        <div class="row">
+                                            </div>
+                                            <div class="row">
                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest lenght:</p>
-                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6"/>
-                                                   <div name"generate_button" style="padding-top: 10px">
-                                                 <input id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
-                                             </div>
-                                                </div>
-                                     </form> 
-                                 </div>
-                             </div>
-                         </div>
+                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6" required/>
+                                                <div name"generate_button" style="padding-top: 10px">
+                                                   <input id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                               </div>
+                                           </div>
+                                       </form> 
+                                   </div>
+                               </div>
+                           </div>
 
 
-                         <div id="table2" class='right'>
+                           <div id="table2" class='right'>
                                         <!--<div>
                                             <p style="clear: both; font-size: 14px;font-height: 18px"><b>Back testing:</b></p>
                                         </div>-->
@@ -394,7 +394,7 @@ $(document).ready(function() {
                                             <div id="logoImg"></div>
                                             <div id="resultPanel" class="content">
                                                 <div id="resultBox">
-                                                   <div class="resultTitle">
+                                                 <div class="resultTitle">
                                                     <h3 id="summary">INDEX SUMMARY</h3>
                                                 </div>
                                                 <div class="pricingResults">
@@ -405,31 +405,31 @@ $(document).ready(function() {
                                                                 <td id="line" align="left"><b> {{name | safe}}</b> </td>
                                                             </tr>
                                                             <tr>
-                                                             <td id="line" width="160" align="left">Parent Index:</td>
-                                                             <td id="line" align="left"><a href="http://us.spindices.com/indices/equity/sp-100">{{underlying | safe}}</a></td>   
-                                                         </tr>
-                                                         <tr>
-                                                          <td id="line" width="160" align="left">Number of Components:</td> 
-                                                          <td id="line" align="left"> {{number_component | safe}} </td>
-                                                      </tr>
-                                                  </tbody>
+                                                               <td id="line" width="160" align="left">Parent Index:</td>
+                                                               <td id="line" align="left"><a href="http://us.spindices.com/indices/equity/sp-100">{{underlying | safe}}</a></td>   
+                                                           </tr>
+                                                           <tr>
+                                                              <td id="line" width="160" align="left">Number of Components:</td> 
+                                                              <td id="line" align="left"> {{number_component | safe}} </td>
+                                                          </tr>
+                                                      </tbody>
 
-                                              </table>
-                                              <div class="resultMessage">
-                                                <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="warningLabel" ><span class="iconWarning"></span></td>
-                                                            <td id="resultWarning">The Index displayed above is for illustration purposes only and is not calculated using current market data. This Index is subject to change without any notice in line with the applicable market conditions, and is likely to have changed by the time you present this idea to your banker or investment advisor. They will contact us for refreshed Index summary.</td> 
-                                                        </tr>   
-                                                    </tbody>
-                                                </table>
+                                                  </table>
+                                                  <div class="resultMessage">
+                                                    <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="warningLabel" ><span class="iconWarning"></span></td>
+                                                                <td id="resultWarning">The Index displayed above is for illustration purposes only and is not calculated using current market data. This Index is subject to change without any notice in line with the applicable market conditions, and is likely to have changed by the time you present this idea to your banker or investment advisor. They will contact us for refreshed Index summary.</td> 
+                                                            </tr>   
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                                  
+
 
 
                             </div>
@@ -468,24 +468,24 @@ $(document).ready(function() {
                                     -->
                                     {% endif %}
 
-                            
-                            </div>
-                            
+
+                                </div>
+
 
 
 
                             </div>
                         </div>
-                       
 
-                    {% if current_composition_df|length > 0 %}
-                    <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
-                    <div>
-                        <h1 style="clear: both; color: #51555E;font-size: 14px;font-height: 18px;padding: 5px;">INDEX COMPOSITION AND BACKTEST AS OF TODAY</h1>
-                    </div>
-                    <div  style="border-top: 3px solid #51555e;padding: 10px;background-color: white;">
-                        <div id="row" style="background-color:#fcfaf5;">
-                            <div class="left" style="width:50%;background-color: #fcfaf5">
+
+                        {% if current_composition_df|length > 0 %}
+                        <div style="border-top: 3px solid #51555e;padding-bottom: 0px"></div>
+                        <div>
+                            <h1 style="clear: both; color: #51555E;font-size: 14px;font-height: 18px;padding: 5px;">INDEX COMPOSITION AND BACKTEST AS OF TODAY</h1>
+                        </div>
+                        <div  style="border-top: 3px solid #51555e;padding: 10px;background-color: white;">
+                            <div id="row" style="background-color:#fcfaf5;">
+                                <div class="left" style="width:50%;background-color: #fcfaf5">
                                         <!--<div>
                                             <p style="clear: both; font-size: 14px;font-height: 18px"><b>Back testing:</b></p>
                                         </div>-->
@@ -494,7 +494,7 @@ $(document).ready(function() {
 
                                             <div id="resultPanel" class="content">
                                                 <div id="resultBox" style="display: block;">
-                                                   <div class="resultTitle" style="padding-top: 0px">
+                                                 <div class="resultTitle" style="padding-top: 0px">
                                                     <h3 id="summary2">BACKTEST OVER THE LAST {{backtest_date | safe}} MONTHS </h3>
                                                 </div>
                                                 <div class="pricingResults">
@@ -505,51 +505,51 @@ $(document).ready(function() {
                                                                 <td id="line" align="left"> {{number_observation_bt | safe}}</td>
                                                             </tr>
                                                             <tr>
-                                                             <td id="line" width="200" align="left">Average level observed:</td>
-                                                             <td id="line" align="left">{{average_level_bt | safe}}</td>   
-                                                         </tr>
-                                                         <tr>
-                                                          <td id="line" width="200" align="left">Average volatility:</td> 
-                                                          <td id="line" align="left"> {{volatility_bt | safe}} %</td>
-                                                      </tr>
-                                                      <tr>
-                                                          <td id="line" width="200" align="left">Maximum level reached:</td> 
-                                                          <td id="line" align="left"> {{maximum_bt | safe}} </td>
-                                                      </tr>
-                                                      <tr>
-                                                          <td id="line" width="200" align="left">Minimum level reached:</td> 
-                                                          <td id="line" align="left"> {{minimum_bt | safe}} </td>
-                                                      </tr>
-                                                      <tr>
-                                                          <td id="line" width="200" align="left">25th Percentile:</td> 
-                                                          <td id="line" align="left"> {{pt25_bt | safe}} </td>
-                                                      </tr>
-                                                      <tr>
-                                                          <td id="line" width="200" align="left">50th Percentile:</td> 
-                                                          <td id="line" align="left"> {{pt50_bt | safe}} </td>
-                                                      </tr>
-                                                      <tr>
-                                                          <td id="line" width="200" align="left">75th Percentile:</td> 
-                                                          <td id="line" align="left"> {{pt75_bt | safe}} </td>
-                                                      </tr>
-                                                  </tbody>
+                                                               <td id="line" width="200" align="left">Average level observed:</td>
+                                                               <td id="line" align="left">{{average_level_bt | safe}}</td>   
+                                                           </tr>
+                                                           <tr>
+                                                              <td id="line" width="200" align="left">Average volatility:</td> 
+                                                              <td id="line" align="left"> {{volatility_bt | safe}} %</td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">Maximum level reached:</td> 
+                                                              <td id="line" align="left"> {{maximum_bt | safe}} </td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">Minimum level reached:</td> 
+                                                              <td id="line" align="left"> {{minimum_bt | safe}} </td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">25th Percentile:</td> 
+                                                              <td id="line" align="left"> {{pt25_bt | safe}} </td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">50th Percentile:</td> 
+                                                              <td id="line" align="left"> {{pt50_bt | safe}} </td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">75th Percentile:</td> 
+                                                              <td id="line" align="left"> {{pt75_bt | safe}} </td>
+                                                          </tr>
+                                                      </tbody>
 
-                                              </table>
-                                              <div class="resultMessage">
-                                                <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
-                                                            <td id="resultWarning" style="vertical-align: middle;">The Backtest displayed above is for illustration purposes only and is not calculated using current market data. It has been computed using monthly rebalancement. It is not possible, yet, to change the frequence of the rebalancement.</td> 
-                                                        </tr>   
-                                                    </tbody>
-                                                </table>
+                                                  </table>
+                                                  <div class="resultMessage">
+                                                    <table class="messages" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
+                                                                <td id="resultWarning" style="vertical-align: middle;">The Backtest displayed above is for illustration purposes only and is not calculated using current market data. It has been computed using monthly rebalancement. It is not possible, yet, to change the frequence of the rebalancement.</td> 
+                                                            </tr>   
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                            </div>
+                                </div>
 
                                         <!--
                                         <img src="../static/bg.png" style="border-style: solid; border-color: #51555E;border-width:1px;width:100%;height:240px;background-color: #fcfaf5">
@@ -566,89 +566,82 @@ $(document).ready(function() {
                             </div>
                             
                             <div class="carrousel"  id="row" style="border-color: #f0a800;background-color: #3a3d44;background-image: url(../static/bg.png);margin-top: 10px;">
-                            <table>
-                            <tr>
-                            <td>
-                                
+                                <table>
+                                    <tr>
+                                        <td>
 
-                                    <div id="smartdisplay" > 
-                                    <span class="smartitle">Weights</span>
-                                        <div id="floater" >
-                                        <div id="component_list">
-                                            <center>
-                                                {% block content %}
-                                                {{current_data | safe}}
-                                                {% endblock %}
-                                            </center>
-                                        </div>
+
+                                            <div id="smartdisplay" > 
+                                                <span class="smartitle">Weights</span>
+                                                <div id="floater" >
+                                                    <div id="component_list">
+                                                        <center>
+                                                            {% block content %}
+                                                            {{current_data | safe}}
+                                                            {% endblock %}
+                                                        </center>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </td>
+                                        <td>
+                                            <div id="smartdisplay" >
+                                                <span class="smartitle">{{name | safe}}'s composition</span>
+                                                {% if current_composition_df|length < 11 %}
+                                                <div id="floater" style="width: auto;height: 100%;display: table">
+
+                                                 <div id="container" style="height: 400px"></div>
+
+                                                 {% elif current_composition_df|length > 10 %}
+                                                 <div id="floater" style="width: auto;height: 100%;display: table">
+                                                   <div id="container" style="height: 400px;margin: 0 auto"></div>
+                                               </div>
+                                               {% elif current_composition_df|length == 0  %}
+                                               <div id="floater">
+                                                <img src="../static/logo2.png">
+                                            </div>
+                                            {% endif %}
+
                                         </div>
                                     </div>
-                                    
-                                
                                 </td>
                                 <td>
-                                <div id="smartdisplay" >
-                                <span class="smartitle">{{name | safe}}'s composition</span>
-                                    {% if current_composition_df|length < 11 %}
-                                    <div id="floater" style="width: auto;height: 100%;display: table">
 
-                                       <div id="container" style="height: 400px"></div>
-
-                                       {% elif current_composition_df|length > 10 %}
-                                       <div id="floater" style="width: auto;height: 100%;display: table">
-                                         <div id="container" style="height: 400px;margin: 0 auto"></div>
-                                     </div>
-                                     {% elif current_composition_df|length == 0  %}
-                                     <div id="floater">
-                                        <img src="../static/logo2.png">
-                                    </div>
-                                    {% endif %}
-
-                                </div>
-                                </div>
-                                </td>
-                                <td>
-                                
-                                <div id="smartdisplay">
-                                <span class="smartitle">{{name | safe}}'s Daily Return Distribution</span>
-                                <div id="floater" style="width: auto;height: 100%;display: table">
-                            <div id="bar_chart" style="min-width: 500px; height: 400px; margin: 0 auto"></div></div></div>
-                            </td>
-                            </tr>
-                            </table>
+                                    <div id="smartdisplay">
+                                        <span class="smartitle">{{name | safe}}'s Daily Return Distribution</span>
+                                        <div id="floater" style="width: auto;height: 100%;display: table">
+                                            <div id="bar_chart" style="min-width: 500px; height: 400px; margin: 0 auto"></div></div></div>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
-                            </div>
-
-                            
-                        
                         </div>
-                     
-                    </div>
-                    {% endif %}
-                    <div Align="right" style="background-color: #f3f3f3;padding: 20px">
 
+
+                        
                     </div>
+
                 </div>
-                <div id="view2">
-               <script>
-    (function($){
-        $(window).load(function(){
-            $(".content").mCustomScrollbar();
-        });
-    })(jQuery);
-</script>
-<div class="mCustomScrollbar" data-mcs-theme="dark">
-  <!-- your content -->
-</div>
+                {% endif %}
+                <div Align="right" style="background-color: #f3f3f3;padding: 20px">
+
+                </div>
+            </div>
+            <div id="view2">
 
 
-         </div>
+            </div>
+            <div id="view3">
 
-    </div>
+
+            </div>
+        </div>
     </div>
 </body>
-<footer >
-    <div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
+<footer style="background: #6a6b74" >
+<div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
     <div id="contact_info" style="padding-left: 10px;">
         <h4>Contact Info</h4>
         <p id="contact">
