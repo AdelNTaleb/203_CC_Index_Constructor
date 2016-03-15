@@ -1,6 +1,8 @@
                                 #### Import function, data and hardcoded input #### 
 
 import flask
+
+from flask import render_template, redirect, url_for, request
 import time
 import matplotlib.finance as finance
 import datetime
@@ -308,6 +310,17 @@ def index_pro():
     ben_bins_js=json.dumps(benchmark_hist[1])
     ben_freq_js=json.dumps(benchmark_hist[0])
     return flask.render_template('Index_Generator_Pro.html',ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_date,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights'),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,describe_data=description.to_html(classes='weights'))
+
+# route for handling the login page logic
+@Server.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return redirect('/pro/')
+    return render_template('login.html', error=error)
 
 if __name__ == '__main__':
     Server.debug=True

@@ -5,32 +5,7 @@
     stroke-width: 0.1;
     fill: yes;
 }
-#accept{
-  
-    background-color: #f2b019;
-    border: 1px solid #ac7b1d; /* Green */
-    border-radius: 5px;
-    color: #fffff8;
-    padding: 12px 13px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
 
-}
-#accept:hover{
-  
-    background-color: #f5cd7a; /* Green */
-    
-    color: #cf8614;
-    border: 1px solid #ac7b1d; 
-    padding: 12px 13px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-
-}
 ul.tabs
 {
     padding: 8px 0;
