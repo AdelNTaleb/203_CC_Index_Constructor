@@ -26,10 +26,13 @@
   <div id="content">
     <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
     
-    <div id="background1">
-
+    
+    <div id="image_bg">
           <div id="login_pop">
             <h1>Sign in</h1>
+            {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
             <br>
             <form action="" method="post">
               <input type="text" placeholder="Username" name="username" value="{{
@@ -43,6 +46,7 @@
               {% endif %}
             </div> 
         </div>
+
       </div>
     </body>
     <footer style="background: #6a6b74" >

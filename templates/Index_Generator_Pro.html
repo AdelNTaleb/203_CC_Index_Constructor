@@ -258,7 +258,7 @@ $(document).ready(function() {
         <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
         <div id="header">
             <div id="header_logo" ></div>
-            <a id="link1" title="Leonteq" href="/main">
+            <a id="link1" title="Leonteq" href="/pro">
                 <img
                 src="../static/logo_header.png"
                 width="262"
@@ -270,15 +270,20 @@ $(document).ready(function() {
         </div>
         <div id="background1">
             <div id="background2">
+            
                 <ul class="tabs" data-persist="true">
-                    <li><a href="#view1">Equity</a></li>
-                    <li><a href="#view2">Credit</a></li>
-                    <li><a href="#view3">Rates</a></li>
+                    <li><a href="#view1">Dashboard</a></li>
+                    <li><a href="#view2">Downloads</a></li>
+                    <li><a href="#view3">Information</a></li>
+                    <li><a href="/logout">Log out</a></li>
                 </ul>
+            
             </div>
             <div class="tabcontents">
                 <div id="view1">
-                   
+                    {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
                 <div Align="right" style="background-color: #f3f3f3;padding: 20px"></div>
             </div>
             <div id="view2">

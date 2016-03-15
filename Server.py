@@ -2,12 +2,12 @@
 
 import flask
 
-from flask import render_template, redirect, url_for, request
+from flask import flash,session,render_template, redirect, request
 import time
 import matplotlib.finance as finance
 import datetime
 from pandas import read_csv
-
+from functools import wraps
 
 #Adel I modified your function so that we can get the correct format
 def get_benchmark(tick,y1,m1,d1,y2,m2,d2):
@@ -77,6 +77,17 @@ global t
 
 # Create the application.
 Server = flask.Flask(__name__)
+
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Please login first.')
+            return redirect('/login')
+    return wrap
     
 global Max_Weight_Allowed
 global Max_Vol
@@ -204,6 +215,7 @@ def index():
     return flask.render_template('Index_Generator.html',ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_date,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights'),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,describe_data=description.to_html(classes='weights'))
 
 @Server.route('/pro/',methods=['GET','POST'])
+@login_required
 def index_pro():
 
     if (flask.request.args.get('NbMonth1') is None):
@@ -311,6 +323,7 @@ def index_pro():
     ben_freq_js=json.dumps(benchmark_hist[0])
     return flask.render_template('Index_Generator_Pro.html',ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_date,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights'),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,describe_data=description.to_html(classes='weights'))
 
+Server.secret_key="secret_key"
 # route for handling the login page logic
 @Server.route('/login', methods=['GET', 'POST'])
 def login():
@@ -319,8 +332,18 @@ def login():
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
         else:
+            flask.session['logged_in'] = True
+            flash('You have signed in')
             return redirect('/pro/')
     return render_template('login.html', error=error)
+
+@Server.route('/logout')
+@login_required
+def logout():
+    flask.session.pop('logged_in',None)
+    flash('You have signed out')
+    return redirect('/')
+
 
 if __name__ == '__main__':
     Server.debug=True

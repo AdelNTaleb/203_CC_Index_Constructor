@@ -37,6 +37,9 @@
         <input id="accept" type="submit" value="Accept and proceed to Creator Pro" 
         onclick="window.location='/login';" style="margin-top: 15px;" /> 
         </div>
+         {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
     </center>
 </div>
 </body>

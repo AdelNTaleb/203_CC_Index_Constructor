@@ -1,4 +1,4 @@
-/* Tab Content - menucool.com */
+
 .test path
 { 
     stroke: black;
@@ -37,7 +37,7 @@ ul.tabs
     margin:0;
     font-size: 0;
     list-style-type: none;
-    text-align: left; /*set to left, center, or right to align the tabs as desired*/
+    text-align: right; /*set to left, center, or right to align the tabs as desired*/
     padding-left:0px; /* Offset of the first tab */
 }
         
@@ -66,7 +66,7 @@ ul.tabs li a
 /*Note: IE8 and earlier doesn't support li:last-child. You have to add another class to the last tab (LI) and specify its border-right as below.*/
 ul.tabs li:last-child a
 {
-    ;
+    text-align: right;
 }
   
         
