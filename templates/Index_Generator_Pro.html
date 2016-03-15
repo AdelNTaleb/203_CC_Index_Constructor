@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="shortcut icon" href="../static/leonteq_favicon.ico">
+    <title>Leonteq Creator Pro</title>
+    <meta charset="utf-8" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+    <title>Leonteq - Msc 203 Index Generator</title>
+    <script src="../static/tabcontent.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" type="text/css" href="../static/stylesheet_pro.css">
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="../static/js/highstock.js"></script>
+    <script src="../static/js/sly.min.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    
+
+    <script type="text/javascript">
+
+//<![CDATA[
+$(document).ready(function() {
+
+    var my_data_line = {{ data_graph_line|safe }};
+    var my_data_line_2 ={{ benchmark|safe }};
+    $(function() {
+       // Create the chart
+       window.chart = new Highcharts.StockChart({
+         plotOptions: {
+            series: {
+                lineWidth: 1.5,
+
+                states: {
+                    hover: {
+                        enabled: true,
+                        lineWidth: 1.5
+                    }
+                }
+            }
+        },
+        credits: {
+            enabled:false
+        },
+
+        chart : {
+            backgroundColor: null,
+            plotBackgroundColor: '#fcfaf5',
+            renderTo : 'chart_test'
+        },
+        navigator: {
+            maskFill: 'rgba(251, 239, 168, 0.60)',
+            series: {
+                color: '#51555f',
+                
+            }
+        },
+        legend: {
+            align: 'center',
+            
+        },
+        rangeSelector : {
+                 buttonTheme: { // styles for the buttons
+                    fill: '#f4f4f4',
+                    stroke: 'none',
+                    'stroke-width': 0,
+
+                    style: {
+
+                        color: '#58535c',
+                        fontWeight: 'bold'
+                    },
+                    states: {
+                        hover: {
+                        },
+                        select: {
+                            fill: '#fbefa8',
+                            style: {
+                                color: '#58535c'
+                            }
+                        }
+                    // disabled: { ... }
+                }
+            },
+
+            selected : 5
+        },
+        colors: ['#f0a800','#757b8a'],
+        title : {
+         text : '{{name | safe}} vs {{underlying | safe}} ',
+         style:{color: "#51555f"},
+     },
+
+
+     series : [{
+        name:"{{name | safe}}",
+        data: my_data_line,
+    },{
+        name:"Benchmark",
+        data: my_data_line_2
+    }],
+    tooltip: {
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+        valueDecimals: 5
+    },
+
+
+})
+   })
+    $(function () {
+        Highcharts.setOptions({
+            colors: ['#eaa800','#767b8b']
+        });
+        $('#bar_chart').highcharts({
+
+            credits: {
+                enabled:false
+            },
+            chart: {
+                backgroundColor: null,
+                plotBackgroundColor: '#fcfaf5',
+                type: 'column'
+            },
+            title: {
+                text: '{{name | safe}}\'s Daily Return Distribution',
+                style:{color: "white"},
+            },
+
+            xAxis: {
+                categories: {{ index_bins_js|safe }},
+                crosshair: {
+                    color:"#fbefa8",
+                    enabled:true,
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Frequency'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0,
+                    states:{
+                        hover:{
+                            fill: "#fbefa8",
+
+                        }
+                    }
+                }
+            },
+            legend:{
+
+                itemStyle: {
+
+                    color: 'white'}},
+
+                    series: [{
+                        name: '{{name | safe}}',
+                        data: {{ index_freq_js|safe }}
+
+                    }, {
+                        name: '{{underlying | safe}}',
+                        data: {{ ben_freq_js|safe }}
+
+                    }]
+                });
+    });
+
+    var my_data_pie = {{ data_graph_pie|safe }};
+    $(function () {
+        Highcharts.setOptions({
+            colors: ['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']
+        });
+        $('#container').highcharts({
+
+            credits: {
+
+                enabled:false
+            },
+
+            chart: {
+                backgroundColor: null,
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45
+                }
+            },
+            title: {
+                text: '{{name | safe}}\'s composition',
+                style:{color: "#ffffff"},
+
+            },
+            legend:{
+
+                itemStyle: {
+
+                    color: 'white'}},
+                    plotOptions: {
+                        pie: {
+                            borderColor: '#ffffff',
+                            innerSize: 50,
+                            depth: 45,
+                            dataLabels: {enabled: false},
+                            showInLegend:true},
+                            style:{
+                                color:(['#ed9800', '#b22a48', '#368b99', '#47b88c', '#aac800', '#4a4647', '#676568', '#9a9899']),
+                            }
+                        },
+                        series: [{
+                            name: 'Weight',
+                            data: my_data_pie
+                        }]
+                    });
+    });
+});
+//]]>
+</script> 
+<script type="text/javascript">
+    function loading()
+    {
+
+        var isValidForm = document.forms['formulaire'].checkValidity();
+        if (isValidForm)
+        {
+            $("#loading").show();
+        }
+        else
+        {
+
+            return false;
+        }
+
+    }
+    
+// ]]>
+</script>
+</head>
+<body id="main_body" onload="HideLoadingDiv()">
+
+    <!--<div class="loader"></div>-->
+    <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
+    <div id="content">
+        <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+        <div id="header">
+            <div id="header_logo" ></div>
+            <a id="link1" title="Leonteq" href="/main">
+                <img
+                src="../static/logo_header.png"
+                width="262"
+                height="95"
+                alt="Leonteq"
+                style="display: block"
+                />
+            </a>
+        </div>
+        <div id="background1">
+            <div id="background2">
+                <ul class="tabs" data-persist="true">
+                    <li><a href="#view1">Equity</a></li>
+                    <li><a href="#view2">Credit</a></li>
+                    <li><a href="#view3">Rates</a></li>
+                </ul>
+            </div>
+            <div class="tabcontents">
+                <div id="view1">
+                   
+                <div Align="right" style="background-color: #f3f3f3;padding: 20px"></div>
+            </div>
+            <div id="view2">
+
+
+            </div>
+            <div id="view3">
+
+
+            </div>
+        </div>
+    </div>
+</body>
+<footer style="background: #6a6b74" >
+<div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
+    <div id="contact_info" style="padding-left: 10px;">
+        <h4>Contact Info</h4>
+        <p id="contact">
+            Phone: +33 7 81 22 99 72
+        </p>
+    </div>
+    <div id="under_footer">
+        <div id="diclaimer_bottom">
+            <p>2016, Master 203 | Creator Beta 1.0 |</p>
+        </div>
+    </div>
+    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+</footer>
+
+</html>
