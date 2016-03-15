@@ -1,3 +1,28 @@
+.flash_msg{
+    margin:auto;
+    width: 200px;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+
+}
+
+#loading_pop{
+  box-shadow: 0 0 0 1px  #74767b, 0 0 0 1px  #81622d inset;
+  border:1px solid #3a3d44;
+  border-radius: 5px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 99999;
+    height: 250px;
+    margin-top: -200px;
+    width: 600px;
+    margin-left: -300px;
+   background-color:rgba(229, 229, 230,0.60);
+
+}
 #logos .head-languages {
     position:absolute;
     right:100px;

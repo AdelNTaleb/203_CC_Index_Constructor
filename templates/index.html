@@ -10,6 +10,7 @@
     <title>Leonteq - Msc 203 Index Generator</title>
     <script src="../static/tabcontent.js" type="text/javascript"></script>
     <link href="../static/stylesheet_main.css" rel="stylesheet" type="text/css" />
+
     <div id="logos">
         <a title="Leonteq" href="#">
             <img
@@ -27,6 +28,19 @@
 </head>
 <body style="background:#51555E; padding-left: 100px;padding-right: 100px ;font-family:Arial;opacity: 7;">
 
+    {% for message in get_flashed_messages() %}
+    <div id="dimmed_pop"><div id="loading_pop">
+        <div class="flash_msg">
+            {{ message }}
+            <FORM>
+            <INPUT TYPE="button" onClick="history.go(0)" VALUE="Ok">
+                </FORM>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
     <div style="background-color: #f3f3f3; padding: 10px;"><center>
         <h1 style=";font-family:Arial;">WARNING: this is a proof of concept and not a fully working application.</h1>
         <p>Do you wish to continue?</p>
@@ -34,14 +48,12 @@
         <input id="accept" type="submit" value="Accept and proceed to Creator" 
         onclick="window.location='/main';" />
         <div>
-        <input id="accept" type="submit" value="Accept and proceed to Creator Pro" 
-        onclick="window.location='/login';" style="margin-top: 15px;" /> 
+            <input id="accept" type="submit" value="Accept and proceed to Creator Pro" 
+            onclick="window.location='/login';" style="margin-top: 15px;" /> 
         </div>
-         {% for message in get_flashed_messages() %}
-        {{ message }}
-      {% endfor %}
-    </center>
-</div>
+
+
+    </div>
 </body>
 <footer>
     <div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
