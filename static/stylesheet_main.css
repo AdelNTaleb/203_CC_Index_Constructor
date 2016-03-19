@@ -1,3 +1,12 @@
+#disclaimer{
+  color: #4c525c;
+
+  text-align: center;
+  vertical-align: middle;
+  background-color: white;
+  height: 50px;
+  border: solid 3px #eaa800;
+}
 .btn_main{
     width: 300px;
     height: 35px;
