@@ -272,9 +272,9 @@ $(document).ready(function() {
         
             <div id="background2">
                 <ul class="tabs" data-persist="true">
-                    <li><a href="#view1">Equity</a></li>
-                    <li><a href="#view2">Credit</a></li>
-                    <li><a href="#view3">Rates</a></li>
+                    <li><a href="#view1">Index Creator</a></li>
+                    <li><a href="#view2">History</a></li>
+                    <li><a href="#view3">Download</a></li>
                     <li><a href="/">Go to main menu</a></li>
                 </ul>
             </div>
@@ -378,7 +378,7 @@ $(document).ready(function() {
                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest lenght:</p>
                                                 <input  class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6" required/>
                                                 <div name"generate_button" style="padding-top: 10px">
-                                                   <input id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                                   <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
                                                </div>
                                            </div>
                                        </form> 
@@ -627,19 +627,24 @@ $(document).ready(function() {
 
                 </div>
                 {% endif %}
+                <!--
                 <div Align="right" style="background-color: #f3f3f3;padding: 20px">
 
-                </div>
+                </div>-->
+            </div>
             </div>
             <div id="view2">
-
-
+            <div id="container" style="width: 100%">
+            {{ Database|safe}}
+            <a href="/delete">test delete</a>
+            </div>
             </div>
             <div id="view3">
 
 
             </div>
         </div>
+    </div>
     </div>
 </body>
 <footer style="background: #6a6b74" >

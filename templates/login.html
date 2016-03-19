@@ -20,31 +20,51 @@
   <script src="../static/js/sly.min.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/highcharts-3d.js"></script>
-
+<div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
 </head>
 <body id="main_body" onload="HideLoadingDiv()">
   <div id="content">
-    <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+    
     
     
     <div id="image_bg">
+    <img src="../static/bg_sign.jpg" alt="bg_sign" id="bg_sign">
           <div id="login_pop">
-            <h1>Sign in</h1>
+          <table id="table_log">
+          <tr id="row_log">
+          <td id="left_cell">
+          <div id="sign_in">
+            <h3>Sign in</h3>
             {% for message in get_flashed_messages() %}
         {{ message }}
       {% endfor %}
-            <br>
+
+           
             <form action="" method="post">
-              <input type="text" placeholder="Username" name="username" value="{{
+            <div>
+              <input class="sign_in_form" type="text" placeholder="Username" name="username" value="{{
               request.form.username }}">
-              <input type="password" placeholder="Password" name="password" value="{{
+
+              </div>
+              <div>
+              <input class="sign_in_form" type="password" placeholder="Password" name="password" value="{{
               request.form.password }}">
-              <input class="btn btn-default" type="submit" value="Login">
+              </div>
+              <div class="btn_login_div">
+              <input id="btn_login" class="btn_main" type="submit" value="Sign in">
+              </div>
             </form>
             {% if error %}
             <p class="error"><strong>Error:</strong> {{ error }}
               {% endif %}
+              </div>
+              </td>
+              <td id="row_right"><img src="../static/logo_header.png" id="leon_logo"></td>
+              </tr>
+
+              </table>
             </div> 
+            
         </div>
 
       </div>

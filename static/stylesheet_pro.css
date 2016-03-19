@@ -48,7 +48,9 @@ ul.tabs li
     background: White;
     margin-left: 0px;
 }
-        
+input:focus {
+    outline:none;
+}       
 ul.tabs li a
 {
     font: normal 12px Verdana;
@@ -274,7 +276,7 @@ div#loading {
     background-color: rgba(0, 0, 0, 0.6);
     cursor: wait;
     }
-input[type=submit] {
+.btn_generator {
     padding:5px 45px; 
     background: url(../static/icons_gray.png) 145% 41.9% no-repeat;
     background-color:#f4f4f4; 
@@ -291,7 +293,7 @@ input[type=submit] {
 
 
 }
-input[type=submit]:hover {
+.btn_generator:hover {
   background: url(../static/icons_color.png) 145% 41.9% no-repeat;
   background-color: #f6e785;
   border:solid;
