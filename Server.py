@@ -177,7 +177,9 @@ def index():
     current_composition_graph_df=current_composition_df.reset_index()
     current_composition_graph_df.columns=["tick","weights"]
     data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])
-    description=back_tested_df.describe()
+    back_tested_df_return=Returns_df(back_tested_df)
+    print back_tested_df_return
+    description=back_tested_df_return.describe()
     description.columns=["Description"]
 
     #misceleanous data for the web page
@@ -205,10 +207,10 @@ def index():
 
     number_component=len(current_composition_df)
     number_observation_bt=int(description.loc['count'])
-    average_level_bt=float(description.loc['mean'])
-    volatility_bt=float(description.loc['std'])*100
+    average_level_bt=float(description.loc['mean'])*100
+    volatility_bt=float(description.loc['std'])*(252**0.5)*100
     maximum_bt=float(description.loc['max'])
-    minimum_bt=float(description.loc['min'])
+    minimum_bt=float(description.loc['min'])*100
     pt25_bt=float(description.loc['25%'])
     pt50_bt=float(description.loc['50%'])
     pt75_bt=float(description.loc['75%'])

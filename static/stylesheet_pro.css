@@ -48,9 +48,7 @@ ul.tabs li
     background: White;
     margin-left: 0px;
 }
-input:focus {
-    outline:none;
-}       
+     
 ul.tabs li a
 {
     font: normal 12px Verdana;
