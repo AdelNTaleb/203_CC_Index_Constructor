@@ -44,13 +44,16 @@ from Function_Library import *
 
 
 
-# Import data
-#Prices_df=read_excel('Data SP100 Values.xlsx',0)
-#MktCap_df=read_excel('Data SP100 Values.xlsx',1)
-# Test Nikkei 225
-Prices_df=read_excel('NKY225 - Prices.xlsx')
-MktCap_df=read_excel('NKY225 - MktCap.xlsx')
+# Import data -  New Import from CSV
 
+Prices_df=read_csv('NKY225 - Prices.csv',sep=';',decimal=",")
+Prices_df=Prices_df.set_index('Date')
+#Prices_df=Prices_df.astype(float)
+Prices_df.index.name=None
+MktCap_df=read_csv('NKY225 - MktCap.csv',sep=';',decimal=",")
+MktCap_df=MktCap_df.set_index('Date')
+#MktCap_df=MktCap_df.astype(float)
+MktCap_df.index.name=None
 Prices_df_return=Returns_df(Prices_df)
 
 
