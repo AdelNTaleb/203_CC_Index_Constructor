@@ -512,5 +512,5 @@ def OutputStats(back_tested,current_composition):
 
     return Stats_Output_df
 
-OutputStats(back_tested,current_composition)
+
 
