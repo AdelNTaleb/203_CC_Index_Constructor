@@ -422,7 +422,7 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1
 # Only1 function to call returning a full dataframe with all statistics: OutputStats(back_tested,current_composition)
 
 # Function which returns the number of components : input dataframe of stocks and weigths
-def NbofComponents(composition_df):
+def NbofComponents(current_composition_df):
     return len(current_composition_df)
 
 
@@ -447,7 +447,7 @@ def DownsideVol(back_tested_returns_df):
 
 
 # We assume r=0 riskfreerate
-def SharpeRatio(back_tested_returns,back_tested_df):
+def SharpeRatio(back_tested_returns_df,back_tested_df):
     return AvgAnnualReturn(back_tested_df)/AnnVolatility(back_tested_returns_df)
 
 # We assume r=0 riskfreerate
@@ -467,10 +467,10 @@ def MaximumDD(back_tested_df):
             
     return abs(mdd)
 
-
 # General function which displays the Summary Statistics table
 # Input: back_tested series, current composition
 # Output: Databframe
+
 def OutputStats(back_tested,current_composition):
 
     # Compute returns using Returns_df function
@@ -501,8 +501,8 @@ def OutputStats(back_tested,current_composition):
     Stats_Output_df['Statistics']['Avg. Return (ann,%)']=AvgAnnualReturn(back_tested_df)*100
     Stats_Output_df['Statistics']['Volatility (ann,%)']=AnnVolatility(back_tested_returns_df)*100
     Stats_Output_df['Statistics']['Maximum Drawdown (%)']=MaximumDD(back_tested_df)*100
-    Stats_Output_df['Statistics']['Sharpe Ratio']=SharpeRatio(back_tested_returns,back_tested_df)
-    Stats_Output_df['Statistics']['Sortino Ratio']=SortinoRatio(back_tested_returns,back_tested_df)
+    Stats_Output_df['Statistics']['Sharpe Ratio']=SharpeRatio(back_tested_returns_df,back_tested_df)
+    Stats_Output_df['Statistics']['Sortino Ratio']=SortinoRatio(back_tested_returns_df,back_tested_df)
     Stats_Output_df['Statistics']['Nb of Negative Returns']=len(back_tested_returns_df[back_tested_returns_df['Returns']<0])
     Stats_Output_df['Statistics']['Avg. Negative Returns (%)']=back_tested_returns_df[back_tested_returns_df['Returns']<0].mean()*100
     Stats_Output_df['Statistics']['Negative Volatility (%)']=DownsideVol(back_tested_returns_df)*100
@@ -511,6 +511,4 @@ def OutputStats(back_tested,current_composition):
     Stats_Output_df['Statistics']['Positive Volatility (%)']=UpsideVol(back_tested_returns_df)*100
 
     return Stats_Output_df
-
-
 
