@@ -281,8 +281,8 @@ input:focus {
 }
 
 .table {display:table;border-collapse:separate;border-spacing:5px;}
-.row {display:table-row;}
-.cell {display:table-cell;padding:5px;}
+.row {display:table-row;width: 100%}
+.cell {display:table-cell;width: 35%;padding:5px;}
 
 .rc_input {
   width: 132px;
@@ -443,6 +443,9 @@ box-shadow: inset 1px 10px 5px -3px rgba(97,97,97,0.39);
   padding-top: 1px;
   padding-left: 10px;
   padding-bottom: 10px;
+}
+#selection_table{
+  width: 100%
 }
 #strategy{
   font-size: 12px;
@@ -639,6 +642,7 @@ tbody {
     border-bottom: 1px dashed #fde5e5;
 }
 #row {
+  width: 100%;
   display: flex; /* equal height of the children */
   border-style: solid;
   border-color: #8e8e95;

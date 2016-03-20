@@ -176,7 +176,11 @@ def index():
     back_tested_df=back_tested.to_frame()
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
-    data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['date'], back_tested_graph[name])])
+    #bidouille
+    back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    ###
+    data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
+    print data_graph_line
     current_composition_graph_df=current_composition_df.reset_index()
     current_composition_graph_df.columns=["tick","weights"]
     data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])

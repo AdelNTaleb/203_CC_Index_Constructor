@@ -349,8 +349,9 @@ $(document).ready(function() {
 
 
                                             <div class="row">
-                                                <p id="select2" class="cell">Risk Constrained:</p>
-
+                                            <div class="cell">
+                                                <p id="select2">Risk Constrained:</p>
+                                                </div>
                                                 <select class="selecto" name="method" id="drop2" required> 
                                                     <option selected value="">Please choose</option> 
                                                     <option value="Constrained">Yes</option>
@@ -375,8 +376,8 @@ $(document).ready(function() {
                                                 </script>
                                             </div>
                                             <div class="row">
-                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest lenght:</p>
-                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Lenght"  type="number" min="6" step="1" value="6" required/>
+                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Month):</p>
+                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
                                                 <div name"generate_button" style="padding-top: 10px">
                                                    <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
                                                </div>
