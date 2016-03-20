@@ -20,6 +20,14 @@
   <script src="../static/js/sly.min.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+  <script type="text/javascript" src="http://malsup.github.com/jquery.cycle.all.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.slideshow').cycle({
+    fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+  });
+});
+</script>
 <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
 </head>
 <body id="main_body" onload="HideLoadingDiv()">
@@ -28,28 +36,16 @@
     
     
     
-    <div id="image_bg" class="slideshow">
-  <ul>
-    <li><img src="../static/bg_sign.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_9.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_4.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_7.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_11.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_19.jpg" alt="bg_sign" id="bg_sign"></li>
-    <li><img src="../static/bg_22.jpg" alt="bg_sign" id="bg_sign"></li>
-  </ul>
-
-    <script type="text/javascript">
-   $(function(){
-      setInterval(function(){
-         $(".slideshow ul").fadeTo('slow', 0.3,function(){
-            $(this).css({marginLeft:0,opacity: 1}).find("li:last").after($(this).find("li:first")).delay(1000);
-         })
-      }, 10000);
-   });
-
-   
-</script>
+    <div id="image_bg" >
+  <div class="slideshow">
+    <img src="../static/bg_sign.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_9.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_4.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_7.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_11.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_19.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_22.jpg" alt="bg_sign" id="bg_sign">
+  </div>
           <div id="login_pop">
           <table id="table_log">
           <tr id="row_log">

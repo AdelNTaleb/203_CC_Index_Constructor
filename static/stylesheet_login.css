@@ -2,7 +2,7 @@
    max-width: 975px;
 	max-height: 545px;
    overflow: hidden;
-   
+   z-index: 0;
 }
 
 .slideshow ul {
