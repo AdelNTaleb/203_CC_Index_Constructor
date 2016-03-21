@@ -5,10 +5,24 @@ import datetime
 from pandas import *
 import numpy as np
 from scipy.optimize import minimize
+from scipy.stats import norm
 
 
                                 #### General Function used ##### 
+def normfunction(bins):
+    sigma=0.01
+    mu=0
+    # Plot between -10 and 10 with .001 steps.
+    
+    result=[]
 
+    for i in bins:
+
+        value=1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (i - mu)**2 / (2 * sigma**2))
+        
+        result.append(value)
+    
+    return result
 
 # # Compute returns from a dataframe of prices.
 
@@ -285,7 +299,7 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
         
         #Return Composition
         Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
-        print Composition
+        
         
     elif Method=="Constrained":
         
@@ -336,10 +350,10 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
         #Normalise
         Weights=Weights/np.sum(Weights)
         
-        print Weights
+       
         Composition=Series(Weights,index=Ranked_Zscore_df.index)
         Composition.name = "Weights"
-        print Composition
+        
     
     return Composition
     
