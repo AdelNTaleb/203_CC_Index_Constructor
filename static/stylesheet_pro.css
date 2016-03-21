@@ -161,7 +161,7 @@ body {
 }
 #component_list{
   min-width: 180px;
-  height:404px;
+  height:168px;
   overflow: auto;
 }
 .carrousel{
@@ -201,15 +201,16 @@ select {
 }
 
 #floater{
-  background-color:rgba(229, 229, 230,0.60);
-  padding: 10px;
-  
-  box-shadow: 0 0 0 1px  #74767b, 0 0 0 1px  #81622d inset;
-  border:1px solid #3a3d44;
-  padding:20px;
   margin-top: 20px;
   margin-bottom: 20px;
-  
+  background-color: #fbfbfb;
+  border:solid 1px #e1e1e1;
+  border-radius: 3px;
+  height: 170px;
+  width: 100%;
+ -webkit-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
 }
 #loading_pop_title{
   color: #f5f5f5;
@@ -236,9 +237,9 @@ select {
 
 }
 table.dataframe, .dataframe th, .dataframe td {
-  color: #f5f5f5;
+  color: #58534d;
   border: none;
-  border-bottom: 1px dashed #f5f5f5;
+  border-bottom: 1px dashed #58534d;
   border-collapse: collapse;
   padding: 5px;
   text-align:left;
@@ -247,7 +248,7 @@ table.dataframe, .dataframe th, .dataframe td {
   
 }
 .weights thead{
-  color: #f5f5f5;
+  color: #58534d;
   background-color:background-color:transparent;
 
 }
@@ -255,11 +256,11 @@ table.dataframe, .dataframe th, .dataframe td {
 .weights tr:nth-child(even) { background-color:transparent; }
 
 .weights th {
-    color: #f5f5f5;
+    color: #58534d;
     line-height: 20px;
     margin: 0 0 10px 0;
     padding: 0;
-    border-bottom: 1px dashed #f5f5f5;
+    border-bottom: 1px dashed #58534d;
     font-family: Helvetica,Arial,Sans-Serif;
     font-size: 13px;
 }
@@ -462,9 +463,14 @@ box-shadow: inset 1px 10px 5px -3px rgba(97,97,97,0.39);
    font-family:Arial;
 }
 #background3{
-  background-color: #fcfaf5;
+  background-color: #fbfbfb;
+  border:solid 1px #e1e1e1;
+  border-radius: 3px;
   min-height: 170px;
   width: 100%;
+ -webkit-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
 }
 #table_selection{
   padding-top: 1px;

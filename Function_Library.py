@@ -451,7 +451,7 @@ def SharpeRatio(back_tested_returns_df,back_tested_df):
     return AvgAnnualReturn(back_tested_df)/AnnVolatility(back_tested_returns_df)
 
 # We assume r=0 riskfreerate
-def SortinoRatio(back_tested_returns,back_tested_df):
+def SortinoRatio(back_tested_returns_df,back_tested_df):
     return AvgAnnualReturn(back_tested_df)/DownsideVol(back_tested_returns_df)
 
 

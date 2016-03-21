@@ -5,9 +5,7 @@
     <link rel="shortcut icon" href="../static/leonteq_favicon.ico">
     <title>Creator</title>
     <meta charset="utf-8" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+  
     <title>Leonteq - Msc 203 Index Generator</title>
     <script src="../static/tabcontent.js" type="text/javascript"></script>
     
@@ -161,7 +159,7 @@ $(document).ready(function() {
                 }
             },
             legend:{
-
+                enabled: false,
                 itemStyle: {
 
                     color: 'white'}},
@@ -615,7 +613,7 @@ $(document).ready(function() {
                                     <div id="smartdisplay">
                                         <span class="smartitle">{{name | safe}}'s Daily Return Distribution</span>
                                         <div id="floater" style="width: auto;height: 100%;display: table">
-                                            <div id="bar_chart" style="min-width: 500px; height: 400px; margin: 0 auto"></div></div></div>
+                                            <div id="bar_chart" style="min-width: 400px; height: 100%; margin: 0 auto"></div></div></div>
                                         </td>
                                     </tr>
                                 </table>

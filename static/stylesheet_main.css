@@ -1,3 +1,74 @@
+#loading {
+  z-index: 9999;
+    position: fixed;
+    left:auto;
+    top: auto;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    cursor: wait;
+    }
+
+#loading_pop_title{
+  color: #f5f5f5;
+    line-height: 20px;
+    margin: 0 0 10px 0;
+    padding: 0;
+    
+    font-family: Helvetica,Arial,Sans-Serif;
+    font-size: 13px
+}
+#loading_pop{
+  box-shadow: 0 0 0 1px  #74767b, 0 0 0 1px  #81622d inset;
+  border:1px solid #3a3d44;
+  border-radius: 5px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 99999;
+    height: 250px;
+    margin-top: -200px;
+    width: 600px;
+    margin-left: -300px;
+   background-color:rgba(229, 229, 230,0.60);
+
+}
+.slideshow {
+   max-width: 975px;
+    max-height: 545px;
+   overflow: hidden;
+   z-index: 0;
+}
+
+.slideshow ul {
+    /* 4 images donc 4 x 100% */
+   width: 400%;
+   height: 200px;
+   padding:0; margin:0;
+   list-style: none;
+}
+.slideshow li {
+   float: left;
+}
+#back_to_menu:hover{
+    text-decoration: underline;
+    color: #4d3900;
+}
+#back_to_menu{
+    color: #916821;
+    cursor: auto;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+
+}
+.btn_login_div{
+    width: 285px;
+}
 #disclaimer{
   color: #4c525c;
 
@@ -36,88 +107,90 @@
 input:focus {
     outline:none;
 }  
-#accept{
+
+.sign_in_form:focus{
+    border-color: rgba(82,168,236,0.8);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(82,168,236,0.6);
+}
+.sign_in_form{
+    border-radius: 4px;
+    vertical-align: middle;
+    display: inline-block;
+    height: 20px;
+    padding: 4px 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #555;
+    width: 270px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    transition: border linear 0.2s,box-shadow linear 0.2s;
+}
+h3{
+    color: #323333;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 24.5px;
+    line-height: 40px;
+    margin: 10px 0;
+    font-weight: normal;
+}
+#sign_in{
+    width: 50%;
+    margin: 0 auto; 
+}
+
+#table_log{
+    height: 100%;
+    width: 100%;
+}
+#leon_logo{
     display: block;
-    margin: 0 auto;
-    text-align: center;
-}
-#msg_conf{
-    font-size: 20px;
-    text-align: center;
-
-}
-#ok_button{
-    padding: 20px;
-    text-align: center;
-}
-#dimmed_pop{
-    background-color:rgba(105, 105, 105,0.60);
-    position:fixed;
-    width:100%;
-    height:100%;
-    top:0px;
-    left:0px;
-    z-index:1000;
+    margin-left: auto;
+    margin-right: auto
 }
 
-.flash_msg{
+#left_cell{
+    width: 335px
+}
+#bg_sign{
+    border-radius: 5px;
+}
+#content{
     padding: 50px;
-    color:white;
-    z-index: 200;
 }
+#login_pop{
+    background-color:rgba(255,255,255, 0.7);
+    width: 775px;
+    height: 345px;
+    position: absolute;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    top: 100px;
+    left: 100px;
 
-.flash_msg{
-    margin:auto;
-    width: 200px;
-    height: auto;
-    margin: 0 auto;
-  
-    padding: 100px;
+}
+#image_bg{
     position: relative;
-}
+    
+    margin: 0 auto;
 
-#loading_pop{
-  box-shadow: 0 0 0 1px  #74767b, 0 0 0 1px  #81622d inset;
-  border:1px solid #3a3d44;
-  border-radius: 5px;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    z-index: 99999;
-    height: 250px;
-    margin-top: -200px;
-    width: 600px;
-    margin-left: -300px;
-   background-color:rgba(229, 229, 230,0.60);
+    max-width: 975px;
+    max-height: 545px;
+    
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 39px 0px rgba(0,0,0,0.75);
+    
 
 }
-#logos .head-languages {
-    position:absolute;
-    right:100px;
-    top:0;
-    padding:0 10px;
-    height:25px;
-    line-height:25px;
-    font-size:13px;
-    background:#8E8E95 url(bg_head_languages.png) repeat-x 0 0;
-    box-shadow: 0px 15px 17px -2px #454951;
+#main_body{
+    background-color: #51555f;
 }
-#logos .head-languages span {
-    margin:0 40px 0 0;
-    color:#FFF;
-    font-weight:bold;
-}
-#logos .head-languages a {
-    color:#CBC9CD;
-    font-weight:bold;
-    text-decoration:none;
-}
-#logos .head-languages a+a {
-    margin:0 0 0 20px;
-}
-#logos .head-languages a:hover {
-    text-decoration:underline;
-}
-#logos .head-languages a.active {
-    color: #FFF;   
+.container{
+    padding: 30pc;
 }
