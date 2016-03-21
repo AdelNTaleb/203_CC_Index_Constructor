@@ -386,7 +386,7 @@ def login():
             error = 'Invalid Credentials. Please try again.'
         else:
             flask.session['logged_in'] = True
-            flash('You have signed in')
+            
             return redirect('/pro/')
     return render_template('login.html', error=error)
 

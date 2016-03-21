@@ -41,14 +41,20 @@ $(document).ready(function() {
 
     {% for message in get_flashed_messages() %}
     <div id="loading_pop">
+    <center>
         <div class="flash_msg">
-        <div id="msg_conf">
+        
+        <h3>
             {{ message }}
-            </div>
+            </h3>
+            <div class="flash_btn">
             <FORM id="ok_button">
             <INPUT class="btn_main"TYPE="button" onClick="history.go(0)" VALUE="Ok" id="accept" style="width: 80px">
                 </FORM>
+                </div>
+                
             </div>
+            </center>
         </div>
         
         

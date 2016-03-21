@@ -194,3 +194,15 @@ h3{
 .container{
     padding: 30pc;
 }
+.flash_msg{
+    margin-top: 40px;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+}
+.flash_btn{
+    margin-top: 40px;
+    position: absolute;
+  margin: auto 0;
+  t
+}

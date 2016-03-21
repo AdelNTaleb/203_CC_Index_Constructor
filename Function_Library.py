@@ -285,7 +285,7 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
         
         #Return Composition
         Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
-        
+        print Composition
         
     elif Method=="Constrained":
         
@@ -335,7 +335,11 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
    
         #Normalise
         Weights=Weights/np.sum(Weights)
+        
+        print Weights
         Composition=Series(Weights,index=Ranked_Zscore_df.index)
+        Composition.name = "Weights"
+        print Composition
     
     return Composition
     
@@ -407,8 +411,9 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1
             #dilute if vol above vol_cap
             if hist_vol>vol_cap:
                 undiluted=vol_cap/hist_vol
-            #compute base 1
-            base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
+            #end if
+        #compute base 1
+        base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
         
      
     base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
