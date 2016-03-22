@@ -253,6 +253,7 @@ def index_pro():
     
      
     #the following lines prevent the code from bugging if the Ranking method is selected
+    global name
     if Method=="Ranking":
         Max_Weight_Allowed=0
         Max_Vol=0
@@ -410,13 +411,14 @@ def logout():
     return redirect('/')
 #download button function
 @Server.route("/download")
-def getPlotCSV():   
+@login_required
+def downloadCSV():   
     csv = output.to_csv()
     return Response(
         csv,
         mimetype="text/csv",
         headers={"Content-disposition":
-                 "attachment; filename=my_index.csv"})
+                 "attachment; filename= %s .csv" %name})
 if __name__ == '__main__':
     Server.debug=True
     Server.run()
