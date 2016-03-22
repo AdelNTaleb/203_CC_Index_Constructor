@@ -42,7 +42,9 @@ from urllib2 import urlopen  # python 2 syntax
 # Import users' define function
 from Function_Library import *
 
-
+#define backtest globally so that we can download it ==> expect modification to create a specific DataFrame for the download
+global output
+output=DataFrame()
 
 # Import data -  New Import from CSV
 
@@ -300,10 +302,13 @@ def index_pro():
 
 
     #Create a description of the backtest data
-    global back_tested_df
+    
     back_tested_df=back_tested.to_frame()
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
+
+    output=back_tested_graph
+    print output
     #bidouille
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
     ###
@@ -403,17 +408,20 @@ def logout():
     flask.session.pop('logged_in',None)
     flash('You have signed out')
     return redirect('/')
-
+#download button function
 @Server.route("/download")
 def getPlotCSV():
-    
-    csv = back_tested_df.to_csv()
+    if len(output) == 0:
+        flash('please generate an index first')
+        return redirect('/pro')
+    else:    
+        csv = output.to_csv()
 
-    return Response(
-        csv,
-        mimetype="text/csv",
-        headers={"Content-disposition":
-                 "attachment; filename=my_index.csv"})
+        return Response(
+            csv,
+            mimetype="text/csv",
+            headers={"Content-disposition":
+                     "attachment; filename=my_index.csv"})
 if __name__ == '__main__':
     Server.debug=True
     Server.run()

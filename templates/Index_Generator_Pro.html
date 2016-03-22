@@ -691,34 +691,36 @@ $(document).ready(function() {
                                                    <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
                                                </div>
                                                <div name"generate_button" style="padding-top: 10px">
-                                               
-                                               <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
-                                              
-                                               
+
+                                                   <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
+
+
                                                </div> 
 
                                            </div>
 
-                                           <div class="row" >
-                                            <center>
-                                                <div id="loading">
 
+                                       </div>
+                                   </form> 
+                                   <div id="loading">
+                                    <div id="compostion">
+                                    <div id="floater_ajax" >
+                                        <div id="ajax_loader">
+                                            <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
 
+                                            <img src="../static/ajax-loader-grey.gif" >
 
-                                                    <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
-
-                                                    <img src="../static/ajax-loader-grey.gif" >
-
-                                                </div>
-                                            </center>
                                         </div>
                                     </div>
-                                </form> 
+                                </div>
                             </div>
+
                             <div id="compostion">
                                <div id="floater" >
                                 <div id="component_list">
                                    <center>
+
+
                                     {% block content %}
                                     {{current_data | safe}}
                                     {% endblock %}
@@ -727,7 +729,6 @@ $(document).ready(function() {
                         </div>
                     </div>
                 </div>
-
                 <div class="ui-layout-center">
                    <style type="text/css">
                     .container {
