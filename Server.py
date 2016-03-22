@@ -2,7 +2,7 @@
 
 import flask
 
-from flask import flash,session,render_template, redirect, request
+from flask import flash,session,render_template, redirect, request,Response
 import time
 import matplotlib.finance as finance
 import datetime
@@ -290,7 +290,7 @@ def index_pro():
     current_composition_pie_chart_json=json.dumps([{"label": date, "value": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
     #Convert current composition data to JSON for the bar chart
     current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
-
+    
     #Compute the backtest of the strategy
     back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame)
     description_df=OutputStats(back_tested,current_composition)
@@ -300,7 +300,7 @@ def index_pro():
 
 
     #Create a description of the backtest data
-    
+    global back_tested_df
     back_tested_df=back_tested.to_frame()
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
@@ -404,7 +404,16 @@ def logout():
     flash('You have signed out')
     return redirect('/')
 
+@Server.route("/download")
+def getPlotCSV():
+    
+    csv = back_tested_df.to_csv()
 
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 "attachment; filename=my_index.csv"})
 if __name__ == '__main__':
     Server.debug=True
     Server.run()

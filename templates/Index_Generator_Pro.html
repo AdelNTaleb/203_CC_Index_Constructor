@@ -28,7 +28,7 @@ $(document).ready(function() {
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
-         plotOptions: {
+           plotOptions: {
             series: {
                 lineWidth: 1.5,
 
@@ -88,12 +88,12 @@ $(document).ready(function() {
         },
         colors: ['#f0a800','#757b8a'],
         title : {
-         text : '{{name | safe}} vs {{underlying | safe}} ',
-         style:{color: "#51555f"},
-     },
+           text : '{{name | safe}} vs {{underlying | safe}} ',
+           style:{color: "#51555f"},
+       },
 
 
-     series : [{
+       series : [{
         name:"{{name | safe}}",
         data: my_data_line,
     },{
@@ -111,7 +111,7 @@ $(document).ready(function() {
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
-         plotOptions: {
+           plotOptions: {
             series: {
                 lineWidth: 1.5,
 
@@ -171,12 +171,12 @@ $(document).ready(function() {
         },
         colors: ['#f0a800','#757b8a'],
         title : {
-         text : '{{name | safe}}\'s returns vs {{underlying | safe}}\'s returns ',
-         style:{color: "#51555f"},
-     },
+           text : '{{name | safe}}\'s returns vs {{underlying | safe}}\'s returns ',
+           style:{color: "#51555f"},
+       },
 
 
-     series : [{
+       series : [{
         name:"{{name | safe}}",
         data: my_data_line_3,
     },{
@@ -197,9 +197,9 @@ $(document).ready(function() {
         });
         $('#bar_chart').highcharts({
             exporting: {
-             enabled: false
-         },
-         credits: {
+               enabled: false
+           },
+           credits: {
             enabled:false
         },
         chart: {
@@ -235,7 +235,7 @@ $(document).ready(function() {
             useHTML: true
         },
         plotOptions: {
-            
+
             spline: {
                 lineWidth: 1,
                 marker: {
@@ -352,7 +352,7 @@ $(document).ready(function() {
 <script type="text/javascript" src="../static/js/jquery-latest.js"></script>
 <script type='text/javascript'>  
 
- var $jq = jQuery.noConflict();  
+   var $jq = jQuery.noConflict();  
 
 </script>
 <script src="../static/tabcontent.js" type="text/javascript"></script>
@@ -431,24 +431,24 @@ $(document).ready(function() {
     // used by the 'Reset State' button: myLayout.loadState( stateResetSettings )
     var stateResetSettings = {
 
-       north__initClosed:  false
-       ,   north__initHidden:  false
-       ,   north__size:        100
-       ,   north_minSize:  200
-       ,   south__size:        "auto"
-       ,   south__initClosed:  false
-       ,   south__initHidden:  false
-       ,   west__size:         200
-       ,   west__initClosed:   false
-       ,   west__initHidden:   false
-       ,   east__size:         300
-       ,   east__initClosed:   false
-       ,   east__initHidden:   false
-   };
+     north__initClosed:  false
+     ,   north__initHidden:  false
+     ,   north__size:        100
+     ,   north_minSize:  200
+     ,   south__size:        "auto"
+     ,   south__initClosed:  false
+     ,   south__initHidden:  false
+     ,   west__size:         200
+     ,   west__initClosed:   false
+     ,   west__initHidden:   false
+     ,   east__size:         300
+     ,   east__initClosed:   false
+     ,   east__initHidden:   false
+ };
 
-   var myLayout;
+ var myLayout;
 
-   $jq(document).ready(function () {
+ $jq(document).ready(function () {
 
         // this layout could be created with NO OPTIONS - but showing some here just as a sample...
         // myLayout = $('body').layout(); -- syntax with No Options
@@ -555,7 +555,7 @@ $(document).ready(function() {
         });
     </script>
     <!--
-      <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>-->
+    <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>-->
 </head>
 
 <body id="main_body" onload="HideLoadingDiv()">
@@ -569,7 +569,7 @@ $(document).ready(function() {
     </div></div>
     <div class="ui-layout-west">
 
-     <div id="background3">  
+       <div id="background3">  
         <img src="../static/logo_header.png">
         <form id="selection_table" name="formulaire" class ="table"> 
             <div class="row">
@@ -649,7 +649,7 @@ $(document).ready(function() {
                                                 </script>
                                             </div>
                                             <div class="row">
-                                            <div class="cell">
+                                                <div class="cell">
                                                     <p id="select2">Volatility Cap:</p>
                                                 </div>
                                                 <select class="selecto" name="vol_capped" id="drop3" required> 
@@ -659,7 +659,7 @@ $(document).ready(function() {
                                                 </select>
                                                 <div id='input3'class="cell">
                                                     <div>
-                                                    <p class="form_title">Volatility Window (in days):</p>
+                                                        <p class="form_title">Volatility Window (in days):</p>
                                                         <input class="rc_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
                                                         <p class="form_title">Volatility Cap (in %):</p>
                                                         <input class="rc_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
@@ -672,92 +672,99 @@ $(document).ready(function() {
                                                         document.getElementById('input3').style.display = display;
                                                     }
                                                 </script>
+
+                                                
+                                            </div>
+
+                                            <div class="row">
+                                               <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
+                                               <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
+
+
+
+                                           </div>
+                                           <div class="row">
+                                               <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing period (Days):</p>
+                                               <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing period (Day)"  type="number" min="5" step="1" value="20" required/>
+
+                                               <div name"generate_button" style="padding-top: 10px">
+                                                   <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                               </div>
+                                               <div name"generate_button" style="padding-top: 10px">
                                                
-                                                
-                                             </div>
-                                             
-                                             <div class="row">
-                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
-                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
-                                            
-                                          
-                                                
-                                                </div>
-                                                 <div class="row">
-                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing period (Days):</p>
-                                                <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing period (Day)"  type="number" min="5" step="1" value="20" required/>
-                                            
-                                             <div name"generate_button" style="padding-top: 10px">
-                                                 <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
-                                                </div>
-                                                
-                                                </div>
-                                                <div class="row" >
-                                                <center>
+                                               <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
+                                              
+                                               
+                                               </div> 
+
+                                           </div>
+
+                                           <div class="row" >
+                                            <center>
                                                 <div id="loading">
-                                                
-                                                
-                                                
-                                                <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
-                                                
-                                                <img src="../static/ajax-loader-grey.gif" >
-                                                
+
+
+
+                                                    <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
+
+                                                    <img src="../static/ajax-loader-grey.gif" >
+
                                                 </div>
-                                                </center>
-                                                </div>
-                                         </div>
-                                     </form> 
-                                 </div>
-                                 <div id="compostion">
-                                     <div id="floater" >
-                                        <div id="component_list">
-                                         <center>
-                                            {% block content %}
-                                            {{current_data | safe}}
-                                            {% endblock %}
-                                        </center>
+                                            </center>
+                                        </div>
                                     </div>
-                                </div>
+                                </form> 
+                            </div>
+                            <div id="compostion">
+                               <div id="floater" >
+                                <div id="component_list">
+                                   <center>
+                                    {% block content %}
+                                    {{current_data | safe}}
+                                    {% endblock %}
+                                </center>
                             </div>
                         </div>
-
-                        <div class="ui-layout-center">
-                         <style type="text/css">
-                            .container {
-                                text-align: left;
-                                margin: 0px auto;
-                                padding: 0px;
-                                border:0;
-                                width: 100%;
-                            }
-                            .item-1 {
-                                float: left;
-                                width: 50%;
-                                background-color:white;
-                                overflow: auto;
-                            }
-                            .item-2 { 
-                                margin: 0;
-                                float: left;
-                                width: 50%;
-                                background-color: white;
-                            }
-                        </style>
-                        <div id="chart_1" style="overflow: auto">
-                            <div id="chart_test" style="height: 400px;width: 99%;min-width: 300px"></div></div>
-                            <div class="container"><div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width: 50%"></div>
-                           
-
-                            <div class="item-2" style="height: 400px;width: 50%;"><div class="container">
-                            <div class="item-1"><div id="bar_chart" style="width: 100%; height: 100%"></div></div>
-                            <div class="item-2">
-
-                                {{description_df | safe}}
-
-                            </div>
-                        </div></div></div>
-
-
                     </div>
-                    <!--<div class="loader"></div>-->
-                  
+                </div>
+
+                <div class="ui-layout-center">
+                   <style type="text/css">
+                    .container {
+                        text-align: left;
+                        margin: 0px auto;
+                        padding: 0px;
+                        border:0;
+                        width: 100%;
+                    }
+                    .item-1 {
+                        float: left;
+                        width: 50%;
+                        background-color:white;
+                        overflow: auto;
+                    }
+                    .item-2 { 
+                        margin: 0;
+                        float: left;
+                        width: 50%;
+                        background-color: white;
+                    }
+                </style>
+                <div id="chart_1" style="overflow: auto">
+                    <div id="chart_test" style="height: 400px;width: 99%;min-width: 300px"></div></div>
+                    <div class="container"><div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width: 50%"></div>
+
+
+                    <div class="item-2" style="height: 400px;width: 50%;"><div class="container">
+                        <div class="item-1"><div id="bar_chart" style="width: 100%; height: 100%"></div></div>
+                        <div class="item-2">
+
+                            {{description_df | safe}}
+
+                        </div>
+                    </div></div></div>
+
+
+                </div>
+                <!--<div class="loader"></div>-->
+

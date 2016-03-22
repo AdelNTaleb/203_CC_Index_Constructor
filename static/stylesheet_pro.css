@@ -537,6 +537,31 @@ box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
 #submit_btn{
   text-align: right
 }
+.btn_download{
+  text-align: right;
+   padding:5px 42.5px; 
+    background: url(../static/file_gray.png) 88% 21% no-repeat;
+    background-color:#f4f4f4; 
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 2px;
+    border-radius: 2px; 
+    border:solid;
+    border-color: #d9d9d9;
+    border-width: 1px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:#918888;
+    font-weight: bold;
+}
+.btn_download:hover{
+  background: url(../static/file.png) 88% 21% no-repeat;
+  background-color: #f6e785;
+  border:solid;
+  border-color: #e28700;
+  border-width: 1px;
+  color: #C77405;
+  font-weight: bold;
+}
 #table2{
   width: 75%;
   min-height: 240px;
