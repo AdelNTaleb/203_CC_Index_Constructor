@@ -45,6 +45,7 @@ $(document).ready(function() {
         },
 
         chart : {
+            
             backgroundColor: null,
             plotBackgroundColor: '#fcfaf5',
             renderTo : 'chart_test'
@@ -328,8 +329,10 @@ $(document).ready(function() {
                     });
     });
 });
+
 //]]>
-</script> 
+</script>
+
 <script type="text/javascript">
     function loading()
     {
@@ -568,8 +571,16 @@ $(document).ready(function() {
         </ul>
     </div></div>
     <div class="ui-layout-west">
+<div id="loading" style="margin:-10px;width: 100%;height: 100%;z-index: 1;background-color: rgba(105,105,105,0.5);position: absolute;"><center>
+                                                <p  style="margin-top: 210px;font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#fbfbfb">Creating Index please wait...</p>
 
+                                                <img src="../static/ajax-loader-grey.gif" >
+</center>
+                                           
+                                </div>
      <div id="background3">  
+     
+
         <img src="../static/logo_header.png">
         <form id="selection_table" name="formulaire" class ="table"> 
             <div class="row">
@@ -702,20 +713,11 @@ $(document).ready(function() {
                                          </div>
 
 
+
                                      </div>
+
                                  </form> 
-                                 <div id="loading">
-                                    <div id="compostion">
-                                        <div id="floater_ajax" >
-                                            <div id="ajax_loader">
-                                                <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
-
-                                                <img src="../static/ajax-loader-grey.gif" >
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                 
                                 {% if back_tested_data|length > 0 %}
                                 <div id="compostion">
                                  <div id="floater" >

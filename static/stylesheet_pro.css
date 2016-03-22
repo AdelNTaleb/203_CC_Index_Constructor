@@ -312,6 +312,7 @@ div#loading {
     font-family: Arial, Helvetica, sans-serif;
     color:#918888;
     font-weight: bold;
+    transition:  .2s ease-out;
 
 
 }
@@ -571,6 +572,7 @@ box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
     font-family: Arial, Helvetica, sans-serif;
     color:#918888;
     font-weight: bold;
+    transition:  .2s ease-out;
 }
 .btn_download:hover{
   background: url(../static/file.png) 88% 21% no-repeat;
