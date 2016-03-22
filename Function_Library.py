@@ -1,4 +1,5 @@
 # Import python libraries
+from __future__ import division
 import os
 
 import datetime
@@ -368,7 +369,7 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
 # It returns the performance of the index over this period.
 
 
-def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor, freq=20, vol_cap=1, vol_time=20):
+def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq=20, vol_time=20):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -447,6 +448,7 @@ def NbofComponents(current_composition_df):
 
 def AvgAnnualReturn(back_tested_df):
     Perf = back_tested_df['Returns'][len(back_tested_df)-1]/back_tested_df['Returns'][0]
+    print Perf ** (252 / len(back_tested_df)) - 1, "perf"
     return Perf ** (252 / len(back_tested_df)) - 1
 
 

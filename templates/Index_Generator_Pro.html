@@ -554,6 +554,8 @@ $(document).ready(function() {
 
         });
     </script>
+    <!--
+      <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>-->
 </head>
 
 <body id="main_body" onload="HideLoadingDiv()">
@@ -647,11 +649,53 @@ $(document).ready(function() {
                                                 </script>
                                             </div>
                                             <div class="row">
-                                                <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Month):</p>
-                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
-                                                <div name"generate_button" style="padding-top: 10px">
-                                                 <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                            <div class="cell">
+                                                    <p id="select2">Volatility Cap:</p>
+                                                </div>
+                                                <select class="selecto" name="vol_capped" id="drop3" required> 
+                                                    <option selected value="">Please choose</option> 
+                                                    <option value="vol_cap_yes">Yes</option>
+                                                    <option value="vol_cap_no" onclick="dynInput(this)">No</option>
+                                                </select>
+                                                <div id='input3'class="cell">
+                                                    <div>
+                                                        <p class="form_title">Volatility Cap (in %):</p>
+                                                        <input class="rc_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
+                                                    </div>
+                                                </div>
+
+                                                <script>
+                                                    document.getElementById('drop3').onchange = function() {
+                                                        var display = this.selectedIndex == 1 ? "inline" : "none";
+                                                        document.getElementById('input3').style.display = display;
+                                                    }
+                                                </script>
+                                               
+                                                
                                              </div>
+                                             
+                                             <div class="row">
+                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Month):</p>
+                                                <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
+                                            
+                                             <div name"generate_button" style="padding-top: 10px">
+                                                 <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                                                </div>
+                                                
+                                                </div>
+                                                <div class="row" >
+                                                <center>
+                                                <div id="loading">
+                                                
+                                                
+                                                
+                                                <p  style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d">Creating Index please wait...</p>
+                                                
+                                                <img src="../static/ajax-loader-grey.gif" >
+                                                
+                                                </div>
+                                                </center>
+                                                </div>
                                          </div>
                                      </form> 
                                  </div>
@@ -692,7 +736,10 @@ $(document).ready(function() {
                         </style>
                         <div id="chart_1" style="overflow: auto">
                             <div id="chart_test" style="height: 400px;width: 99%;min-width: 300px"></div></div>
-                            <div class="container"><div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width: 50%"></div><div class="item-2" style="height: 400px;width: 50%;"><div class="container">
+                            <div class="container"><div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width: 50%"></div>
+                           
+
+                            <div class="item-2" style="height: 400px;width: 50%;"><div class="container">
                             <div class="item-1"><div id="bar_chart" style="width: 100%; height: 100%"></div></div>
                             <div class="item-2">
 
@@ -704,4 +751,4 @@ $(document).ready(function() {
 
                     </div>
                     <!--<div class="loader"></div>-->
-                    <div id="loading"><div id="loading_pop"><h1 id="loading_pop_title" style="font-size: 20px;padding-top: 10px;padding-left: 10px;">CREATING INDEX PLEASE WAIT.</h1><img src="../static/loading.gif" style="margin-left: 200px;"></div></div>
+                  

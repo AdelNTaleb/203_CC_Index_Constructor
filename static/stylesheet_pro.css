@@ -264,7 +264,7 @@ table.dataframe, .dataframe th, .dataframe td {
     font-family: Helvetica,Arial,Sans-Serif;
     font-size: 13px;
 }
-div#loading {
+div#loadergif {
   z-index: 9999;
     position: fixed;
     left:auto;
@@ -273,6 +273,10 @@ div#loading {
     height: 100%;
     display: none;
     background-color: rgba(0, 0, 0, 0.6);
+    cursor: wait;
+    }
+div#loading {
+    display: none;
     cursor: wait;
     }
 .btn_generator {
@@ -513,6 +517,17 @@ box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
   color:#58534d;
 }
 #input2{
+  display: none;
+  margin-left: 0px;
+}
+#drop3{
+  background-image: url(../static/bg_custom_selectbox.png);
+  width: 138px;
+  height: 20px;
+  cursor: pointer;
+  color:#58534d;
+}
+#input3{
   display: none;
   margin-left: 0px;
 }

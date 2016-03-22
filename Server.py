@@ -73,7 +73,7 @@ global t
 #initiate database
 global Database
 Database=DataFrame(columns=('Date','Name'))
-print Database
+
 # Constraint function : in our case, volatility is the constraint.
 
 
@@ -128,23 +128,19 @@ def index():
     Method=flask.request.args.get('method')
 
     t=int(flask.request.args.get('backtest_len'))
-    print t
+    
     #the following lines prevent the code from bugging if the Ranking method is selected
     if Method=="Ranking":
         Max_Weight_Allowed=0
         Max_Vol=0
         name="Momentum"+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-        
-        print Max_Vol
-        print name
+     
         
     else:
         Max_Vol=float(flask.request.args.get('vol_cap'))
         Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
         name="Momentum"+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-        
-        print Max_Vol
-        print name
+       
         
 
     #compute the composition of the selected index as of now
@@ -180,12 +176,12 @@ def index():
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
     ###
     data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
-    print data_graph_line
+   
     current_composition_graph_df=current_composition_df.reset_index()
     current_composition_graph_df.columns=["tick","weights"]
     data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])
     back_tested_df_return=Returns_df(back_tested_df)
-    print back_tested_df_return
+   
     description=back_tested_df_return.describe()
     description.columns=["Description"]
 
@@ -243,7 +239,7 @@ def index():
 def index_pro():
     if (flask.request.args.get('NbMonth1') is None):
         return flask.render_template('Index_Generator_Pro.html')
-        
+       
     Nb_Month_1 = int(flask.request.args.get('NbMonth1'))
     Nb_Month_2 = int(flask.request.args.get('NbMonth2'))
     #return the homepage if the method is blank
@@ -252,25 +248,28 @@ def index_pro():
     Method=flask.request.args.get('method')
 
     t=int(flask.request.args.get('backtest_len'))
-    print t
+    
+     
     #the following lines prevent the code from bugging if the Ranking method is selected
     if Method=="Ranking":
         Max_Weight_Allowed=0
         Max_Vol=0
         name="Momentum"+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-        
-        print Max_Vol
-        print name
+       
         
     else:
         Max_Vol=float(flask.request.args.get('vol_cap'))
         Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
         name="Momentum"+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
         
-        print Max_Vol
-        print name
-        
 
+    vol_cap_imposed=flask.request.args.get('vol_capped')
+    print vol_cap_imposed
+    if vol_cap_imposed=="vol_cap_yes":
+        vol_cap = (float(flask.request.args.get('vol_cap_daily')))/1000
+    else:
+        vol_cap=1
+    print vol_cap
     #compute the composition of the selected index as of now
     current_composition=optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
     #convert the weights into unit percentages
@@ -289,7 +288,7 @@ def index_pro():
     current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
 
     #Compute the backtest of the strategy
-    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap)
     description_df=OutputStats(back_tested,current_composition)
     #Convert the backtest data to json
     back_tested_json = dataToJson(back_tested)
@@ -305,12 +304,12 @@ def index_pro():
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
     ###
     data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
-    print data_graph_line
+    
     current_composition_graph_df=current_composition_df.reset_index()
     current_composition_graph_df.columns=["tick","weights"]
     data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])
     back_tested_df_return=Returns_df(back_tested_df)
-    print back_tested_df_return
+    
 
     description=back_tested_df_return.describe()
     description.columns=["Description"]
