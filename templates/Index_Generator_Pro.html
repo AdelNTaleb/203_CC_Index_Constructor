@@ -659,6 +659,8 @@ $(document).ready(function() {
                                                 </select>
                                                 <div id='input3'class="cell">
                                                     <div>
+                                                    <p class="form_title">Volatility Window (in days):</p>
+                                                        <input class="rc_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
                                                         <p class="form_title">Volatility Cap (in %):</p>
                                                         <input class="rc_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
                                                     </div>
@@ -675,8 +677,15 @@ $(document).ready(function() {
                                              </div>
                                              
                                              <div class="row">
-                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Month):</p>
+                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
                                                 <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
+                                            
+                                          
+                                                
+                                                </div>
+                                                 <div class="row">
+                                                 <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing period (Days):</p>
+                                                <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing period (Day)"  type="number" min="5" step="1" value="20" required/>
                                             
                                              <div name"generate_button" style="padding-top: 10px">
                                                  <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>

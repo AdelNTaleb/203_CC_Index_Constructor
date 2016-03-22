@@ -254,9 +254,7 @@ def index_pro():
     if Method=="Ranking":
         Max_Weight_Allowed=0
         Max_Vol=0
-        name="Momentum"+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-       
-        
+        name="Momentum"+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"    
     else:
         Max_Vol=float(flask.request.args.get('vol_cap'))
         Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
@@ -264,12 +262,18 @@ def index_pro():
         
 
     vol_cap_imposed=flask.request.args.get('vol_capped')
-    print vol_cap_imposed
+    if (flask.request.args.get('vol_frame') is None):
+        return flask.render_template('Index_Generator_Pro.html')
+
     if vol_cap_imposed=="vol_cap_yes":
         vol_cap = (float(flask.request.args.get('vol_cap_daily')))/1000
+        vol_frame= int(flask.request.args.get('vol_frame'))
     else:
         vol_cap=1
-    print vol_cap
+        vol_frame=20
+    
+
+    freq=int(flask.request.args.get('rebalance_len'))
     #compute the composition of the selected index as of now
     current_composition=optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
     #convert the weights into unit percentages
@@ -288,7 +292,7 @@ def index_pro():
     current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
 
     #Compute the backtest of the strategy
-    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap)
+    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame)
     description_df=OutputStats(back_tested,current_composition)
     #Convert the backtest data to json
     back_tested_json = dataToJson(back_tested)
