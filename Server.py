@@ -285,7 +285,7 @@ def index_pro():
 
     #Convert current composition data to json --> needed as the dataToJson doesn't output the right format for the graphs
     current_composition_df=current_composition.to_frame()
-    current_composition_df.columns=["Weights"]
+    current_composition_df.columns=["Weights (%)"]
     current_composition_json=current_composition_df.to_json(date_format='iso',orient='split')
     current_composition_temp=json.loads(current_composition_json)
 
@@ -308,8 +308,7 @@ def index_pro():
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
     global output
-    output=back_tested_graph
-
+    
     
     #bidouille
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
@@ -386,7 +385,7 @@ def index_pro():
     data_norm_freq_js=json.dumps(normfunction(data_hist[1]))
     data_norm_bins_js=json.dumps(benchmark_hist[0])
     #Database_out=Database.set_index('Date')
-    return flask.render_template('Index_Generator_Pro.html',data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_date,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights'),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
+    return flask.render_template('Index_Generator_Pro.html',data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_date,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
 
 #login page
 Server.secret_key="secret_key"
