@@ -2,6 +2,8 @@
 
 import flask
 
+#test modified by freddy
+
 from flask import flash,session,render_template, redirect, request,Response
 import time
 import matplotlib.finance as finance
