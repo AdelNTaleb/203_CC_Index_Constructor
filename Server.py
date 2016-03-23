@@ -2,6 +2,8 @@
 
 import flask
 
+#test modified by freddy
+
 from flask import flash,session,render_template, redirect, request,Response
 import time
 import matplotlib.finance as finance
@@ -321,7 +323,7 @@ def index_pro():
     back_tested_graph.columns=["date",name]
     
     global output
-    
+    output=back_tested_graph
     
     #bidouille
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
