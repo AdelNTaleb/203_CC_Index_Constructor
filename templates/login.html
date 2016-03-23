@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+  <link rel="shortcut icon" href="../static/leonteq_favicon.ico">
+  <title>Leonteq Creator Pro</title>
+  <meta charset="utf-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+  <title>Leonteq - Msc 203 Index Generator</title>
+  <script src="../static/tabcontent.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" type="text/css" href="../static/stylesheet_pro.css">
+  <link rel="stylesheet" type="text/css" href="../static/stylesheet_login.css">
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="../static/js/highstock.js"></script>
+  <script src="../static/js/sly.min.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+  <script type="text/javascript" src="http://malsup.github.com/jquery.cycle.all.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.slideshow').cycle({
+    fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+  });
+});
+</script>
+<div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+</head>
+<body id="main_body" onload="HideLoadingDiv()">
+  <div id="content">
+    
+    
+    
+    
+    <div id="image_bg" >
+  <div class="slideshow">
+    <img src="../static/bg_sign.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_9.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_4.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_7.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_11.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_19.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_22.jpg" alt="bg_sign" id="bg_sign">
+  </div>
+          <div id="login_pop">
+          <table id="table_log">
+          <tr id="row_log">
+          <td id="left_cell">
+          <div id="sign_in">
+            <h3>Sign in</h3>
+            {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+
+           
+            <form action="" method="post">
+            <div>
+              <input class="sign_in_form" type="text" placeholder="Username" name="username" value="{{
+              request.form.username }}">
+
+              </div>
+              <div>
+              <input class="sign_in_form" type="password" placeholder="Password" name="password" value="{{
+              request.form.password }}">
+              </div>
+              <div class="btn_login_div">
+              <input id="btn_login" class="btn_main" type="submit" value="Sign in">
+              </div>
+            </form>
+            {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+              {% endif %}
+              </div>
+              </td>
+              <td id="row_right"><img src="../static/logo_header.png" id="leon_logo"><a id="back_to_menu"href="/">Go back to main menu</a></td>
+              </tr>
+
+              </table>
+            </div> 
+            
+        </div>
+
+      </div>
+    </body>
+    <footer style="background: #6a6b74" >
+      
+      <div id="contact_info" style="padding-left: 10px;">
+        <h4>Contact Info</h4>
+        <p id="contact">
+          Phone: +33 7 81 22 99 72
+        </p>
+      </div>
+      <div id="under_footer">
+        <div id="diclaimer_bottom">
+          <p>2016, Master 203 | Creator Beta 1.0 |</p>
+        </div>
+      </div>
+      <div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
+    </footer>
+
+    </html>
+
+

@@ -9,7 +9,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
     <title>Leonteq - Msc 203 Index Generator</title>
     <script src="../static/tabcontent.js" type="text/javascript"></script>
-    <link href="../static/tabcontent.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://malsup.github.com/jquery.cycle.all.js"></script>
+    <link href="../static/stylesheet_main.css" rel="stylesheet" type="text/css" />
+    
+    <script type="text/javascript">
+$(document).ready(function() {
+    $('.slideshow').cycle({
+    fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+  });
+});
+</script>
+<div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
     <div id="logos">
         <a title="Leonteq" href="#">
             <img
@@ -21,25 +32,75 @@
             />
 
         </a>
-        <div class="head-languages" ><span>  HOTLINE: +33 7 81 22 99 72 </span></div>
+        
         
     </div>
+
 </head>
 <body style="background:#51555E; padding-left: 100px;padding-right: 100px ;font-family:Arial;opacity: 7;">
 
-    <div style="background-color: #f3f3f3; padding: 10px;"><center>
-        <h1 style=";font-family:Arial;">WARNING: this is a proof of concept and not a fully working application.</h1>
+    {% for message in get_flashed_messages() %}
+    <div id="loading_pop">
+    <center>
+        <div class="flash_msg">
+        
+        <h3>
+            {{ message }}
+            </h3>
+            <div class="flash_btn">
+            <FORM id="ok_button">
+            <INPUT class="btn_main"TYPE="button" onClick="history.go(0)" VALUE="Ok" id="accept" style="width: 80px">
+                </FORM>
+                </div>
+                
+            </div>
+            </center>
+        </div>
+        
+        
+    {% endfor %}
+    
+ <div id="image_bg" >
+  <div class="slideshow">
+    <img src="../static/bg_sign.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_9.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_4.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_7.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_11.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_19.jpg" alt="bg_sign" id="bg_sign">
+    <img src="../static/bg_22.jpg" alt="bg_sign" id="bg_sign">
+  </div>
+          <div id="login_pop">
+          <table id="table_log">
+          <tr id="row_log">
+           <div style=" padding: 10px;"><center>
+        <h3>WARNING: this is a proof of concept and not a fully working application.</h3>
         <p>Do you wish to continue?</p>
 
-        <input id="accept" type="submit" value="Accept and proceed to Creator" 
-        onclick="window.location='/main';" /> 
-        
-    </center>
-</div>
+        <input class="btn_main"  type="submit" value="Accept and proceed to Creator" 
+        onclick="window.location='/main';" />
+        <div>
+            <input class="btn_main"  type="submit" value="Accept and proceed to Creator Pro" 
+            onclick="window.location='/login';" style="margin-top: 15px;" /> 
+        </div>
+
+
+    </div>
+              </tr>
+
+              </table>
+            </div> 
+            
+        </div>
+
+  
+   
+
 </body>
 <footer>
-    <div style="border-top: 5px solid #f9a900;padding-bottom: 0px"></div>
-
+    
+    <div style="height: 100px;"></div>
+<div id="disclaimer" style="z-index: 100000"><p>Please keep in mind that this application is the work of the students from the master 203 of Dauphine University and is not affiliated in any way to Leonteq AG</div>
 </footer>
 
 </html>

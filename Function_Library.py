@@ -1,14 +1,29 @@
 # Import python libraries
+from __future__ import division
 import os
 
 import datetime
 from pandas import *
 import numpy as np
 from scipy.optimize import minimize
+from scipy.stats import norm
 
 
                                 #### General Function used ##### 
+def normfunction(bins):
+    sigma=0.01
+    mu=0
+    # Plot between -10 and 10 with .001 steps.
+    
+    result=[]
 
+    for i in bins:
+
+        value=1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (i - mu)**2 / (2 * sigma**2))
+        
+        result.append(value)
+    
+    return result
 
 # # Compute returns from a dataframe of prices.
 
@@ -16,6 +31,12 @@ def Returns_df(Prices_df):
     df_return=Prices_df/Prices_df.shift(1)-1
     df_return=df_return.ix[1:]
     return df_return
+
+def histo_func(df):
+    df_return=df/df.shift(1)-1
+    df_return=df_return.ix[1:]
+    hist_data=np.histogram(df_return,bins=[-0.05,-0.04,-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.04,0.05])
+    return hist_data
 
 def dataToJson(a):
     b=a.to_frame()
@@ -329,7 +350,11 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
    
         #Normalise
         Weights=Weights/np.sum(Weights)
+        
+       
         Composition=Series(Weights,index=Ranked_Zscore_df.index)
+        Composition.name = "Weights"
+        
     
     return Composition
     
@@ -344,60 +369,167 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
 # It returns the performance of the index over this period.
 
 
-def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
+def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time):
       
+    # vol_time : new input : number of days used to compute previous volatility
+
     df_return=Returns_df(Prices_df)
 
-    # try to find what the "u" is
-    u=len(df_return)-t*20
-    df_return_bt=df_return.ix[:-t*20]
+    # try to find what the starting point is
+    starting_point=len(df_return)-t*20    
     
+    #set up counter for loop    
+    cnt=0
+    
+    while (cnt)*freq<=t*20:
     #set the dataset for backtest
-    Prices_df_bt=Prices_df.ix[:-t*20]
-        #Compute Optimal Composition
-    Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
-                  
-        #compute returns
-    next_returns=df_return.ix[u:].fillna(0)
-    next_20_returns=next_returns.head(20)
-    
-
-    optimum_return=np.dot(next_20_returns,Weights_bt)
-    return_series=Series(optimum_return,index=next_20_returns.index)
-
-    for j in range(t-1,0,-1):
-            
-        s=len(df_return)-j*20  
-        df_return_bt=df_return.ix[:-j*20]
-        
-        #set the dataset for backtest
-        Prices_df_bt=Prices_df.ix[:-j*20] 
-        
+        Prices_df_bt=Prices_df.head(starting_point+freq*cnt)
         #Compute Optimal Composition
         Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
-        #uncomment the following line to test the backtest
-        #print Weights_bt[Weights_bt>0]   
+                  
         #compute returns
-
-        next_returns=df_return.ix[s:].fillna(0)
-        next_20_returns=next_returns.head(20)
-        
-
+        next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
+        next_20_returns=next_returns.head(freq)
         optimum_return=np.dot(next_20_returns,Weights_bt)
-
-        return_series_prov=Series(optimum_return,index=next_20_returns.index)
-        return_series=np.hstack([return_series,return_series_prov])
         
-
-    return_series_date=Series(return_series,index=df_return.ix[u:].index)    
+        #create return series
+        if cnt == 0:
+            return_series=Series(optimum_return,index=next_20_returns.index)
+        
+        else:
+            return_series_prov=Series(optimum_return,index=next_20_returns.index)
+            return_series=np.hstack([return_series,return_series_prov])
+        
+        #update counter
+        cnt=cnt+1
     
-
+    #end loop
+    
+    return_series_date=Series(return_series,index=df_return.tail(t*20).index)
+    
+    #creating base 1
     base_1_backtest=np.ones(len(return_series_date)+1)
     
+    #undiluted represents the quote of risky securities in the index (the rest is assumed cash)
+    undiluted=1.0
+    
     for i in range(1,len(base_1_backtest)):
-        base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1])
+        if i>vol_time:
+        
+            #get "past" return at time i
+            information=return_series_date.head(i)
+            #get last [vol_time] returns to compute vol
+            period=information.tail(vol_time)
+            #compute vol
+            hist_vol=np.std(period)*(250.0/vol_time)**0.5
+                    
+            #dilute if vol above vol_cap
+            if hist_vol>vol_cap:
+                undiluted=vol_cap/hist_vol
+            #end if
+        #compute base 1
+        base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
+        
      
-    base_1_backtest_date=Series(base_1_backtest,index=df_return.ix[u-1:].index) 
+    base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
     
     return base_1_backtest_date
+
+                                #### OUTPUT STATISTICS FUNCTION ##### 
+
+# General function which displays the Summary Statistics table
+
+# Only1 function to call returning a full dataframe with all statistics: OutputStats(back_tested,current_composition)
+
+# Function which returns the number of components : input dataframe of stocks and weigths
+def NbofComponents(current_composition_df):
+    return len(current_composition_df)
+
+
+def AvgAnnualReturn(back_tested_df):
+    Perf = back_tested_df['Returns'][len(back_tested_df)-1]/back_tested_df['Returns'][0]
+    print Perf ** (252 / len(back_tested_df)) - 1, "perf"
+    return Perf ** (252 / len(back_tested_df)) - 1
+
+
+def AnnVolatility(back_tested_returns_df):
+    Vol = np.std(back_tested_returns_df['Returns'])
+    return Vol * (252)**0.5
+
+def UpsideVol(back_tested_returns_df):
+    NegReturns_df=back_tested_returns_df[back_tested_returns_df['Returns']>0]
+    Vol = np.std(NegReturns_df['Returns'])
+    return Vol * (252)**0.5
+
+def DownsideVol(back_tested_returns_df):
+    NegReturns_df=back_tested_returns_df[back_tested_returns_df['Returns']<0]
+    Vol = np.std(NegReturns_df['Returns'])
+    return Vol * (252)**0.5
+
+
+# We assume r=0 riskfreerate
+def SharpeRatio(back_tested_returns_df,back_tested_df):
+    return AvgAnnualReturn(back_tested_df)/AnnVolatility(back_tested_returns_df)
+
+# We assume r=0 riskfreerate
+def SortinoRatio(back_tested_returns_df,back_tested_df):
+    return AvgAnnualReturn(back_tested_df)/DownsideVol(back_tested_returns_df)
+
+
+def MaximumDD(back_tested_df):
+    mdd = 0
+    peak = back_tested_df['Returns'][0]
+    for x in back_tested_df['Returns']:
+        if x > peak:
+            peak = x
+        dd = (x - peak ) / peak
+        if dd < mdd:
+            mdd = dd
+            
+    return abs(mdd)
+
+# General function which displays the Summary Statistics table
+# Input: back_tested series, current composition
+# Output: Databframe
+
+def OutputStats(back_tested,current_composition):
+
+    # Compute returns using Returns_df function
+    back_tested_returns=Returns_df(back_tested)
+
+    # Transform series into dataframe
+    back_tested_df=back_tested.to_frame()
+    back_tested_df.columns=['Returns']
+    back_tested_returns=Returns_df(back_tested)
+    back_tested_returns_df=back_tested_returns.to_frame()
+    back_tested_returns_df.columns=['Returns']
+    current_composition_df=current_composition.to_frame()
+    # Current composition with removes 0 weights
+    current_composition_df=current_composition_df[current_composition_df["Weights"]!=0]
+
+    # Create the table
+    Stats=['Index Nb of Components','Number of Observations', 'Avg. Return (ann,%)','Volatility (ann,%)',
+           'Maximum Drawdown (%)','Sharpe Ratio','Sortino Ratio','Nb of Negative Returns','Avg. Negative Returns (%)',
+           'Negative Volatility (%)','Nb of Positive Returns', 'Avg. Positive Returns (%)', 'Positive Volatility (%)']
+    Stats_Output_df=DataFrame({'Stat':Stats})
+    Stats_Output_df=Stats_Output_df.set_index('Stat')
+    Stats_Output_df['Statistics']=0.0
+    Stats_Output_df.index.name=None
+
+    # Fill the table with numbers
+    Stats_Output_df['Statistics']['Index Nb of Components']=NbofComponents(current_composition_df)
+    Stats_Output_df['Statistics']['Number of Observations']=len(back_tested_df)
+    Stats_Output_df['Statistics']['Avg. Return (ann,%)']=AvgAnnualReturn(back_tested_df)*100
+    Stats_Output_df['Statistics']['Volatility (ann,%)']=AnnVolatility(back_tested_returns_df)*100
+    Stats_Output_df['Statistics']['Maximum Drawdown (%)']=MaximumDD(back_tested_df)*100
+    Stats_Output_df['Statistics']['Sharpe Ratio']=SharpeRatio(back_tested_returns_df,back_tested_df)
+    Stats_Output_df['Statistics']['Sortino Ratio']=SortinoRatio(back_tested_returns_df,back_tested_df)
+    Stats_Output_df['Statistics']['Nb of Negative Returns']=len(back_tested_returns_df[back_tested_returns_df['Returns']<0])
+    Stats_Output_df['Statistics']['Avg. Negative Returns (%)']=back_tested_returns_df[back_tested_returns_df['Returns']<0].mean()*100
+    Stats_Output_df['Statistics']['Negative Volatility (%)']=DownsideVol(back_tested_returns_df)*100
+    Stats_Output_df['Statistics']['Nb of Positive Returns']=len(back_tested_returns_df[back_tested_returns_df['Returns']>0])
+    Stats_Output_df['Statistics']['Avg. Positive Returns (%)']=back_tested_returns_df[back_tested_returns_df['Returns']>0].mean()*100
+    Stats_Output_df['Statistics']['Positive Volatility (%)']=UpsideVol(back_tested_returns_df)*100
+
+    return Stats_Output_df
 
