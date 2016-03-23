@@ -172,7 +172,7 @@ def index():
     current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
 
     #Compute the backtest of the strategy
-    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame)
+    back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap=1,freq=20,vol_frame=20)
     #Convert the backtest data to json
     back_tested_json = dataToJson(back_tested)
 
@@ -322,11 +322,12 @@ def index_pro():
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
     
-    global output
-    output=back_tested_graph
+    
     
     #bidouille
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    global output
+    output=back_tested_graph
     ###
     data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
     
@@ -419,7 +420,9 @@ def index_pro():
     data_norm_freq_js=json.dumps(normfunction(data_hist[1]))
     data_norm_bins_js=json.dumps(benchmark_hist[0])
     #Database_out=Database.set_index('Date')
-    return flask.render_template('Index_Generator_Pro.html',data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_period,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
+    plotrf_df=plotrf(back_tested_graph,ThreeM_USD_libor)
+    rf_graph_line=json.dumps([[date,val] for date, val in zip(plotrf_df['New Date'], plotrf_df["value_rf"])])
+    return flask.render_template('Index_Generator_Pro.html',rf_graph_line=rf_graph_line,data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_period,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
 
 #login page
 Server.secret_key="secret_key"

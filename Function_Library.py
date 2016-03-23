@@ -24,6 +24,13 @@ def normfunction(bins):
         result.append(value)
     
     return result
+#compute a simple function to output libor (must be a simpler way)
+def plotrf(back_tested_df,libor):
+    lenght=len(back_tested_df)
+    back_tested_df["dayrf"]=DataFrame(range(0,lenght))
+    back_tested_df["value_rf"]=back_tested_df["dayrf"].map(lambda x: np.exp(libor*(x/250)))
+    return back_tested_df
+
 
 # # Compute returns from a dataframe of prices.
 

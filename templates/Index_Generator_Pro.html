@@ -25,6 +25,7 @@ $(document).ready(function() {
     var my_data_line_2 ={{ benchmark|safe }};
     var my_data_line_3 ={{ back_tested_df_return|safe }};
     var my_data_line_4 ={{ benchmark_return|safe }};
+    var my_data_line_rf ={{ rf_graph_line|safe }};
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
@@ -87,7 +88,7 @@ $(document).ready(function() {
 
             selected : 5
         },
-        colors: ['#f0a800','#757b8a'],
+        colors: ['black','#f0a800','#757b8a'],
         title : {
          text : '{{name | safe}} vs {{underlying | safe}} ',
          style:{color: "#51555f"},
@@ -95,12 +96,15 @@ $(document).ready(function() {
 
 
      series : [{
-        name:"{{name | safe}}",
+        name:"Interest Index (Buy/Hold)",
+        data: my_data_line_rf
+    },{
+        name:"{{name | safe}} (Buy/Hold)",
         data: my_data_line,
     },{
-        name:"Benchmark",
+        name:"Benchmark (Buy/Hold)",
         data: my_data_line_2
-    }],
+        }],
     tooltip: {
         pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
         valueDecimals: 5
@@ -563,6 +567,7 @@ $(document).ready(function() {
 
 <body id="main_body" onload="HideLoadingDiv()">
     <div class="ui-layout-north"><div id="background2">
+    <img src="../static/logo_header.png" style="zoom: 50%;margin-top:-10px;position: absolute;">
         <ul class="tabs" data-persist="true">
             <li><a href="#view1">Index Creator</a></li>
             <li><a href="#view2">History</a></li>
