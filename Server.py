@@ -310,7 +310,7 @@ def index_pro():
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
     global output
-    
+    output=back_tested_graph
     
     #bidouille
     back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
