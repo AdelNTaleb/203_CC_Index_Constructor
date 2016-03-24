@@ -10,7 +10,7 @@ from scipy.stats import norm
 
 
                                 #### General Function used ##### 
-def normfunction(bins):
+def normfunction(bins,n):
     sigma=0.01
     mu=0
     # Plot between -10 and 10 with .001 steps.
@@ -19,7 +19,7 @@ def normfunction(bins):
 
     for i in bins:
 
-        value=1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (i - mu)**2 / (2 * sigma**2))
+        value=n*(1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (i - mu)**2 / (2 * sigma**2)))
         
         result.append(value)
     
@@ -90,13 +90,13 @@ def MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     rc_three_m_m=(three_m_m/vol)
     rc_six_m_m=(six_m_m/vol)
     
-    # COME BACK HERE  : Winderized our RC distributions
+    # Winderized our RC distributions  : 
+    rc_three_m_m[ rc_three_m_m >= 3] = 3
+    rc_three_m_m[rc_three_m_m <= -3] = -3
 
-    #rc_six_m_m = rc_six_m_m.iloc[0,:].map(lambda x: 3.0 if x>3.0 else x)
-    #rc_six_m_m = rc_six_m_m.map(lambda x: -3.0 if np.abs(x)>3 else x)
-    
-    #rc_three_m_m = rc_three_m_m.iloc[0,:].map(lambda x: 3.0 if x>3.0 else x)
-    #rc_three_m_m = rc_three_m_m.map(lambda x: -3.0 if np.abs(x)>3 else x)
+    rc_six_m_m[ rc_six_m_m >= 3] = 3
+    rc_six_m_m[rc_six_m_m <= -3] = -3
+
     
     #calcul of momentum scores
     z_score=rc_six_m_m*0.5+rc_three_m_m*0.5
@@ -130,13 +130,13 @@ def MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     rc_three_m_m=(three_m_m/vol)
     rc_six_m_m=(six_m_m/vol)
     
-    # COME BACK HERE  : Winderized our RC distributions
+    #Winderized our RC distributions
 
-    #rc_six_m_m = rc_six_m_m.iloc[0,:].map(lambda x: 3.0 if x>3.0 else x)
-    #rc_six_m_m = rc_six_m_m.map(lambda x: -3.0 if np.abs(x)>3 else x)
-    
-    #rc_three_m_m = rc_three_m_m.iloc[0,:].map(lambda x: 3.0 if x>3.0 else x)
-    #rc_three_m_m = rc_three_m_m.map(lambda x: -3.0 if np.abs(x)>3 else x)
+    rc_three_m_m[ rc_three_m_m >= 3] = 3
+    rc_three_m_m[rc_three_m_m <= -3] = -3
+
+    rc_six_m_m[ rc_six_m_m >= 3] = 3
+    rc_six_m_m[rc_six_m_m <= -3] = -3
     
     #calcul of momentum scores
     z_score=rc_six_m_m*0.5+rc_three_m_m*0.5
@@ -146,7 +146,6 @@ def MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     z_df.columns = ['z_score']
     momentum_z_score_df = z_df.iloc[:,0].map(lambda x: x+1 if x>0 else (1-x)**(-1)).to_frame()
     momentum_z_score_df.columns = ['momentum_z_score']
-    
     return momentum_z_score_df
     
 
@@ -286,7 +285,7 @@ def index_vol_jacobian(Prices_df,x):
 # Depending on the selected method, the optimization function will apply different optimization processes and returns a
 # dataframe containig 
 
-def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
+def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position):
     
     df_return=Returns_df(Prices_df)
     #Ranking the inputed dataset
@@ -295,20 +294,30 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
     nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
     #Composition
 
-    if Method=="Ranking":    
-      
-        # Compute the optimal index as per the MSCI Methodology
-        Optimal_Index=Ranked_Zscore_df
-        # Rank the computed Z-scores
-        Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort()
-        #generate weights
-        Optimal_Index['Weights'] = Optimal_Index['Ranking'].map(lambda x: 1 if x <nbr_sec  else 0)
-        Optimal_Index['Weights']=Optimal_Index['Weights']/np.sum(Optimal_Index['Weights']) 
-        
-        #Return Composition
-        Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
-        
-        
+    if Method=="Ranking":   
+    #if position if long then nothing changes 
+        if position=='long':
+            # Compute the optimal index as per the MSCI Methodology
+            Optimal_Index=Ranked_Zscore_df
+            # Rank the computed Z-scores
+            Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort()
+            #generate weights
+            Optimal_Index['Weights'] = Optimal_Index['Ranking'].map(lambda x: 1 if x <nbr_sec  else 0)
+            Optimal_Index['Weights']=Optimal_Index['Weights']/np.sum(Optimal_Index['Weights']) 
+            
+            #Return Composition
+            Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
+            #if position if long/short then 50 best/50 worst
+        else:
+            Optimal_Index=Ranked_Zscore_df
+            Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort() 
+            Optimal_Index['Position'] = 1
+            Optimal_Index['Position'][ Optimal_Index["Ranking"] < 50] = 1
+            Optimal_Index['Position'][(Optimal_Index["Ranking"]  > 50) & (Optimal_Index["Ranking"]  <= 175)] = 0
+            Optimal_Index['Position'][Optimal_Index["Ranking"]  > 175] = -1
+            Optimal_Index['Weights']=Optimal_Index['Position']/100
+            Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
+
     elif Method=="Constrained":
         
         
@@ -376,7 +385,7 @@ def optimal_weights(Prices_df,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Mon
 # It returns the performance of the index over this period.
 
 
-def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time):
+def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -392,7 +401,7 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1
     #set the dataset for backtest
         Prices_df_bt=Prices_df.head(starting_point+freq*cnt)
         #Compute Optimal Composition
-        Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+        Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position)
                   
         #compute returns
         next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
@@ -455,7 +464,7 @@ def NbofComponents(current_composition_df):
 
 def AvgAnnualReturn(back_tested_df):
     Perf = back_tested_df['Returns'][len(back_tested_df)-1]/back_tested_df['Returns'][0]
-    print Perf ** (252 / len(back_tested_df)) - 1, "perf"
+    
     return Perf ** (252 / len(back_tested_df)) - 1
 
 
