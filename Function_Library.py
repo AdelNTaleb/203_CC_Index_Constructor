@@ -441,11 +441,11 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,t,Nb_Month_1
                     
             #dilute if vol above vol_cap
             if hist_vol>vol_cap:
-                undiluted=vol_cap/hist_vol
+                undiluted=min(vol_cap/hist_vol,undiluted)
             #end if
         #compute base 1
         base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
-        
+        print undiluted
      
     base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
     

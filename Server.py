@@ -1,10 +1,10 @@
                                 #### Import function, data and hardcoded input #### 
 
 import flask
-
+import time
 #test modified by freddy
 
-from flask import flash,session,render_template, redirect, request,Response
+from flask import flash,session,render_template, redirect, request,Response,send_file
 import time
 import matplotlib.finance as finance
 import datetime
@@ -217,6 +217,8 @@ def index():
         back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
         global output
         output=back_tested_graph
+
+
         ###
         data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
         
@@ -227,8 +229,8 @@ def index():
         
 
         description=back_tested_df_return.describe()
-        description.columns=["Description"]
-
+        description.columns=["temp_description"]
+        
         back_tested_df_return_js=back_tested_df_return.reset_index()
        
         back_tested_df_return_js.columns=['date','returns']
@@ -283,7 +285,7 @@ def index():
             #benchmark = json.dumps([[date,val] for date, val in zip(benchmark['Date'], benchmark['values'])])
 
         number_component=len(current_composition_df)
-        number_observation_bt=int(description.loc['count'])
+        number_observation_bt=float(description.loc['count'])
         average_level_bt=float(description.loc['mean'])*100
         volatility_bt=float(description.loc['std'])*(252**0.5)*100
         maximum_bt=float(description.loc['max'])
@@ -317,6 +319,8 @@ def index():
 @Server.route('/pro/',methods=['GET','POST'])
 @login_required
 def index_pro():
+    time_start = time.clock()
+
     if (flask.request.args.get('strategy') is None):
         return flask.render_template('Index_Generator_Pro.html')
     elif flask.request.args.get('strategy')=='carry':
@@ -362,7 +366,7 @@ def index_pro():
             return flask.render_template('Index_Generator_Pro.html')
 
         if vol_cap_imposed=="vol_cap_yes":
-            vol_cap = (float(flask.request.args.get('vol_cap_daily')))/1000
+            vol_cap = (float(flask.request.args.get('vol_cap_daily')))/100
             vol_frame= int(flask.request.args.get('vol_frame'))
         else:
             vol_cap=1
@@ -407,6 +411,8 @@ def index_pro():
         back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
         global output
         output=back_tested_graph
+        
+        
         ###
         data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
         
@@ -473,6 +479,7 @@ def index_pro():
             #benchmark = json.dumps([[date,val] for date, val in zip(benchmark['Date'], benchmark['values'])])
 
         number_component=len(current_composition_df)
+
         number_observation_bt=int(description.loc['count'])
         average_level_bt=float(description.loc['mean'])*100
         volatility_bt=float(description.loc['std'])*(252**0.5)*100
@@ -501,6 +508,9 @@ def index_pro():
         #Database_out=Database.set_index('Date')
         plotrf_df=plotrf(back_tested_graph,ThreeM_USD_libor)
         rf_graph_line=json.dumps([[date,val] for date, val in zip(plotrf_df['New Date'], plotrf_df["value_rf"])])
+
+        time_elapsed = (time.clock() - time_start)
+        print time_elapsed
     return flask.render_template('Index_Generator_Pro.html',rf_graph_line=rf_graph_line,data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_period,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
 
 #login page
@@ -522,13 +532,17 @@ def login():
 @Server.route('/logout')
 @login_required
 def logout():
+    Database=DataFrame()
     flask.session.pop('logged_in',None)
     flash('You have signed out')
     return redirect('/')
+
 #download button function
 @Server.route("/download")
 @login_required
-def downloadCSV():   
+def downloadCSV(): 
+    del output['date']
+    del output['dayrf']  
     csv = output.to_csv()
     return Response(
         csv,
