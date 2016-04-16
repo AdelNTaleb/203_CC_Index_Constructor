@@ -343,13 +343,11 @@ def index():
 @login_required
 def index_pro():
     time_start = time.clock()
-
-    if (flask.request.args.get('strategy') is None):
-        return flask.render_template('Index_Generator_Pro.html')
-    elif flask.request.args.get('strategy')=='carry':
+    strategy=flask.request.args.get('strategy')
+    if (strategy is None):
         return flask.render_template('Index_Generator_Pro.html')
     else:
-        if flask.request.args.get('strategy')=='momentum_long_only':
+        if strategy=='momentum_long_only':
             strat="LO Momentum"
             position='long'
             if (flask.request.args.get('method') is None):
@@ -357,6 +355,12 @@ def index_pro():
             Method=flask.request.args.get('method')
             Constraint_type=flask.request.args.get('method_type')
             
+        elif strategy=='carry':
+            strat="L/S Momentum"
+            position='ls'
+            Method="Ranking"
+            Constraint_type='None'
+
         else:
             strat="L/S Momentum"
             position='ls'
@@ -423,7 +427,7 @@ def index_pro():
         
         freq=int(flask.request.args.get('rebalance_len'))
         #compute the composition of the selected index as of now
-        current_composition=optimal_weights(Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta)
+        current_composition=optimal_weights(strategy,Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta)
         #convert the weights into unit percentages
         current_composition=current_composition[current_composition<>0]*100
         
@@ -441,7 +445,7 @@ def index_pro():
         
         #Compute the backtest of the strategy
                         
-        back_tested = back_test(Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta)
+        back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta)
         description_df=OutputStats(back_tested,current_composition)
         #Convert the backtest data to json
         back_tested_json = dataToJson(back_tested)

@@ -149,6 +149,100 @@ def MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     return momentum_z_score_df
     
 
+# New Strategy
+def Beta_Strategy_Scores(Prices_df,Benchmark_df):
+
+    # Compute the beta
+    Betas = index_beta_jacobian(Prices_df,Benchmark_df)
+
+    # transform into dataframe
+    Betas_df=Prices_df.head(1)
+    Betas_df=Betas_df.transpose()
+    Betas_df.columns=['1']
+    del Betas_df['1']
+    Betas_df['Betas']=Betas
+
+    # Rank Beta
+    ranked_beta_z_score_df=Betas_df.sort(['Betas'],ascending=[False])
+
+    return ranked_beta_z_score_df
+
+
+def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
+
+# According to Betas, construct portfolio
+
+        # Construct long portfolio from stocks with beta above Median
+        Betas_df=Beta_Strategy_Scores(Prices_df,Benchmark_df)
+        Median=Betas_df.median
+        Long_PTF_df=Betas_df[Betas_df['Betas']<=np.median(Betas_df['Betas'])]
+        Short_PTF_df=Betas_df[Betas_df['Betas']>np.median(Betas_df['Betas'])]
+
+        #construct rank
+        # Rank from 1 to 113
+        #Long_PTF_df['Rank']=range(len(Long_PTF_df),0,-1)
+        #Short_PTF_df['Rank']=range(1,len(Short_PTF_df)+1,1)
+        # Rank from 113 to 1
+        Long_PTF_df['Rank']=range(1,len(Long_PTF_df)+1,1)
+        Short_PTF_df['Rank']=range(len(Short_PTF_df),0,-1)
+
+        #Compute Z-Hat
+        #Z_bar_Long=np.dot(np.ones(len(Long_PTF_df)),Long_PTF_df['Rank'])/len(Long_PTF_df)
+        Z_bar_Long=np.average(Long_PTF_df['Rank'])
+        Z_bar_Short=np.average(Short_PTF_df['Rank'])
+
+        # Compute Const_K
+        Const_K_Long=2/(np.dot(np.ones(len(Long_PTF_df)),abs(Long_PTF_df['Rank']-Z_bar_Long)))
+        Const_K_Short=2/(np.dot(np.ones(len(Short_PTF_df)),abs(Short_PTF_df['Rank']-Z_bar_Short)))
+
+        # Add the weights colums to our portfolio
+        Long_PTF_df['Weights']=Long_PTF_df['Rank'].map(lambda x: Const_K_Long*np.maximum(x-Z_bar_Long,0))
+        Short_PTF_df['Weights']=Short_PTF_df['Rank'].map(lambda x: Const_K_Short*np.maximum(x-Z_bar_Short,0))
+
+        # XXX REMOVED THIS PART TO ALLOW FOR MATRIX PRODUCT IN BACK TEST FUNCTION
+        # Drop the non-significant weights
+        #Signifiance_Threshold=1*10**(-10)
+        #Long_PTF_df=Long_PTF_df[Long_PTF_df['Weights']>Signifiance_Threshold]
+        #Short_PTF_df=Short_PTF_df[Short_PTF_df['Weights']>Signifiance_Threshold]
+
+        #Compute the betas of the long and short portfolios
+        Beta_Long_PTF=np.dot(Long_PTF_df['Betas'],Long_PTF_df['Weights'])
+        Beta_Short_PTF=np.dot(Short_PTF_df['Betas'],Short_PTF_df['Weights'])
+
+        #print Beta_Long_PTF
+        #print Beta_Short_PTF
+
+        # Compute the leverage and deleverage factors
+        Lvg_Long=1/Beta_Long_PTF
+        DeLvg_Short=1/Beta_Short_PTF
+
+        # Apply -1 to the weights of the short portfolio
+        Short_PTF_df['Weights']=Short_PTF_df['Weights']*(-1)
+
+        # Check if we got beta of 1 and -1 for long and short portfolio
+        #print np.dot(np.dot(Long_PTF_df['Weights'],Beta_Long_PTF),Lvg_Long).sum()
+        #print np.dot(np.dot(Short_PTF_df['Weights'],Beta_Short_PTF),DeLvg_Short).sum()
+
+        # Final Composition 
+        # Apply leverage and deleverage factors to long and short portfolio weights
+        Long_PTF_df['Weights']=Long_PTF_df['Weights']*Lvg_Long
+        Short_PTF_df['Weights']=Short_PTF_df['Weights']*DeLvg_Short
+
+        # Compose the final portoflio
+        Final_Portfolio=DataFrame
+        Final_Portfolio=concat([Short_PTF_df,Long_PTF_df],join='outer', join_axes=None, ignore_index=False,keys=None, levels=None, names=None, verify_integrity=False)
+
+        # Unscale to get weights = 1
+        Final_Portfolio['Weights']=Final_Portfolio['Weights']/Final_Portfolio['Weights'].sum()
+
+        #print Final_Portfolio['Weights'].sum()
+        #print np.dot(Final_Portfolio['Betas'], Final_Portfolio['Weights'])
+
+        Final_Portfolio_Weights=Final_Portfolio['Weights']
+
+        return Final_Portfolio_Weights
+
+
 ### CARRY STRATEGY
 # To be implemented
 
@@ -311,9 +405,6 @@ def index_beta_jacobian(Prices_df,Benchmark_df):
     
 
 
-
-
-
                                 #### OTPIMIZATION FUNCTION ##### 
 
 # Depending on the selected method, the optimization function will apply different optimization processes and returns a
@@ -324,7 +415,7 @@ def index_beta_jacobian(Prices_df,Benchmark_df):
 #Max_Vol is now optional
 
 
-def optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1):
+def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1):
     print  max_Beta
     #df_return=Returns_df(Prices_df)
     #Ranking the inputed dataset
@@ -333,185 +424,191 @@ def optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_All
     nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
     #Composition
 
-    if Method=="Ranking":   
-    #if position if long then nothing changes 
-        if position=='long':
-            # Compute the optimal index as per the MSCI Methodology
-            Optimal_Index=Ranked_Zscore_df
-            # Rank the computed Z-scores
-            Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort()
-            #generate weights
-            Optimal_Index['Weights'] = Optimal_Index['Ranking'].map(lambda x: 1 if x <nbr_sec  else 0)
-            Optimal_Index['Weights']=Optimal_Index['Weights']/np.sum(Optimal_Index['Weights']) 
-            
-            #Return Composition
-            Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
-            #if position if long/short then 50 best/50 worst
-        else:
-            Optimal_Index=Ranked_Zscore_df
-            Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort() 
-            Optimal_Index['Position'] = 1
-            Optimal_Index['Position'][ Optimal_Index["Ranking"] < 50] = 1
-            Optimal_Index['Position'][(Optimal_Index["Ranking"]  > 50) & (Optimal_Index["Ranking"]  <= 175)] = 0
-            Optimal_Index['Position'][Optimal_Index["Ranking"]  > 175] = -1
-            Optimal_Index['Weights']=Optimal_Index['Position']/100
-            Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
+    if Strategy=='carry':
+        
+        Composition=Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df)
 
-    elif Method=="Constrained":
-        
-        
-        Non_Ranked_Zscore_df=MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+    else:
 
-        #Initiate Weight Array
-        
-        if position== "long":
-            Weights_0=np.ones(len(Non_Ranked_Zscore_df))
-            Weights_0=Weights_0/np.sum(Weights_0)
-        else:
-            Weights_0=-np.ones(len(Non_Ranked_Zscore_df))
-            Weights_0=Weights_0/np.sum(Weights_0)
-        #Define Constraints
-        
-        if Constraint_Type=="Vol_C":
-            daily_max_var=(Max_Vol/100)**2.0/256.0
-            
-            if position== "long":
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
-                'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},
-                {'type' : 'eq', 
-                 'fun' : lambda x : np.sum(x)-1,
-                'jac' : lambda x : np.ones(len(x))
-                })
+        if Method=="Ranking":   
+        #if position if long then nothing changes 
+            if position=='long':
+                # Compute the optimal index as per the MSCI Methodology
+                Optimal_Index=Ranked_Zscore_df
+                # Rank the computed Z-scores
+                Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort()
+                #generate weights
+                Optimal_Index['Weights'] = Optimal_Index['Ranking'].map(lambda x: 1 if x <nbr_sec  else 0)
+                Optimal_Index['Weights']=Optimal_Index['Weights']/np.sum(Optimal_Index['Weights']) 
+                
+                #Return Composition
+                Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
+                #if position if long/short then 50 best/50 worst
             else:
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
-                'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},
-                {'type' : 'eq', 
-                 'fun' : lambda x : 0.-np.sum(x),
-                'jac' : lambda x : -np.ones(len(x))
-                })
-        
-        elif Constraint_Type=="Beta_C":
+                Optimal_Index=Ranked_Zscore_df
+                Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort() 
+                Optimal_Index['Position'] = 1
+                Optimal_Index['Position'][ Optimal_Index["Ranking"] < 50] = 1
+                Optimal_Index['Position'][(Optimal_Index["Ranking"]  > 50) & (Optimal_Index["Ranking"]  <= 175)] = 0
+                Optimal_Index['Position'][Optimal_Index["Ranking"]  > 175] = -1
+                Optimal_Index['Weights']=Optimal_Index['Position']/100
+                Composition=Series(Optimal_Index["Weights"],index=Optimal_Index["Weights"].index)
+
+        elif Method=="Constrained":
+            
+            
+            Non_Ranked_Zscore_df=MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+
+            #Initiate Weight Array
             
             if position== "long":
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
-                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
-                {'type' : 'eq', 
-                 'fun' : lambda x : np.sum(x)-1,
-                'jac' : lambda x : np.ones(len(x))
-                })
-#            else:
-#                Constraints=({'type': 'ineq',
-#                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
-#                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
-#                {'type': 'ineq',
-#                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-#                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
-#                {'type' : 'eq', 
-#                 'fun' : lambda x : 0.-np.sum(x),
-#                'jac' : lambda x : -np.ones(len(x))
-#                })                
-                
-                
-#            Constraints=(
-#            {'type': 'eq',
-#            'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-#            'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
-#            {'type' : 'eq', 
-#             'fun' : lambda x : np.sum(x)-1,
-#            'jac' : lambda x : np.ones(len(x))
-#            })
+                Weights_0=np.ones(len(Non_Ranked_Zscore_df))
+                Weights_0=Weights_0/np.sum(Weights_0)
+            else:
+                Weights_0=-np.ones(len(Non_Ranked_Zscore_df))
+                Weights_0=Weights_0/np.sum(Weights_0)
+            #Define Constraints
             
-        elif Constraint_Type == "Mixed":
-            daily_max_var=(Max_Vol/100)**2.0/256.0
+            if Constraint_Type=="Vol_C":
+                daily_max_var=(Max_Vol/100)**2.0/256.0
+                
+                if position== "long":
+                    Constraints=({'type': 'ineq',
+                    'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
+                    'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},
+                    {'type' : 'eq', 
+                     'fun' : lambda x : np.sum(x)-1,
+                    'jac' : lambda x : np.ones(len(x))
+                    })
+                else:
+                    Constraints=({'type': 'ineq',
+                    'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
+                    'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},
+                    {'type' : 'eq', 
+                     'fun' : lambda x : 0.-np.sum(x),
+                    'jac' : lambda x : -np.ones(len(x))
+                    })
             
-            if position=="long":
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
-                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
-                'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},            
-                {'type' : 'eq', 
-                 'fun' : lambda x : np.sum(x)-1,
-                'jac' : lambda x : np.ones(len(x))
-                })
-            else: 
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
-                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
-                'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},            
-                {'type' : 'eq', 
-                 'fun' : lambda x : 0.-np.sum(x),
-                'jac' : lambda x : -np.ones(len(x))
-                })
-          
-        if position== "long":
-        #Define minimum value for weights (always 0) and maximum (in range (0,1] )
-            bnds=[(0,(Max_Weight_Allowed/100.))]*len(Weights_0)
-        else:
-            bnds=[((-Max_Weight_Allowed/100.),(Max_Weight_Allowed/100.))]*len(Weights_0)
+            elif Constraint_Type=="Beta_C":
+                
+                if position== "long":
+                    Constraints=({'type': 'ineq',
+                    'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
+                    'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
+                    {'type': 'ineq',
+                    'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+                    'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
+                    {'type' : 'eq', 
+                     'fun' : lambda x : np.sum(x)-1,
+                    'jac' : lambda x : np.ones(len(x))
+                    })
+    #            else:
+    #                Constraints=({'type': 'ineq',
+    #                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
+    #                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
+    #                {'type': 'ineq',
+    #                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+    #                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
+    #                {'type' : 'eq', 
+    #                 'fun' : lambda x : 0.-np.sum(x),
+    #                'jac' : lambda x : -np.ones(len(x))
+    #                })                
+                    
+                    
+    #            Constraints=(
+    #            {'type': 'eq',
+    #            'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+    #            'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
+    #            {'type' : 'eq', 
+    #             'fun' : lambda x : np.sum(x)-1,
+    #            'jac' : lambda x : np.ones(len(x))
+    #            })
+                
+            elif Constraint_Type == "Mixed":
+                daily_max_var=(Max_Vol/100)**2.0/256.0
+                
+                if position=="long":
+                    Constraints=({'type': 'ineq',
+                    'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
+                    'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
+                    {'type': 'ineq',
+                    'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+                    'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},
+                    {'type': 'ineq',
+                    'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
+                    'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},            
+                    {'type' : 'eq', 
+                     'fun' : lambda x : np.sum(x)-1,
+                    'jac' : lambda x : np.ones(len(x))
+                    })
+                else: 
+                    Constraints=({'type': 'ineq',
+                    'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
+                    'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
+                    {'type': 'ineq',
+                    'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+                    'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},
+                    {'type': 'ineq',
+                    'fun' : lambda x : daily_max_var-index_vol(Prices_df,x),
+                    'jac' : lambda x : -index_vol_jacobian(Prices_df,x)},            
+                    {'type' : 'eq', 
+                     'fun' : lambda x : 0.-np.sum(x),
+                    'jac' : lambda x : -np.ones(len(x))
+                    })
+              
+            if position== "long":
+            #Define minimum value for weights (always 0) and maximum (in range (0,1] )
+                bnds=[(0,(Max_Weight_Allowed/100.))]*len(Weights_0)
+            else:
+                bnds=[((-Max_Weight_Allowed/100.),(Max_Weight_Allowed/100.))]*len(Weights_0)
+            
+            #Define Target - Used in the optimization function following
+            def target_fun(x):
+                
+                total_score=-np.dot(x,Non_Ranked_Zscore_df)
+                return total_score
+            def target_fun_derivative(x):
+                
+                return -Non_Ranked_Zscore_df
         
-        #Define Target - Used in the optimization function following
-        def target_fun(x):
-            
-            total_score=-np.dot(x,Non_Ranked_Zscore_df)
-            return total_score
-        def target_fun_derivative(x):
-            
-            return -Non_Ranked_Zscore_df
-    
-        #Define Target Function
-        if position != "long" and Constraint_Type=="Beta":
-            beta_vector=index_beta_jacobian(Prices_df,Benchmark_df)
-            A=[-beta_vector,beta_vector]
-            b=[-min_Beta,max_Beta]
-            A_e=[np.ones(len(x))]
-            b_e=0.
-            c=np.ravel(Non_Ranked_Zscore_df)
-            res=linprog(c=-c,A_ub=A,b_ub=b,A_eq=A_e,b_eq=b_e,bounds=bnds)#,options=dict(bland=True, tol=1e-19))
-            
-                        #Extract Weights
-            Weights=res.x
-            print res
-            
+            #Define Target Function
+            if position != "long" and Constraint_Type=="Beta":
+                beta_vector=index_beta_jacobian(Prices_df,Benchmark_df)
+                A=[-beta_vector,beta_vector]
+                b=[-min_Beta,max_Beta]
+                A_e=[np.ones(len(x))]
+                b_e=0.
+                c=np.ravel(Non_Ranked_Zscore_df)
+                res=linprog(c=-c,A_ub=A,b_ub=b,A_eq=A_e,b_eq=b_e,bounds=bnds)#,options=dict(bland=True, tol=1e-19))
+                
+                            #Extract Weights
+                Weights=res.x
+                print res
+                
 
-        
-        else :
-            res=minimize(target_fun, Weights_0, jac = target_fun_derivative,
-                   constraints=Constraints, method="SLSQP",
-                   bounds=bnds,
-                   options={'disp': True, "maxiter":1000})
-        
-            #Extract Weights
-            Weights=res.x
             
-        # Function to remove the components with unsignificant weights
-            f= lambda x : x if x>10**-6 else 0.0
-            f=np.vectorize(f)
-            Weights=f(Weights)
-   
-        #Normalise
-            Weights=Weights/np.sum(Weights)
-        
+            else :
+                res=minimize(target_fun, Weights_0, jac = target_fun_derivative,
+                       constraints=Constraints, method="SLSQP",
+                       bounds=bnds,
+                       options={'disp': True, "maxiter":1000})
+            
+                #Extract Weights
+                Weights=res.x
+                
+            # Function to remove the components with unsignificant weights
+                f= lambda x : x if x>10**-6 else 0.0
+                f=np.vectorize(f)
+                Weights=f(Weights)
        
-        Composition=Series(Weights,index=Ranked_Zscore_df.index)
-        Composition.name = "Weights"
+            #Normalise
+                Weights=Weights/np.sum(Weights)
+            
+           
+            Composition=Series(Weights,index=Ranked_Zscore_df.index)
+            Composition.name = "Weights"
+            
         
-    
     return Composition
     
 
@@ -527,7 +624,7 @@ def optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_All
 #Arguments to be checked when calling the function
 
 
-def back_test(Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,Benchmark_df=0,min_Beta=0, max_Beta=1):
+def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,Benchmark_df=0,min_Beta=0, max_Beta=1):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -545,7 +642,7 @@ def back_test(Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb
         Benchmark_df_bt=Benchmark_df.head(starting_point+freq*cnt)
         #Compute Optimal Composition
         #Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position)
-        Weights_bt=optimal_weights(Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
+        Weights_bt=optimal_weights(Strategy,Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
     
         #compute returns
         next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
