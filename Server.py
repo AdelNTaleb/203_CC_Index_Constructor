@@ -167,7 +167,7 @@ def index():
             Max_Beta=0
             Min_Beta=0
             name=str(strat)+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"  
-            print name   
+              
         else:
             if Constraint_type=="Vol_C":
                 Max_Beta=0
@@ -175,14 +175,14 @@ def index():
                 Max_Vol=float(flask.request.args.get('vol_cap'))
                 Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
                 name= str(strat)+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                print name 
+               
             else:
                 Max_Weight_Allowed=0
                 Max_Vol=0
                 Max_Beta=float(flask.request.args.get('max_beta'))
                 Min_Beta=float(flask.request.args.get('min_beta'))
                 name= str(strat)+" "+str(Method)+" "+"("+"Beta:"+" "+str(Min_Beta)+"-"+str(Max_Beta)+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                print name 
+                
 
 
 
@@ -206,7 +206,7 @@ def index():
             
             benchmark=NKY225_df 
         
-        print NKY225_df
+        
         freq=int(flask.request.args.get('rebalance_len'))
         #compute the composition of the selected index as of now
         current_composition=optimal_weights(Prices_df,Method,Constraint_type,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Min_Beta,Max_Beta,NKY225_df)
@@ -356,7 +356,7 @@ def index_pro():
                 return flask.render_template('Index_Generator_Pro.html')
             Method=flask.request.args.get('method')
             Constraint_type=flask.request.args.get('method_type')
-            print Constraint_type
+            
         else:
             strat="L/S Momentum"
             position='ls'
@@ -382,7 +382,7 @@ def index_pro():
             Max_Beta=0
             Min_Beta=0
             name=str(strat)+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"  
-            print name   
+              
         else:
             if Constraint_type=="Vol_C":
                 Max_Beta=0
@@ -390,14 +390,14 @@ def index_pro():
                 Max_Vol=float(flask.request.args.get('vol_cap'))
                 Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
                 name= str(strat)+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                print name 
+                
             else:
                 Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
                 Max_Vol=0
                 Max_Beta=float(flask.request.args.get('max_beta'))
                 Min_Beta=float(flask.request.args.get('min_beta'))
                 name= str(strat)+" "+str(Method)+" "+"("+"Beta:"+" "+str(Min_Beta)+"-"+str(Max_Beta)+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                print name 
+                
 
 
 
@@ -421,7 +421,6 @@ def index_pro():
             
             benchmark=NKY225_df 
         
-        print NKY225_df
         freq=int(flask.request.args.get('rebalance_len'))
         #compute the composition of the selected index as of now
         current_composition=optimal_weights(Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta)
