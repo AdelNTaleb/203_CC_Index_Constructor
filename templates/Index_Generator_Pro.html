@@ -628,12 +628,12 @@ $(document).ready(function() {
                         $(this).find("option:selected").each(function(){
                             if($(this).attr("value")=="momentum_long_only"){
                                 $(".input").not(".momentum").hide();
-                                $("#risk_constrained").show();
+                                $("#constrained").show();
                                 $("#input1").show();
                             }
                             else if($(this).attr("value")=="momentum_long_short"){
                                 $(".input").not(".momentum").hide();
-                                $("#risk_constrained").hide();
+                                $("#constrained").hide();
                                 $("#input1").show();
                             }
                             else if($(this).attr("value")=="carry"){
@@ -662,9 +662,9 @@ $(document).ready(function() {
         </div>
 
 
-        <div class="row" id="risk_constrained">
+        <div class="row" id="constrained">
             <div class="cell">
-                <p id="select2">Risk Constrained:</p>
+                <p id="select2">Constraints:</p>
             </div>
             <script type="text/javascript">
                 $(document).ready(function(){
@@ -702,6 +702,25 @@ $(document).ready(function() {
             </script>
 
             <div id='input2'class="cell">
+            <select  style="width:230px;"  name="method" id="drop_cons" required>
+                <option value=""></option>
+                <option selected value="">Please choose</option> 
+                <option value="Beta_C">Beta</option>
+                <option value="Vol_C">Volatility</option>
+            </select>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $('#drop_cons').select2({
+
+                        placeholder: 'Please Choose',
+                        closeOnSelect: true,
+                        minimumResultsForSearch: -1
+
+                    })
+
+                });
+            </script>
+            <div id='input_cons_vol'class="cell">
                 <div>
                     <p class="form_title">Volatility Cap (in %):</p>
                     <input class="other_input"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
@@ -710,6 +729,33 @@ $(document).ready(function() {
                     <p class="form_title">Max Weight (in %):</p>
                     <input  class="other_input" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
                 </div>
+            </div>
+            <div id='input_cons_beta'class="cell">
+                <div>
+                    <p class="form_title">Min Beta:</p>
+                    <input class="other_input"  name="min_beta"  placeholder="Min Beta"  type="number" min="0" step="0.1" value="0" />
+                </div>
+                <div>
+                    <p class="form_title">Max Beta:</p>
+                    <input  class="other_input" name="max_beta"  placeholder="Max Beta"  type="number" min="0" step="0.1" value="2"/>
+                </div>
+            </div>
+              <script type="text/javascript">
+                $(document).ready(function(){
+                    $("#drop_cons").change(function(){
+                        $(this).find("option:selected").each(function(){
+                            if($(this).attr("value")=="Vol_C"){
+                                $("#input_cons_vol").show();
+                                $("#input_cons_beta").hide();
+                            }
+                            else{
+                                $("#input_cons_vol").hide();
+                                $("#input_cons_beta").show();
+                            }
+                        });
+                    }).change();
+                });
+            </script>
             </div>
         </div>
         <div class="row">
