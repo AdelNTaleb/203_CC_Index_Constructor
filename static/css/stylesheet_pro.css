@@ -5,6 +5,9 @@
     stroke-width: 0.1;
     fill: yes;
 }
+#generator_input{
+  min-height: 200px;
+}
 #accept{
   
     background-color: #f2b019;
@@ -363,6 +366,18 @@ input:focus {
   width: 220px;
   height: 15px;
   background-color: #f4f4f4;
+}
+.other_input_2{
+  width: 213px;
+  height: 15px;
+  background-color: #f4f4f4;
+}
+.other_input_2:focus{
+  width: 213px;
+  height: 17px;
+  background-color: #fdefad;
+  border-width: 1px;
+  border-color: #e1bf55;
 }
 .momentum_input {
   width: 225px;
