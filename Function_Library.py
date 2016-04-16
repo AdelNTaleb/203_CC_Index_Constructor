@@ -5,7 +5,7 @@ import os
 import datetime
 from pandas import *
 import numpy as np
-from scipy.optimize import minimize
+from scipy.optimize import minimize, linprog
 from scipy.stats import norm
 
 
@@ -282,12 +282,11 @@ def index_vol_jacobian(Prices_df,x):
     
 ## Beta
 
+
 #Return the Beta of a portfolio with weights x
 def index_beta(Prices_df,Benchmark_df,x):
-    Benchmark_df.reset_index
     df_return=np.nan_to_num(np.array(Returns_df(Prices_df)))
-    Benchmark_return=np.array(Returns_df(Benchmark_df['values']))
-    print Benchmark_return
+    Benchmark_return=np.array(Returns_df(Benchmark_df))
     beta=np.zeros(len(df_return[0]))
     design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
     
@@ -298,9 +297,8 @@ def index_beta(Prices_df,Benchmark_df,x):
 
 #Jacobian of Beta Constraint function, it actually returns the vector of the Betas (maybe can be useful)
 def index_beta_jacobian(Prices_df,Benchmark_df):
-    Benchmark_df.reset_index
     df_return=np.nan_to_num(np.array(Returns_df(Prices_df)))
-    Benchmark_return=np.array(Returns_df(Benchmark_df['values']))
+    Benchmark_return=np.array(Returns_df(Benchmark_df))
     beta=np.zeros(len(df_return[0]))
     design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
     
@@ -325,8 +323,9 @@ def index_beta_jacobian(Prices_df,Benchmark_df):
 # min_Beta, max_Beta.
 #Max_Vol is now optional
 
-def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,min_Beta, max_Beta,Benchmark_df):
-    
+
+def optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1):
+    print  max_Beta
     #df_return=Returns_df(Prices_df)
     #Ranking the inputed dataset
     Ranked_Zscore_df=MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
@@ -406,17 +405,17 @@ def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,
                  'fun' : lambda x : np.sum(x)-1,
                 'jac' : lambda x : np.ones(len(x))
                 })
-            else:
-                Constraints=({'type': 'ineq',
-                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
-                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
-                {'type': 'ineq',
-                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
-                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
-                {'type' : 'eq', 
-                 'fun' : lambda x : 0.-np.sum(x),
-                'jac' : lambda x : -np.ones(len(x))
-                })                
+#            else:
+#                Constraints=({'type': 'ineq',
+#                'fun' : lambda x : max_Beta-index_beta(Prices_df,Benchmark_df,x),
+#                'jac' : lambda x : -index_beta_jacobian(Prices_df,Benchmark_df)},
+#                {'type': 'ineq',
+#                'fun' : lambda x : index_beta(Prices_df,Benchmark_df,x)-min_Beta,
+#                'jac' : lambda x : index_beta_jacobian(Prices_df,Benchmark_df)},            
+#                {'type' : 'eq', 
+#                 'fun' : lambda x : 0.-np.sum(x),
+#                'jac' : lambda x : -np.ones(len(x))
+#                })                
                 
                 
 #            Constraints=(
@@ -459,7 +458,7 @@ def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,
                  'fun' : lambda x : 0.-np.sum(x),
                 'jac' : lambda x : -np.ones(len(x))
                 })
-          #
+          
         if position== "long":
         #Define minimum value for weights (always 0) and maximum (in range (0,1] )
             bnds=[(0,(Max_Weight_Allowed/100.))]*len(Weights_0)
@@ -476,21 +475,37 @@ def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,
             return -Non_Ranked_Zscore_df
     
         #Define Target Function
-        res=minimize(target_fun, Weights_0, jac = target_fun_derivative,
+        if position != "long" and Constraint_Type=="Beta":
+            beta_vector=index_beta_jacobian(Prices_df,Benchmark_df)
+            A=[-beta_vector,beta_vector]
+            b=[-min_Beta,max_Beta]
+            A_e=[np.ones(len(x))]
+            b_e=0.
+            c=np.ravel(Non_Ranked_Zscore_df)
+            res=linprog(c=-c,A_ub=A,b_ub=b,A_eq=A_e,b_eq=b_e,bounds=bnds)#,options=dict(bland=True, tol=1e-19))
+            
+                        #Extract Weights
+            Weights=res.x
+            print res
+            
+
+        
+        else :
+            res=minimize(target_fun, Weights_0, jac = target_fun_derivative,
                    constraints=Constraints, method="SLSQP",
                    bounds=bnds,
                    options={'disp': True, "maxiter":1000})
         
-        #Extract Weights
-        Weights=res.x
+            #Extract Weights
+            Weights=res.x
             
         # Function to remove the components with unsignificant weights
-        f= lambda x : x if x>10**-6 else 0.0
-        f=np.vectorize(f)
-        Weights=f(Weights)
+            f= lambda x : x if x>10**-6 else 0.0
+            f=np.vectorize(f)
+            Weights=f(Weights)
    
         #Normalise
-        Weights=Weights/np.sum(Weights)
+            Weights=Weights/np.sum(Weights)
         
        
         Composition=Series(Weights,index=Ranked_Zscore_df.index)
@@ -500,6 +515,9 @@ def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,
     return Composition
     
 
+
+
+
                                 #### BACKTEST FUNCTION ##### 
 
 
@@ -507,25 +525,27 @@ def optimal_weights(Prices_df,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,
 # It returns the performance of the index over this period.
 
 #Arguments to be checked when calling the function
-def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,Constraint_Type,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,min_Beta, max_Beta,Benchmark_df):
+
+
+def back_test(Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,Benchmark_df=0,min_Beta=0, max_Beta=1):
       
     # vol_time : new input : number of days used to compute previous volatility
 
     df_return=Returns_df(Prices_df)
 
     # try to find what the starting point is
-    starting_point=len(df_return)-backtest_period*20    
+    starting_point=len(df_return)-t*20    
     
     #set up counter for loop    
     cnt=0
     
-    while (cnt)*freq<=backtest_period*20:
+    while (cnt)*freq<=t*20:
     #set the dataset for backtest
         Prices_df_bt=Prices_df.head(starting_point+freq*cnt)
         Benchmark_df_bt=Benchmark_df.head(starting_point+freq*cnt)
         #Compute Optimal Composition
         #Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position)
-        Weights_bt=optimal_weights(Prices_df_bt,Method,Constraint_Type,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,min_Beta, max_Beta,Benchmark_df)
+        Weights_bt=optimal_weights(Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
     
         #compute returns
         next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
@@ -545,7 +565,7 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,Constraint_T
     
     #end loop
     
-    return_series_date=Series(return_series,index=df_return.tail(backtest_period*20).index)
+    return_series_date=Series(return_series,index=df_return.tail(t*20).index)
     
     #creating base 1
     base_1_backtest=np.ones(len(return_series_date)+1)
@@ -571,7 +591,7 @@ def back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,Constraint_T
         base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
         #print undiluted
      
-    base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(backtest_period*20+1).index)  
+    base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
     
     return base_1_backtest_date
 

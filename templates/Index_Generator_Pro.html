@@ -711,6 +711,7 @@ tooltip: {
                         <option value="Beta_C">Beta</option>
                         <option value="Vol_C">Volatility</option>
                     </select>
+
                     <script type="text/javascript">
                         $(document).ready(function(){
                             $('#drop_cons').select2({
@@ -728,10 +729,7 @@ tooltip: {
                             <p class="form_title">Volatility Cap (in %):</p>
                             <input class="other_input_2"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
                         </div>
-                        <div>
-                            <p class="form_title">Max Weight (in %):</p>
-                            <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
-                        </div>
+                       
                     </div>
                     <div id='input_cons_beta'class="cell">
                         <div>
@@ -764,6 +762,10 @@ tooltip: {
                             }).change();
                         });
                     </script>
+                    <div style="padding-left: 10px">
+                            <p class="form_title">Max Weight (in %):</p>
+                            <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
+                        </div>
                 </div>
             </div>
             <div class="row">

@@ -65,6 +65,7 @@ global backtest_period
 
 # Benchmark data: Nikkei 225
 NKY225_df=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")
+input_benchmark=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")['NKY Index']
 NKY225_df.columns=['Date','Index']
 #NKY225_df.index.name=None
 NKY225_a_df=NKY225_df.set_index('Date')
@@ -355,6 +356,7 @@ def index_pro():
                 return flask.render_template('Index_Generator_Pro.html')
             Method=flask.request.args.get('method')
             Constraint_type=flask.request.args.get('method_type')
+            print Constraint_type
         else:
             strat="L/S Momentum"
             position='ls'
@@ -390,7 +392,7 @@ def index_pro():
                 name= str(strat)+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
                 print name 
             else:
-                Max_Weight_Allowed=0
+                Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
                 Max_Vol=0
                 Max_Beta=float(flask.request.args.get('max_beta'))
                 Min_Beta=float(flask.request.args.get('min_beta'))
@@ -422,7 +424,7 @@ def index_pro():
         print NKY225_df
         freq=int(flask.request.args.get('rebalance_len'))
         #compute the composition of the selected index as of now
-        current_composition=optimal_weights(Prices_df,Method,Constraint_type,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Min_Beta,Max_Beta,NKY225_df)
+        current_composition=optimal_weights(Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta)
         #convert the weights into unit percentages
         current_composition=current_composition[current_composition<>0]*100
         
@@ -440,7 +442,7 @@ def index_pro():
         
         #Compute the backtest of the strategy
                         
-        back_tested = back_test(Prices_df,Max_Vol,Max_Weight_Allowed,MktCap_df,Method,Constraint_type,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Min_Beta, Max_Beta,NKY225_df)
+        back_tested = back_test(Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta)
         description_df=OutputStats(back_tested,current_composition)
         #Convert the backtest data to json
         back_tested_json = dataToJson(back_tested)
