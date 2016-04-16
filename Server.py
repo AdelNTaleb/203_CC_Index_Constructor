@@ -11,30 +11,6 @@ import datetime
 from pandas import read_csv
 from functools import wraps
 
-#Adel I modified your function so that we can get the correct format
-def get_benchmark(tick,y1,m1,d1,y2,m2,d2):
-    startdate = datetime.date(y1, m1, d1)
-    enddate = datetime.date(y2, m2, d2)
-    ticker= tick
-    benchmark_df= read_csv(finance.fetch_historical_yahoo(ticker, startdate, enddate),index_col='Date')
-    benchmark_Index=benchmark_df['Close']
-    benchmark_Index=benchmark_Index.to_frame()
-    benchmark_Index.columns=['values']
-    benchmark_Index=benchmark_Index.reset_index()
-    benchmark_Index["New Date"]=benchmark_Index["Date"].map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').strftime('%d/%m/%y'))
-    benchmark_Index["Date"]=benchmark_Index["New Date"].map(lambda x: datetime.datetime.strptime(x, '%d/%m/%y'))
-    benchmark_Index=benchmark_Index.iloc[::-1]
-    benchmark_Index=benchmark_Index.drop(["New Date"],1)
-    benchmark_Index=benchmark_Index.set_index(["Date"])
-    benchmark_Index=benchmark_Index.divide(benchmark_Index.ix[0])
-    return benchmark_Index
-
-
-# Get benchmark
-#SP100=get_benchmark("^OEX",2015,8,14,2016,2,2)
-#SP500=get_benchmark("^GSPC",2015,8,14,2016,2,2)
-#NKY225=get_benchmark("^N225",2013,5,28,2016,3,01)
-
 from pandas import *
 
 # Import Python Library
@@ -54,6 +30,9 @@ Prices_df=read_csv('NKY225 - Prices.csv',sep=';',decimal=",")
 Prices_df=Prices_df.set_index('Date')
 #Prices_df=Prices_df.astype(float)
 Prices_df.index.name=None
+
+#Prices_df=Prices_df.dropna(axis=1,how='any')
+
 MktCap_df=read_csv('NKY225 - MktCap.csv',sep=';',decimal=",")
 MktCap_df=MktCap_df.set_index('Date')
 #MktCap_df=MktCap_df.astype(float)
@@ -64,12 +43,16 @@ MktCap_df.index.name=None
 global backtest_period
 
 # Benchmark data: Nikkei 225
-NKY225_df=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")
-input_benchmark=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")['NKY Index']
-NKY225_df.columns=['Date','Index']
-#NKY225_df.index.name=None
-NKY225_a_df=NKY225_df.set_index('Date')
 
+
+# Benchmark data: Nikkei 225
+NKY225_df=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")
+
+NKY225_a_df=NKY225_df
+NKY225_df.columns=['Date','values']
+NKY225_df=NKY225_df.set_index('Date')
+
+Benchmark_df=NKY225_df
 
 # Libor : risk free rate - try to find a way to get it online?
 ThreeM_USD_libor = 0.00619
@@ -199,6 +182,7 @@ def index():
         underlying="Nikkei 225"
         #get the benchmark
         if underlying=="Nikkei 225":
+            
             
             NKY225_df=NKY225_a_df.tail(backtest_period*20+1)
             NKY225_df['values']=NKY225_df['Index']/NKY225_df['Index'][0]
@@ -404,8 +388,6 @@ def index_pro():
                 name= str(strat)+" "+str(Method)+" "+"("+"Beta:"+" "+str(Min_Beta)+"-"+str(Max_Beta)+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
                 
 
-
-
         vol_cap_imposed=flask.request.args.get('vol_capped')
         if (flask.request.args.get('vol_frame') is None):
             return flask.render_template('Index_Generator_Pro.html')
@@ -420,15 +402,13 @@ def index_pro():
         #get the benchmark
         if underlying=="Nikkei 225":
             
-            NKY225_df=NKY225_a_df.tail(backtest_period*20+1)
-            NKY225_df['values']=NKY225_df['Index']/NKY225_df['Index'][0]
-            del NKY225_df['Index']
+            NKY225_a_df['values']=NKY225_a_df['values']/NKY225_a_df['values'][0]
             
-            benchmark=NKY225_df 
+            benchmark=NKY225_a_df 
         
         freq=int(flask.request.args.get('rebalance_len'))
         #compute the composition of the selected index as of now
-        current_composition=optimal_weights(strategy,Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta)
+        current_composition=optimal_weights(strategy,Prices_df,Benchmark_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1)
         #convert the weights into unit percentages
         current_composition=current_composition[current_composition<>0]*100
         
@@ -445,13 +425,11 @@ def index_pro():
         current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
         
         #Compute the backtest of the strategy
-                        
-        back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta)
+                      
+        back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Benchmark_df,Max_Vol,Min_Beta, Max_Beta)
         description_df=OutputStats(back_tested,current_composition)
         #Convert the backtest data to json
         back_tested_json = dataToJson(back_tested)
-
-
 
         #Create a description of the backtest data
         

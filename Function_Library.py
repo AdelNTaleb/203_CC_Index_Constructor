@@ -35,8 +35,11 @@ def plotrf(back_tested_df,libor):
 # # Compute returns from a dataframe of prices.
 
 def Returns_df(Prices_df):
+    
     df_return=Prices_df/Prices_df.shift(1)-1
-    df_return=df_return.ix[1:]
+    #df_return=df_return.ix[1:]
+    #df_return=df_return.dropna()
+    
     return df_return
 
 def histo_func(df):
@@ -153,7 +156,7 @@ def MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
 def Beta_Strategy_Scores(Prices_df,Benchmark_df):
 
     # Compute the beta
-    Betas = index_beta_jacobian(Prices_df,Benchmark_df)
+    Betas = index_beta_jacobian2(Prices_df,Benchmark_df)
 
     # transform into dataframe
     Betas_df=Prices_df.head(1)
@@ -209,10 +212,15 @@ def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
         Beta_Long_PTF=np.dot(Long_PTF_df['Betas'],Long_PTF_df['Weights'])
         Beta_Short_PTF=np.dot(Short_PTF_df['Betas'],Short_PTF_df['Weights'])
 
+        print len(Beta_Long_PTF)
+        print len(Beta_Short_PTF)
+
         #print Beta_Long_PTF
         #print Beta_Short_PTF
 
         # Compute the leverage and deleverage factors
+        print ' '
+        print type(Benchmark_df)
         Lvg_Long=1/Beta_Long_PTF
         DeLvg_Short=1/Beta_Short_PTF
 
@@ -391,16 +399,48 @@ def index_beta(Prices_df,Benchmark_df,x):
 
 #Jacobian of Beta Constraint function, it actually returns the vector of the Betas (maybe can be useful)
 def index_beta_jacobian(Prices_df,Benchmark_df):
+    
+    
+
     df_return=np.nan_to_num(np.array(Returns_df(Prices_df)))
     Benchmark_return=np.array(Returns_df(Benchmark_df))
-    beta=np.zeros(len(df_return[0]))
-    design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
     
+
+    beta=np.zeros(len(df_return[0]))
+    #design_matrix=np.transpose(np.vstack((np.ones(200),np.ones(200))))
+    design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
+
+
     for i in range(len(df_return[0])):
         beta[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[1]
     
     return beta
     
+def index_beta_jacobian2(Prices_df,Benchmark_df):
+    
+    
+    Benchmark_return=np.array(Returns_df(Benchmark_df))
+        
+    df_return=np.array(Returns_df(Prices_df))
+
+    print 'length2'
+    print len(Benchmark_return)
+    print len(df_return)
+    
+
+    beta=np.zeros(len(df_return[0]))
+    #design_matrix=np.transpose(np.vstack((np.ones(200),np.ones(200))))
+    
+    #print len(Benchmark_return)
+    #print len(np.ones(df_return[:,0]))
+
+    design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
+
+
+    for i in range(len(df_return[0])):
+        beta[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[1]
+    
+    return beta
 
     
 
@@ -425,10 +465,19 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
     #Composition
 
     if Strategy=='reverse_beta':
-        
-        Composition=Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df)
+
+        Prices_df_252=Prices_df.tail(252)
+        Benchmark_df_252=Benchmark_df.tail(252)
+
+        Composition=Weights_for_BettingAgainstBeta(Prices_df_252,Benchmark_df_252)
 
     else:
+
+        # From now on, the Benchmark_df is a dataframe
+
+        Benchmark2_df=Benchmark_df.reset_index()
+        del Benchmark2_df['Date']
+        Benchmark_df=Benchmark2_df['values']
 
         if Method=="Ranking":   
         #if position if long then nothing changes 
@@ -624,7 +673,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
 #Arguments to be checked when calling the function
 
 
-def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,Benchmark_df=0,min_Beta=0, max_Beta=1):
+def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Benchmark_df,Max_Vol,min_Beta=0, max_Beta=1):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -638,15 +687,24 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCa
     
     while (cnt)*freq<=t*20:
     #set the dataset for backtest
+        
         Prices_df_bt=Prices_df.head(starting_point+freq*cnt)
+        
         Benchmark_df_bt=Benchmark_df.head(starting_point+freq*cnt)
+        
         #Compute Optimal Composition
-        #Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position)
+        
+        #Prices_df_bt_2=Prices_df_bt.tail(252)
+        #Benchmark_df_bt_2=Benchmark_df_bt.tail(252)
+        
         Weights_bt=optimal_weights(Strategy,Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
-    
+
+
+
         #compute returns
         next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
         next_20_returns=next_returns.head(freq)
+        
         optimum_return=np.dot(next_20_returns,Weights_bt)
         
         #create return series
