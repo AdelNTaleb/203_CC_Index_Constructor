@@ -424,7 +424,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
     nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
     #Composition
 
-    if Strategy=='carry':
+    if Strategy=='reverse_beta':
         
         Composition=Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df)
 

@@ -355,12 +355,13 @@ def index_pro():
             Method=flask.request.args.get('method')
             Constraint_type=flask.request.args.get('method_type')
             
-        elif strategy=='carry':
-            strat="L/S Momentum"
+        elif strategy=='reverse_beta':
+            strat="L/S Reverse Beta"
             position='ls'
             Method="Ranking"
             Constraint_type='None'
-
+        elif strategy=='carry':
+           return flask.render_template('Index_Generator_Pro.html')
         else:
             strat="L/S Momentum"
             position='ls'

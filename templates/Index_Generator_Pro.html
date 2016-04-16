@@ -618,11 +618,15 @@ tooltip: {
                           <option value="momentum_long_short">Long/Short Momentum</option>
 
                       </optgroup>
+                      <optgroup label="Beta">
+                          <option value="reverse_beta">Long/Short Reverse Beta</option>
+
+                      </optgroup>
                       <optgroup label="Carry">
                           <option value="carry">Carry</option>
 
                       </optgroup>
-
+                      
                   </select>
                   <script type="text/javascript">
                     $(document).ready(function(){
@@ -637,6 +641,11 @@ tooltip: {
                                     $(".input").not(".momentum").hide();
                                     $("#constrained").hide();
                                     $("#input1").show();
+                                }
+                                else if($(this).attr("value")=="reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").hide();
+        
                                 }
                                 else if($(this).attr("value")=="carry"){
                                     $(".input").not(".carry").hide();
