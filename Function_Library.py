@@ -195,7 +195,7 @@ def combine_strat_test(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,Benchmar
     ranked_global_score=DataFrame(ranked_global_score['z_score'])               
     return ranked_global_score
 
-
+# Strategy modified by Freddy and Adel - not original from paper
 def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
 
 # According to Betas, construct portfolio
@@ -271,6 +271,7 @@ def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
         return Final_Portfolio_Weights
         
         
+# Orignal Strategy
 def Weights_for_BettingAgainstBeta2(Prices_df,Benchmark_df):
 
 # According to Betas, construct portfolio
@@ -1020,30 +1021,34 @@ def OutputStats(back_tested,current_composition):
 
     return Stats_Output_df
     
-    
+
+
+
+# --------    
 #%%
 
-#used for test...
-Benchmark_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Benchmark.csv',sep=';',decimal=",")["Index"] #to test    
-Prices_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Prices.csv',sep=';',decimal=",")#.drop("Date",axis=1) #to test    
-Prices_df=Prices_df.set_index('Date')
-x=np.ones(225)/225
+
+#used for test by Alessandro
+#Benchmark_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Benchmark.csv',sep=';',decimal=",")["Index"] #to test    
+#Prices_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Prices.csv',sep=';',decimal=",")#.drop("Date",axis=1) #to test    
+#Prices_df=Prices_df.set_index('Date')
+#x=np.ones(225)/225
 #...
 
 #for testing...
-Max_Weight_Allowed=100.
-MktCap_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - MktCap.csv',sep=';',decimal=",")
-Nb_Month_1=3
-Nb_Month_2=6
-ThreeM_USD_libor=0.
-position="fuck"
-min_Beta=0.7
-max_Beta=4.2
-Method = "Constrained"
+#Max_Weight_Allowed=100.
+#MktCap_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - MktCap.csv',sep=';',decimal=",")
+#Nb_Month_1=3
+#Nb_Month_2=6
+#ThreeM_USD_libor=0.
+#position="fuck"
+#min_Beta=0.7
+#max_Beta=4.2
+#Method = "Constrained"
 #Method= "Ranking"
-Constraint_Type = "Beta"
-Max_Vol=15.
-Strategy='Reverse Beta'
+#Constraint_Type = "Beta"
+#Max_Vol=15.
+#Strategy='Reverse Beta'
 
 #
 ##test=optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
