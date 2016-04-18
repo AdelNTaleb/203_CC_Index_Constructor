@@ -269,6 +269,79 @@ def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
         Final_Portfolio_Weights=Final_Portfolio['Weights']
 
         return Final_Portfolio_Weights
+        
+        
+def Weights_for_BettingAgainstBeta2(Prices_df,Benchmark_df):
+
+# According to Betas, construct portfolio
+
+        # Construct long portfolio from stocks with beta above Median
+    Betas_df=Beta_Strategy_Scores(Prices_df,Benchmark_df)
+#        Median=Betas_df.median
+        
+    Betas_df['Rank']=range(1,len(Betas_df)+1,1)
+    Z_bar=np.sum(Betas_df["Rank"])/len(Betas_df)
+
+        #construct rank
+        # Rank from 1 to 113
+ 
+#        Long_PTF_df['Rank']=range(1,len(Long_PTF_df)+1,1)
+#        Short_PTF_df['Rank']=range(len(Short_PTF_df),0,-1)
+
+        #Compute Z-Hat
+        #Z_bar_Long=np.dot(np.ones(len(Long_PTF_df)),Long_PTF_df['Rank'])/len(Long_PTF_df)
+#        Z_bar_Long=np.average(Long_PTF_df['Rank'])
+#        Z_bar_Short=np.average(Short_PTF_df['Rank'])
+
+        # Compute Const_K
+    Const_K=2/(np.dot(np.ones(len(Betas_df)),abs(Betas_df['Rank']-Z_bar)))
+        
+        # Add the weights colums to our portfolio
+    Betas_df["Short Weights"]=Betas_df['Rank'].map(lambda x: Const_K*np.minimum(x-Z_bar,0))        
+    Betas_df['Long Weights']=Betas_df['Rank'].map(lambda x: Const_K*np.maximum(x-Z_bar,0))
+        
+        # XXX REMOVED THIS PART TO ALLOW FOR MATRIX PRODUCT IN BACK TEST FUNCTION
+        # Drop the non-significant weights
+        #Signifiance_Threshold=1*10**(-10)
+        #Long_PTF_df=Long_PTF_df[Long_PTF_df['Weights']>Signifiance_Threshold]
+        #Short_PTF_df=Short_PTF_df[Short_PTF_df['Weights']>Signifiance_Threshold]
+
+        #Compute the betas of the long and short portfolios
+    Beta_Long_PTF=np.dot(Betas_df['Betas'],Betas_df['Long Weights'])
+    Beta_Short_PTF=-np.dot(Betas_df['Betas'],Betas_df['Short Weights'])
+
+        #print Beta_Long_PTF
+        #print Beta_Short_PTF
+
+        # Compute the leverage and deleverage factors
+    Lvg_Long=1/Beta_Long_PTF
+    DeLvg_Short=1/Beta_Short_PTF
+
+
+
+        # Check if we got beta of 1 and -1 for long and short portfolio
+        #print np.dot(np.dot(Long_PTF_df['Weights'],Beta_Long_PTF),Lvg_Long).sum()
+        #print np.dot(np.dot(Short_PTF_df['Weights'],Beta_Short_PTF),DeLvg_Short).sum()
+
+        # Final Composition 
+        # Apply leverage and deleverage factors to long and short portfolio weights
+    Betas_df['Long Weights']=Betas_df['Long Weights']*Lvg_Long
+    Betas_df['Short Weights']=Betas_df['Short Weights']*DeLvg_Short
+
+        # Compose the final portoflio
+    Betas_df['Final Weights']=Betas_df['Short Weights']+Betas_df['Long Weights']
+#        Final_Portfolio=DataFrame
+#        
+#        # Unscale to get weights = 1
+#        Final_Portfolio['Weights']=Betas_df['Final Weights']
+        #Final_Portfolio['Weights']=Final_Portfolio['Weights']/Final_Portfolio['Weights'].sum()
+
+        #print Final_Portfolio['Weights'].sum()
+        #print np.dot(Final_Portfolio['Betas'], Final_Portfolio['Weights'])
+
+    Final_Portfolio_Weights=Betas_df['Final Weights']/np.sum(Betas_df['Final Weights'])
+
+    return Final_Portfolio_Weights
 
 
 ### CARRY STRATEGY
@@ -782,7 +855,37 @@ def Graham(Prices_df,EPS_df,MktCap_df,Yield=3.8,sensitivity=0.2):
         if np.abs(score[s])<sensitivity:
             score[s]=0.
     return score
-        
+ 
+#Inverse Vol Strategy
+
+def stocks_vol(Prices_df):
+    
+    stocks=list(Prices_df.columns)
+    df_return=Returns_df(Prices_df)
+   
+    #Compute CovMatrix
+    Cov_Matrix=np.cov(df_return, rowvar=0)
+    Cov_Matrix=np.nan_to_num(Cov_Matrix)
+    
+    Var_vec=np.diag(Cov_Matrix)*252
+    Vol_Score_vec=Var_vec**0.5*-100.
+    
+    
+    
+    Vol_Score_df=DataFrame(Vol_Score_vec,index=stocks)
+    Vol_Score_df.columns=["Vol Score"]
+    #In order to ensure that stocks with no data available (ergo 0 vol) are not selected,
+    # their score is set to -1000
+    Vol_Score_df["Vol Score"]=Vol_Score_df["Vol Score"].apply(lambda x: x if x!=0 else -1000.)
+    
+    return Vol_Score_df
+    
+def stocks_vol_ranking(Prices_df):
+    Vol_Score_df=stocks_vol(Prices_df)
+    ranked_Vol_Score_df=Vol_Score_df.sort(['Vol Score'],ascending=[False])
+    
+    return ranked_Vol_Score_df
+       
 
 
  
@@ -916,3 +1019,47 @@ def OutputStats(back_tested,current_composition):
     Stats_Output_df['Statistics']['Positive Volatility (%)']=UpsideVol(back_tested_returns_df)*100
 
     return Stats_Output_df
+    
+    
+#%%
+
+#used for test...
+Benchmark_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Benchmark.csv',sep=';',decimal=",")["Index"] #to test    
+Prices_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - Prices.csv',sep=';',decimal=",")#.drop("Date",axis=1) #to test    
+Prices_df=Prices_df.set_index('Date')
+x=np.ones(225)/225
+#...
+
+#for testing...
+Max_Weight_Allowed=100.
+MktCap_df=read_csv('C:/Users/ALESSANDRO/Documents/ALEX/Lavoro/Leonteq CCProject/203_CC_Index_Constructor-master/203_CC_Index_Constructor-master/NKY225 - MktCap.csv',sep=';',decimal=",")
+Nb_Month_1=3
+Nb_Month_2=6
+ThreeM_USD_libor=0.
+position="fuck"
+min_Beta=0.7
+max_Beta=4.2
+Method = "Constrained"
+#Method= "Ranking"
+Constraint_Type = "Beta"
+Max_Vol=15.
+Strategy='Reverse Beta'
+
+#
+##test=optimal_weights(Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
+##beta_test=index_beta(Prices_df,Benchmark_df,test)    
+#
+##Test
+#t=6
+#freq=20
+#vol_cap=2.
+#vol_time=20
+#
+#import matplotlib.pyplot as plt
+##backtest=back_test(Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol,Benchmark_df,min_Beta, max_Beta)
+#Benchmark_test=Benchmark_df.tail(t*20+1)
+#Benchmark_test=Benchmark_test/np.float(Benchmark_test.head(1))
+#plt.plot(backtest)
+#plt.plot(Benchmark_test)
+#plt.show
+##...     
