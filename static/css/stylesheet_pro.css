@@ -1,4 +1,23 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
 
+div.wrap {
+    float: left;
+    width: 50%;
+}
+
+fieldset.chart_return {
+    overflow: hidden;
+}
+fieldset.chart_volatility {
+    overflow: hidden;
+}
+.hide_over{
+    overflow: hidden;
+    display: block  
+}
 .test path
 { 
     stroke: black;
@@ -562,6 +581,13 @@ box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
   cursor: pointer;
   color:#58534d;
 }
+#drop5{
+  background-image: url(../static/image/bg_custom_selectbox.png);
+  width: 138px;
+  height: 20px;
+  cursor: pointer;
+  color:#58534d;
+}
 #input2{
   display: none;
   margin-left: 0px;
@@ -574,6 +600,10 @@ box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
   color:#58534d;
 }
 #input3{
+  display: none;
+  margin-left: 0px;
+}
+#input5{
   display: none;
   margin-left: 0px;
 }

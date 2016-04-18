@@ -1,19 +1,17 @@
-                                #### Import function, data and hardcoded input #### 
+
+
+ #### Import function, data and hardcoded input #### 
 
 import flask
 import time
-#test modified by freddy
-
+import re
 from flask import flash,session,render_template, redirect, request,Response,send_file
 import time
 import matplotlib.finance as finance
 import datetime
 from pandas import read_csv
 from functools import wraps
-
 from pandas import *
-
-# Import Python Library
 import json
 from urllib2 import urlopen  # python 2 syntax
 
@@ -24,35 +22,8 @@ from Function_Library import *
 global output
 
 
-# Import data -  New Import from CSV
-
-Prices_df=read_csv('NKY225 - Prices.csv',sep=';',decimal=",")
-Prices_df=Prices_df.set_index('Date')
-#Prices_df=Prices_df.astype(float)
-Prices_df.index.name=None
-
-#Prices_df=Prices_df.dropna(axis=1,how='any')
-
-MktCap_df=read_csv('NKY225 - MktCap.csv',sep=';',decimal=",")
-MktCap_df=MktCap_df.set_index('Date')
-#MktCap_df=MktCap_df.astype(float)
-MktCap_df.index.name=None
-
-
 # Correspond to the backtest period.
 global backtest_period
-
-# Benchmark data: Nikkei 225
-
-
-# Benchmark data: Nikkei 225
-NKY225_df=read_csv('NKY225 Benchmark.csv',sep=';',decimal=",")
-
-NKY225_a_df=NKY225_df
-NKY225_df.columns=['Date','values']
-NKY225_df=NKY225_df.set_index('Date')
-
-Benchmark_df=NKY225_df
 
 # Libor : risk free rate - try to find a way to get it online?
 ThreeM_USD_libor = 0.00619
@@ -69,7 +40,15 @@ global Nb_Month_2
 #initiate database
 global Database
 Database=DataFrame(columns=('Date','Name'))
+#20 days windows vol Variable
+global basket_days_20_vol 
+basket_days_20_vol=np.zeros(1)
 
+#20 rolling vol Variable
+
+
+global dilution
+dilution=np.zeros(1)
 # Constraint function : in our case, volatility is the constraint.
 
 
@@ -183,7 +162,6 @@ def index():
         #get the benchmark
         if underlying=="Nikkei 225":
             
-            
             NKY225_df=NKY225_a_df.tail(backtest_period*20+1)
             NKY225_df['values']=NKY225_df['Index']/NKY225_df['Index'][0]
             del NKY225_df['Index']
@@ -231,7 +209,7 @@ def index():
         global output
         output=back_tested_graph
         
-        
+
         ###
         data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
         
@@ -327,213 +305,301 @@ def index():
 @login_required
 def index_pro():
     time_start = time.clock()
-    strategy=flask.request.args.get('strategy')
-    if (strategy is None):
+    Parent_Index=flask.request.args.get('index')
+    print Parent_Index
+    if (Parent_Index is None):
         return flask.render_template('Index_Generator_Pro.html')
     else:
-        if strategy=='momentum_long_only':
-            strat="LO Momentum"
-            position='long'
-            if (flask.request.args.get('method') is None):
-                return flask.render_template('Index_Generator_Pro.html')
-            Method=flask.request.args.get('method')
-            Constraint_type=flask.request.args.get('method_type')
-            
-        elif strategy=='reverse_beta':
-            strat="L/S Reverse Beta"
-            position='ls'
-            Method="Ranking"
-            Constraint_type='None'
-        elif strategy=='carry':
-           return flask.render_template('Index_Generator_Pro.html')
-        else:
-            strat="L/S Momentum"
-            position='ls'
-            Method="Ranking"
-            Constraint_type='None'
+        Parent_Index=str(flask.request.args.get('index'))
+        Prices_df=read_csv('%s - Prices.csv' %Parent_Index,sep=';',decimal=",")
+        Prices_df=Prices_df.set_index('Date')
+        Prices_df.index.name=None
+        TradedVolume_df=read_csv('%s - Volume.csv' %Parent_Index,sep=';',decimal=",")
+        TradedVolume_df=TradedVolume_df.set_index('Date')
+        TradedVolume_df.index.name=None
+        Prices_df=Prices_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)
+        TradedVolume_df=TradedVolume_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)      
+        Dollar_TV_df=Prices_df.multiply(TradedVolume_df)
+        Dollar_TV_df=DataFrame(Dollar_TV_df.mean())
+        Threshold=1500.0
+        Dollar_TV_df=Dollar_TV_df[Dollar_TV_df>Threshold]
+        Dollar_TV_df=Dollar_TV_df.dropna()
+        Dollar_TV_df=Dollar_TV_df.transpose()
+        StocksLeft_list=list(Dollar_TV_df.columns.values)
+        Prices_df=Prices_df.transpose()
+        Prices_df=Prices_df.reset_index()
+        Prices_df = Prices_df[Prices_df['index'].isin(StocksLeft_list)].set_index('index')
+        Prices_df=Prices_df.transpose()
+        MktCap_df=read_csv('%s - MktCap.csv' %Parent_Index,sep=';',decimal=",")
+        MktCap_df=MktCap_df.transpose()
+        MktCap_df=MktCap_df.reset_index()
+        MktCap_df = MktCap_df[MktCap_df['index'].isin(StocksLeft_list)].set_index('index')
+        MktCap_df=MktCap_df.transpose()
         
+        # Benchmark data: Nikkei 225
+        Benchmark_df=read_csv('%s - Benchmark.csv' %Parent_Index,sep=';',decimal=",")
+        print Benchmark_df
+        
+        input_benchmark=Benchmark_df['Index']
 
-        if (flask.request.args.get('NbMonth1') is None):
+    ##get the benchmark##
+    #backtest lengh needed for the benchmark
+    backtest_period=int(flask.request.args.get('backtest_len'))
+    
+    Benchmark_Graph_df=Benchmark_df
+    Benchmark_Graph_df=Benchmark_Graph_df.tail(backtest_period*20+1)
+    Benchmark_Graph_df=Benchmark_Graph_df.reset_index()
+    del Benchmark_Graph_df['index']
+    Benchmark_Graph_df['values']=Benchmark_Graph_df['Index']/Benchmark_Graph_df['Index'][0]
+    del Benchmark_Graph_df['Index']
+    benchmark=Benchmark_Graph_df
+    print 'first print of benchmark'
+
+    print benchmark
+
+    value_strat=flask.request.args.get('strategy')
+    if (value_strat is None):
+        return flask.render_template('Index_Generator_Pro.html') 
+    if value_strat=='momentum_long_only':
+        strat_name="LO Momentum"
+        strategy='momentum'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
             return flask.render_template('Index_Generator_Pro.html')
-           
-        Nb_Month_1 = int(flask.request.args.get('NbMonth1'))
-        Nb_Month_2 = int(flask.request.args.get('NbMonth2'))
-        #return the homepage if the method is blank
+        Constraint_type=flask.request.args.get('method_type')
+ 
+    if value_strat=='multi_fact':
+        strat_name="LO Multi Factorial"
+        strategy='multi_fact'
+        position='long'
+        strat_list_unparse=str(flask.request.args.getlist('strategy_combination'))
+        strat_list_parsed=re.findall("'([^']*)'", strat_list_unparse)
+        strat_list=tuple(strat_list_parsed)
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
 
-        backtest_period=int(flask.request.args.get('backtest_len'))
+    if value_strat=='reverse_beta':
+        strat_name="L/S Reverse Beta"
+        strategy='reverse_beta'
+        strat_list=("none","none", "none")
+        position='ls'
+        Method="Ranking"
+        Constraint_type='None'
+
+    if value_strat=='carry':
+        return flask.render_template('Index_Generator_Pro.html')
+
+    if value_strat=='momentum_long_short':
+        strat_name="L/S Momentum"
+        strat_list=("none","none", "none")
+        position='ls'
+        strategy='momentum'
+        Method="Ranking"
+        Constraint_type='None'
         
-         
-        #the following lines prevent the code from bugging if the Ranking method is selected
-        global name
-        if Method=="Ranking":
-            Max_Weight_Allowed=0
-            Max_Vol=0
+
+    if (flask.request.args.get('NbMonth1') is None):
+        return flask.render_template('Index_Generator_Pro.html')
+       
+    Nb_Month_1 = int(flask.request.args.get('NbMonth1'))
+    Nb_Month_2 = int(flask.request.args.get('NbMonth2'))
+    
+ ##identify the constraints method
+    global name
+    if Method=="Ranking":
+        Max_Weight_Allowed=0
+        Max_Vol=0
+        Max_Beta=0
+        Min_Beta=0
+        name=str(strat_name)+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"  
+          
+    else:
+        if Constraint_type=="Vol_C":
             Max_Beta=0
             Min_Beta=0
-            name=str(strat)+" "+str(Method)+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"  
-              
-        else:
-            if Constraint_type=="Vol_C":
-                Max_Beta=0
-                Min_Beta=0
-                Max_Vol=float(flask.request.args.get('vol_cap'))
-                Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
-                name= str(strat)+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                
-            else:
-                Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
-                Max_Vol=0
-                Max_Beta=float(flask.request.args.get('max_beta'))
-                Min_Beta=float(flask.request.args.get('min_beta'))
-                name= str(strat)+" "+str(Method)+" "+"("+"Beta:"+" "+str(Min_Beta)+"-"+str(Max_Beta)+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
-                
-
-        vol_cap_imposed=flask.request.args.get('vol_capped')
-        if (flask.request.args.get('vol_frame') is None):
-            return flask.render_template('Index_Generator_Pro.html')
-
-        if vol_cap_imposed=="vol_cap_yes":
-            vol_cap = (float(flask.request.args.get('vol_cap_daily')))/100
-            vol_frame= int(flask.request.args.get('vol_frame'))
-        else:
-            vol_cap=1
-            vol_frame=20
-        underlying="Nikkei 225"
-        #get the benchmark
-        if underlying=="Nikkei 225":
+            Max_Vol=float(flask.request.args.get('vol_cap'))
+            Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
+            name= str(strat_name)+" "+str(Method)+" "+"("+"Vol:"+" "+str(Max_Vol)+"%"+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
             
-            NKY225_a_df['values']=NKY225_a_df['values']/NKY225_a_df['values'][0]
+        else:
+            Max_Weight_Allowed=float(flask.request.args.get('max_weight'))
+            Max_Vol=0
+            Max_Beta=float(flask.request.args.get('max_beta'))
+            Min_Beta=float(flask.request.args.get('min_beta'))
+            name= str(strat_name)+" "+str(Method)+" "+"("+"Beta:"+" "+str(Min_Beta)+"-"+str(Max_Beta)+")"+" "+str(Nb_Month_1)+"-"+str(Nb_Month_2)+" "+"Months"+" "+"Index"
             
-            benchmark=NKY225_a_df 
-        
-        freq=int(flask.request.args.get('rebalance_len'))
-        #compute the composition of the selected index as of now
-        current_composition=optimal_weights(strategy,Prices_df,Benchmark_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1)
-        #convert the weights into unit percentages
-        current_composition=current_composition[current_composition<>0]*100
-        
 
-        #Convert current composition data to json --> needed as the dataToJson doesn't output the right format for the graphs
-        current_composition_df=current_composition.to_frame()
-        current_composition_df.columns=["Weights (%)"]
-        current_composition_json=current_composition_df.to_json(date_format='iso',orient='split')
-        current_composition_temp=json.loads(current_composition_json)
 
-        #Convert current composition data to JSON for the pie chart
-        current_composition_pie_chart_json=json.dumps([{"label": date, "value": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
-        #Convert current composition data to JSON for the bar chart
-        current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
-        
-        #Compute the backtest of the strategy
-                      
-        back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Benchmark_df,Max_Vol,Min_Beta, Max_Beta)
-        description_df=OutputStats(back_tested,current_composition)
-        #Convert the backtest data to json
-        back_tested_json = dataToJson(back_tested)
+##Vol Cap Part
+    vol_cap_imposed=flask.request.args.get('vol_capped')
+    if (flask.request.args.get('vol_frame') is None):
+        return flask.render_template('Index_Generator_Pro.html')
 
-        #Create a description of the backtest data
-        
-        back_tested_df=back_tested.to_frame()
-        back_tested_graph=back_tested_df.reset_index()
-        back_tested_graph.columns=["date",name]
-        
-        
-        
-        #bidouille
-        back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
-        global output
-        output=back_tested_graph
-        
-        
-        ###
-        data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
-        
-        current_composition_graph_df=current_composition_df.reset_index()
-        current_composition_graph_df.columns=["tick","weights"]
-        data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])
-        back_tested_df_return=Returns_df(back_tested_df)
-        
+    if vol_cap_imposed=="vol_cap_yes":
+        vol_cap = (float(flask.request.args.get('vol_cap_daily')))/100
+        vol_frame= int(flask.request.args.get('vol_frame'))
+    else:
+        vol_cap=1
+        vol_frame=20
 
-        description=back_tested_df_return.describe()
-        description.columns=["Description"]
-
-        back_tested_df_return_js=back_tested_df_return.reset_index()
-       
-        back_tested_df_return_js.columns=['date','returns']
-        back_tested_df_return_js["New Date"]=back_tested_df_return_js["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
-        back_tested_df_return_json=json.dumps([[date, returns] for date, returns in zip(back_tested_df_return_js['New Date'], back_tested_df_return_js['returns'])])
-        #misceleanous data for the web page
-
-        #backtest_date=t
-        pricing_day= time.strftime("%d")
-        pricing_month= time.strftime("%B")
-        pricing_year= time.strftime("%Y")
-        pricing_hour= time.strftime("%X")
     
-            
-        #this is complete tweaking, apparently yahoo is missing some data, so I tweaked the dataset so that we have the same data (ideal: use a merge so that we only select the same data in both dataset)
+
+                                    ##compute the composition of the selected index as of now##
+
+    current_composition=optimal_weights(strategy,Prices_df,input_benchmark,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,Min_Beta,Max_Beta,strat_list)
+    #convert the weights into unit percentages
+    current_composition=current_composition[current_composition<>0]*100
+    #Convert current composition data to json --> needed as the dataToJson doesn't output the right format for the graphs
+    current_composition_df=current_composition.to_frame()
+    current_composition_df.columns=["Weights (%)"]
+    current_composition_json=current_composition_df.to_json(date_format='iso',orient='split')
+    current_composition_temp=json.loads(current_composition_json)
+    #Convert current composition data to JSON for the pie chart
+    current_composition_pie_chart_json=json.dumps([{"label": date, "value": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
+    #Convert current composition data to JSON for the bar chart
+    current_composition_bar_chart_json=json.dumps([{"x": date, "y": val} for date, val in zip(current_composition_temp['index'], current_composition_temp['data'])])
+    
+                                            ##Compute the backtest of the strategy##
+    
+    #get arguments
+    freq=int(flask.request.args.get('rebalance_len'))
+    back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list)
+    description_df=OutputStats(back_tested,current_composition)
+    #Convert the backtest data to json
+    back_tested_json = dataToJson(back_tested)
+
+
+
+    #Create a description of the backtest data
+    
+    back_tested_df=back_tested.to_frame()
+    back_tested_graph=back_tested_df.reset_index()
+    back_tested_graph.columns=["date",name]
+    
+    
+    
+    #bidouille
+    back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    global output
+    output=back_tested_graph
+    
+
+    ###
+    data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
+    
+    current_composition_graph_df=current_composition_df.reset_index()
+    current_composition_graph_df.columns=["tick","weights"]
+    data_graph_pie=json.dumps([[tick, weight] for tick, weight in zip(current_composition_graph_df['tick'], current_composition_graph_df['weights'])])
+    back_tested_df_return=Returns_df(back_tested_df)
+    
+
+    description=back_tested_df_return.describe()
+    description.columns=["Description"]
+
+    back_tested_df_return_js=back_tested_df_return.reset_index()
+   
+    back_tested_df_return_js.columns=['date','returns']
+    back_tested_df_return_js["New Date"]=back_tested_df_return_js["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    back_tested_df_return_json=json.dumps([[date, returns] for date, returns in zip(back_tested_df_return_js['New Date'], back_tested_df_return_js['returns'])])
+    #misceleanous data for the web page
+    
+    #backtest_date=t
+    pricing_day= time.strftime("%d")
+    pricing_month= time.strftime("%B")
+    pricing_year= time.strftime("%Y")
+    pricing_hour= time.strftime("%X")
+
         
-        benchmark_return=Returns_df(NKY225_a_df.tail(backtest_period*20+1))
-        benchmark_return=benchmark_return.reset_index()
-        benchmark_return["New Date"]=benchmark_return['Date'].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
-        
-    	#benchmark["New Date"]=benchmark["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
-                
-        benchmark_return = json.dumps([[date,val] for date, val in zip(benchmark_return['New Date'], benchmark_return['Index'])])
-        
-		#bidouille
-	    #back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
-	    ###
-	    #data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
+    #this is complete tweaking, apparently yahoo is missing some data, so I tweaked the dataset so that we have the same data (ideal: use a merge so that we only select the same data in both dataset)
+    
+    
+    benchmark=benchmark.set_index('Date')
+    
+    
 
-        #bidouille
-    	benchmark=benchmark.reset_index()
 
-    	benchmark["New Date"]=benchmark["Date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    benchmark_return=Returns_df(benchmark)
+    benchmark_return=benchmark_return.reset_index()
+    print 'ici benhmark roalalal'
+    print benchmark_return
 
-        
-        benchmark = json.dumps([[date,val] for date, val in zip(benchmark['New Date'], benchmark['values'])])
-        #next part is just for fun
-        #else:
-         #   benchmark=SP500
-          #  benchmark=benchmark.head(del NKY225_2_df['Index']*20-4)
-           # benchmark=benchmark.reset_index()
-            #benchmark = json.dumps([[date,val] for date, val in zip(benchmark['Date'], benchmark['values'])])
+    benchmark_return["New Date"]=benchmark_return['Date'].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    
+    #benchmark["New Date"]=benchmark["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    print 'deuxieme print date modified'
+    print benchmark_return
 
-        number_component=len(current_composition_df)
+    benchmark_return = json.dumps([[date,val] for date, val in zip(benchmark_return['New Date'], benchmark_return['values'])])
+    
+    #bidouille
+    #back_tested_graph["New Date"]=back_tested_graph["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    ###
+    #data_graph_line=json.dumps([[date,val] for date, val in zip(back_tested_graph['New Date'], back_tested_graph[name])])
 
-        number_observation_bt=int(description.loc['count'])
-        average_level_bt=float(description.loc['mean'])*100
-        volatility_bt=float(description.loc['std'])*(252**0.5)*100
-        maximum_bt=float(description.loc['max'])
-        minimum_bt=float(description.loc['min'])*100
-        pt25_bt=float(description.loc['25%'])
-        pt50_bt=float(description.loc['50%'])
-        pt75_bt=float(description.loc['75%'])
+    #bidouille
+    benchmark=benchmark.reset_index()
+    benchmark["New Date"]=benchmark["Date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
 
-        
-        data_hist=histo_func(back_tested_df)
-        index_bins_js=json.dumps(data_hist[1])
-        index_freq_js=json.dumps(data_hist[0])
+    
+    benchmark = json.dumps([[date,val] for date, val in zip(benchmark['New Date'], benchmark['values'])])
+    
+    number_component=len(current_composition_df)
 
-        benchmark_hist=histo_func(NKY225_a_df.head(backtest_period*20))
-        ben_bins_js=json.dumps(benchmark_hist[1])
-        ben_freq_js=json.dumps(benchmark_hist[0])
+    number_observation_bt=int(description.loc['count'])
+    average_level_bt=float(description.loc['mean'])*100
+    volatility_bt=float(description.loc['std'])*(252**0.5)*100
+    maximum_bt=float(description.loc['max'])
+    minimum_bt=float(description.loc['min'])*100
+    pt25_bt=float(description.loc['25%'])
+    pt50_bt=float(description.loc['50%'])
+    pt75_bt=float(description.loc['75%'])
 
-        creation_time=str(pricing_hour) + " " + str(pricing_day)+" "+str(pricing_month)+" "+str(pricing_year)
-        temp_data=[creation_time,name]
+    
+    data_hist=histo_func(back_tested_df)
+    index_bins_js=json.dumps(data_hist[1])
+    index_freq_js=json.dumps(data_hist[0])
 
-        Database.loc[len(Database)]=temp_data
-        #compute and plot norm distribution
-        data_norm_freq_js=json.dumps(normfunction(data_hist[1],backtest_period/6))
-        data_norm_bins_js=json.dumps(benchmark_hist[0])
-        #Database_out=Database.set_index('Date')
-        plotrf_df=plotrf(back_tested_graph,ThreeM_USD_libor)
-        rf_graph_line=json.dumps([[date,val] for date, val in zip(plotrf_df['New Date'], plotrf_df["value_rf"])])
 
-        time_elapsed = (time.clock() - time_start)
-        print time_elapsed
-    return flask.render_template('Index_Generator_Pro.html',rf_graph_line=rf_graph_line,data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_period,number_component=number_component,underlying=underlying,name=name,pricing_day=pricing_day,pricing_month=pricing_month,pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
+    benchmark_histo_graph=Benchmark_Graph_df.tail(backtest_period*20+1)
+    benchmark_histo_graph=benchmark_histo_graph.set_index('Date')
+    
+    benchmark_hist=histo_func(benchmark_histo_graph)
+    ben_bins_js=json.dumps(benchmark_hist[1])
+    ben_freq_js=json.dumps(benchmark_hist[0])
+
+    creation_time=str(pricing_hour) + " " + str(pricing_day)+" "+str(pricing_month)+" "+str(pricing_year)
+    temp_data=[creation_time,name]
+
+    Database.loc[len(Database)]=temp_data
+    #compute and plot norm distribution
+    data_norm_freq_js=json.dumps(normfunction(data_hist[1],backtest_period/6))
+    data_norm_bins_js=json.dumps(benchmark_hist[0])
+    #Database_out=Database.set_index('Date')
+    plotrf_df=plotrf(back_tested_graph,ThreeM_USD_libor)
+
+    rf_graph_line=json.dumps([[date,val] for date, val in zip(plotrf_df['New Date'], plotrf_df["value_rf"])])
+    #rolling_vol_20_js=rolling_vol_20.reset_index()
+    #rolling_vol_20_js.columns['date','volatility']
+    #rolling_vol_20_json=json.dumps([[date, returns] for date, returns in zip(rolling_vol_20_js['date'], rolling_vol_20_js['volatility'])])
+    time_elapsed = (time.clock() - time_start)
+    print time_elapsed
+    
+    return flask.render_template('Index_Generator_Pro.html',rf_graph_line=rf_graph_line,\
+        data_norm_freq_js=data_norm_freq_js,benchmark_return=benchmark_return,back_tested_df_return=back_tested_df_return_json,\
+        Database=Database.to_html(classes='weights'),ben_freq_js=ben_freq_js,ben_bins_js=ben_bins_js,index_freq_js=index_freq_js,\
+        index_bins_js=index_bins_js,benchmark=benchmark,data_graph_pie=data_graph_pie,data_graph_line=data_graph_line,\
+        pt75_bt=pt75_bt,pt50_bt=pt50_bt,pt25_bt=pt25_bt,maximum_bt=maximum_bt,minimum_bt=minimum_bt,volatility_bt=volatility_bt,\
+        average_level_bt=average_level_bt,number_observation_bt=number_observation_bt,backtest_date=backtest_period,\
+        number_component=number_component,underlying=Parent_Index,name=name,pricing_day=pricing_day,pricing_month=pricing_month,\
+        pricing_year=pricing_year,pricing_hour=pricing_hour, pie_data=current_composition_pie_chart_json, \
+        current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),\
+        current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,\
+        back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),\
+        describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
 
 #login page
 Server.secret_key="secret_key"

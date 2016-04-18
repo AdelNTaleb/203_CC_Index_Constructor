@@ -30,10 +30,11 @@ $(document).ready(function() {
     var my_data_line_3 ={{ back_tested_df_return|safe }};
     var my_data_line_4 ={{ benchmark_return|safe }};
     var my_data_line_rf ={{ rf_graph_line|safe }};
+    var my_data_line_vol ={{ rf_graph_line|safe }};
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
-         plotOptions: {
+           plotOptions: {
             series: {
                 lineWidth: 1.5,
 
@@ -94,12 +95,12 @@ $(document).ready(function() {
         },
         colors: ['#f0a800','black','#757b8a'],
         title : {
-         text : '{{name | safe}} vs {{underlying | safe}} ',
-         style:{color: "#51555f"},
-     },
+           text : '{{name | safe}} vs {{underlying | safe}} ',
+           style:{color: "#51555f"},
+       },
 
 
-     series : [{
+       series : [{
         name:"{{name | safe}} (Buy/Hold)",
         data: my_data_line,
     },{name:"Interest Index (Buy/Hold)",
@@ -118,10 +119,92 @@ tooltip: {
 
 })
    })
+    
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
-         plotOptions: {
+           plotOptions: {
+            series: {
+                lineWidth: 1.5,
+
+                states: {
+                    hover: {
+                        enabled: true,
+                        lineWidth: 1.5
+                    }
+                }
+            }
+        },
+        credits: {
+            enabled:false
+        },
+
+        chart : {
+            backgroundColor: null,
+            plotBackgroundColor: '#fcfaf5',
+            renderTo : 'chart_vol'
+        },
+        navigator: {
+            maskFill: 'rgba(251, 239, 168, 0.60)',
+            series: {
+                color: '#51555f',
+                
+            }
+        },
+        legend: {
+            align: 'center',
+            
+        },
+        rangeSelector : {
+                 buttonTheme: { // styles for the buttons
+                    fill: '#f4f4f4',
+                    stroke: 'none',
+                    'stroke-width': 0,
+
+                    style: {
+
+                        color: '#58535c',
+                        fontWeight: 'bold'
+                    },
+                    states: {
+                        hover: {
+                        },
+                        select: {
+                            fill: '#fbefa8',
+                            style: {
+                                color: '#58535c'
+                            }
+                        }
+                    // disabled: { ... }
+                }
+            },
+
+            selected : 5
+        },
+        colors: ['#f0a800','#757b8a'],
+        title : {
+           text : '{{name | safe}}\'s returns vs {{underlying | safe}}\'s returns ',
+           style:{color: "#51555f"},
+       },
+
+
+       series : [{
+        name:"{{name | safe}}",
+        data: my_data_line_vol,
+    }],
+    tooltip: {
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+        valueDecimals: 5
+    },
+
+
+})
+
+   })
+    $(function() {
+       // Create the chart
+       window.chart = new Highcharts.StockChart({
+           plotOptions: {
             series: {
                 lineWidth: 1.5,
 
@@ -181,12 +264,12 @@ tooltip: {
         },
         colors: ['#f0a800','#757b8a'],
         title : {
-         text : '{{name | safe}}\'s returns vs {{underlying | safe}}\'s returns ',
-         style:{color: "#51555f"},
-     },
+           text : '{{name | safe}}\'s returns vs {{underlying | safe}}\'s returns ',
+           style:{color: "#51555f"},
+       },
 
 
-     series : [{
+       series : [{
         name:"{{name | safe}}",
         data: my_data_line_3,
     },{
@@ -200,6 +283,7 @@ tooltip: {
 
 
 })
+
    })
     $(function () {
         Highcharts.setOptions({
@@ -207,9 +291,9 @@ tooltip: {
         });
         $('#bar_chart').highcharts({
             exporting: {
-             enabled: false
-         },
-         credits: {
+               enabled: false
+           },
+           credits: {
             enabled:false
         },
         chart: {
@@ -364,7 +448,7 @@ tooltip: {
 <script type="text/javascript" src="../static/js/jquery-latest.js"></script>
 <script type='text/javascript'>  
 
- var $jq = jQuery.noConflict();  
+   var $jq = jQuery.noConflict();  
 
 </script>
 <script src="../static/js/tabcontent.js" type="text/javascript"></script>
@@ -443,24 +527,24 @@ tooltip: {
     // used by the 'Reset State' button: myLayout.loadState( stateResetSettings )
     var stateResetSettings = {
 
-       north__initClosed:  false
-       ,   north__initHidden:  false
-       ,   north__size:        100
-       ,   north_minSize:  200
-       ,   south__size:        "auto"
-       ,   south__initClosed:  false
-       ,   south__initHidden:  false
-       ,   west__size:         200
-       ,   west__initClosed:   false
-       ,   west__initHidden:   false
-       ,   east__size:         300
-       ,   east__initClosed:   false
-       ,   east__initHidden:   false
-   };
+     north__initClosed:  false
+     ,   north__initHidden:  false
+     ,   north__size:        100
+     ,   north_minSize:  200
+     ,   south__size:        "auto"
+     ,   south__initClosed:  false
+     ,   south__initHidden:  false
+     ,   west__size:         200
+     ,   west__initClosed:   false
+     ,   west__initHidden:   false
+     ,   east__size:         300
+     ,   east__initClosed:   false
+     ,   east__initHidden:   false
+ };
 
-   var myLayout;
+ var myLayout;
 
-   $jq(document).ready(function () {
+ $jq(document).ready(function () {
 
         // this layout could be created with NO OPTIONS - but showing some here just as a sample...
         // myLayout = $('body').layout(); -- syntax with No Options
@@ -589,7 +673,7 @@ tooltip: {
             <img src="../static/image/ajax-loader-grey.gif" >
         </center>
 
-        </div>
+    </div>
     <div id="background3">  
 
 
@@ -597,6 +681,30 @@ tooltip: {
         
         <form id="selection_table" name="formulaire" class ="table"> 
             <div id="generator_input">
+            <div class="row">
+                <p id="strategy" class="cell">Parent Index:</p>
+                <script type="text/javascript">
+                        $(document).ready(function(){
+                            $('#drop_universe').select2({
+
+                                placeholder: 'Please Choose',
+                                closeOnSelect: true,
+                            })
+
+                        });
+                    </script>
+                    <select  style="width:230px;"  name="index" required id="drop_universe">
+                        <option value=""></option>
+                        <optgroup label="America">
+                          <option value="S&P100" >S&P 100</option>
+                      </optgroup>
+                      <optgroup label="Asia">
+                          <option value="NKY225">Nikkei 225</option>
+
+                          <optgroup label="Europe">
+                              <option value="SX5E">EuroStoxx 50</option>
+                  </select>
+            </div>
                 <div class="row">
                     <p id="strategy" class="cell">Strategy:</p>
 
@@ -621,12 +729,16 @@ tooltip: {
                       <optgroup label="Beta">
                           <option value="reverse_beta">Long/Short Reverse Beta</option>
 
+                          <optgroup label="Multi Factor">
+                              <option value="multi_fact">Multi-factor strategy</option>
+
+                          </optgroup>
+
                       </optgroup>
                       <optgroup label="Carry">
                           <option value="carry">Carry</option>
 
                       </optgroup>
-                      
                   </select>
                   <script type="text/javascript">
                     $(document).ready(function(){
@@ -636,233 +748,304 @@ tooltip: {
                                     $(".input").not(".momentum").hide();
                                     $("#constrained").show();
                                     $("#input1").show();
+                                    $("#input5").hide();
                                 }
                                 else if($(this).attr("value")=="momentum_long_short"){
                                     $(".input").not(".momentum").hide();
                                     $("#constrained").hide();
                                     $("#input1").show();
+                                    $("#input5").hide();
                                 }
+                                
                                 else if($(this).attr("value")=="reverse_beta"){
                                     $(".input").not(".reverse_beta").hide();
                                     $("#constrained").hide();
-        
+                                    $("#input5").hide();
+
                                 }
                                 else if($(this).attr("value")=="carry"){
                                     $(".input").not(".carry").hide();
                                     $("#warning_msg").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="multi_fact"){                                
+                                    $(".input").not(".multi_fact").hide();
+                                    $("#input1").hide();
+                                    $("#constrained").show();
+                                    $("#warning_msg").hide();
+                                    $("#input5").show();
+
                                 }
                                 else{
                                     $("#input1").hide();
+                                    $("#input5").hide();
                                 }
                             });
                         }).change();
                     });
                 </script>
-                <div id='input1'style='display: none;margin-left: 0px;'class="input momentum">
-                    <div>
-                        <p class="form_title">Month Number 1:</p>
-                        <input class="momentum_input"  name="NbMonth1"  placeholder="Month Number 1"  type="number" min="1" step="1" value="3" />                    
-                    </div>
-                    <div>
-                        <p class="form_title">Month Number 2:</p>
-                        <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
-                    </div>
-                </div>
-                <div id="warning_msg" style='display: none;margin-left: 0px;'class="input carry"><p class="warning_func">Function not implemented yet</p> </div>
+                <div id='input5'class="cell" style="margin-left: -5px;">
 
-            </div>
-
-
-            <div class="row" id="constrained">
-                <div class="cell">
-                    <p id="select2">Constraints:</p>
-                </div>
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        $('#drop2').select2({
-
-                            placeholder: 'Please Choose',
-                            closeOnSelect: true,
-                            minimumResultsForSearch: -1
-
-                        })
-
-                    });
-                </script>
-
-                <select  style="width:230px;"  name="method" id="drop2" required>
-                    <option value=""></option>
-                    <option selected value="">Please choose</option> 
-                    <option value="Constrained">Yes</option>
-                    <option value="Ranking">No</option>
-                </select>
-
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        $("#drop2").change(function(){
-                            $(this).find("option:selected").each(function(){
-                                if($(this).attr("value")=="Constrained"){
-                                    $("#input2").show();
-                                }
-                                else{
-                                    $("#input2").hide();
-                                }
-                            });
-                        }).change();
-                    });
-                </script>
-
-                <div id='input2'class="cell" style="margin-left: -5px;">
-                    <p class="form_title">Type of constraint:</p>
-                    <select  style="width:230px;"  name="method_type" id="drop_cons" required>
-                        <option value=""></option>
-                        <option selected value="">Please choose</option> 
-                        <option value="Beta_C">Beta</option>
-                        <option value="Vol_C">Volatility</option>
-                    </select>
+                    <p class="form_title">Please select the factors:</p>
 
                     <script type="text/javascript">
                         $(document).ready(function(){
-                            $('#drop_cons').select2({
+                            $('#drop5').select2({
 
-                                placeholder: 'Please Choose',
                                 closeOnSelect: true,
-                                minimumResultsForSearch: -1
-
                             })
 
                         });
                     </script>
-                    <div id='input_cons_vol'class="cell">
-                        <div>
-                            <p class="form_title">Volatility Cap (in %):</p>
-                            <input class="other_input_2"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
-                        </div>
-                       
-                    </div>
-                    <div id='input_cons_beta'class="cell">
-                        <div>
-                            <p class="form_title">Min Beta:</p>
-                            <input class="other_input_2"  name="min_beta"  placeholder="Min Beta"  type="number" min="0" step="0.1" value="0" />
-                        </div>
-                        <div>
-                            <p class="form_title">Max Beta:</p>
-                            <input  class="other_input_2" name="max_beta"  placeholder="Max Beta"  type="number" min="0" step="0.1" value="2"/>
-                        </div>
-                    </div>
+                    <select  style="width:230px;"  name="strategy_combination" id="drop5" multiple="multiple">
+                        <option value=""></option>
 
-                    <script type="text/javascript">
-                        $(document).ready(function(){
-                            $("#drop_cons").change(function(){
-                                $(this).find("option:selected").each(function(){
-                                    if($(this).attr("value")=="Vol_C"){
-                                        $("#input_cons_vol").show();
-                                        $("#input_cons_beta").hide();
-                                    }
-                                    else if ($(this).attr("value")=="Beta_C"){
-                                        $("#input_cons_vol").hide();
-                                        $("#input_cons_beta").show();
-                                    }
-                                    else{
-                                        $("#input_cons_vol").hide();
-                                        $("#input_cons_beta").hide();
-                                    }
-                                });
-                            }).change();
-                        });
-                    </script>
-                    <div style="padding-left: 10px">
-                            <p class="form_title">Max Weight (in %):</p>
-                            <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
-                        </div>
+                        <option value="Momentum" >Momentum</option>
+
+
+                        <option value="Beta">Beta</option>
+
+
+                    </select>
+                    
                 </div>
+                <!--
+               <link type="text/css" rel="stylesheet" href="../static/css/jsgrid.css" />
+<link type="text/css" rel="stylesheet" href="../static/css/jsgrid-theme.css" />
+    
+<script type="text/javascript" src="../static/js/jsgrid.min.js"></script>
+<div id="jsGrid" class="input multi_fact"></div>
+<script>
+
+    var strat_select = [
+        { Name: "Please Choose", Id: 0 },
+        { Name: "Momentum", Id: 1 },
+        { Name: "Beta", Id: 2 },
+    ];
+ 
+    $jq("#jsGrid").jsGrid({
+        width: "230px",
+        height: "200px",
+
+        inserting: true,
+        editing: true,
+        sorting: false,
+        paging: true,
+ 
+       
+ 
+        fields: [
+            { name: "Strategy", type: "select", items: strat_select, valueField: "Id", textField: "Name" },
+            { type: "control" }
+        ]
+    });
+</script>
+-->
+<div id='input1'style='display: none;margin-left: 0px;'class="input momentum">
+    <div>
+        <p class="form_title">Month Number 1:</p>
+        <input class="momentum_input"  name="NbMonth1"  placeholder="Month Number 1"  type="number" min="1" step="1" value="3" />                    
+    </div>
+    <div>
+        <p class="form_title">Month Number 2:</p>
+        <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
+    </div>
+</div>
+<div id="warning_msg" style='display: none;margin-left: 0px;'class="input carry"><p class="warning_func">Function not implemented yet</p> </div>
+
+</div>
+
+
+<div class="row" id="constrained">
+    <div class="cell">
+        <p id="select2">Constraints:</p>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#drop2').select2({
+
+                placeholder: 'Please Choose',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1
+
+            })
+
+        });
+    </script>
+
+    <select  style="width:230px;"  name="method" id="drop2" required>
+        <option value=""></option>
+        <option selected value="">Please choose</option> 
+        <option value="Constrained">Yes</option>
+        <option value="Ranking">No</option>
+    </select>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#drop2").change(function(){
+                $(this).find("option:selected").each(function(){
+                    if($(this).attr("value")=="Constrained"){
+                        $("#input2").show();
+                    }
+                    else{
+                        $("#input2").hide();
+                    }
+                });
+            }).change();
+        });
+    </script>
+
+    <div id='input2'class="cell" style="margin-left: -5px;">
+        <p class="form_title">Type of constraint:</p>
+        <select  style="width:230px;"  name="method_type" id="drop_cons" required>
+            <option value=""></option>
+            <option selected value="">Please choose</option> 
+            <option value="Beta_C">Beta</option>
+            <option value="Vol_C">Volatility</option>
+        </select>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#drop_cons').select2({
+
+                    placeholder: 'Please Choose',
+                    closeOnSelect: true,
+                    minimumResultsForSearch: -1
+
+                })
+
+            });
+        </script>
+        <div id='input_cons_vol'class="cell">
+            <div>
+                <p class="form_title">Volatility Cap (in %):</p>
+                <input class="other_input_2"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
             </div>
-            <div class="row">
-                <div class="cell">
-                    <p id="select2">Volatility Cap:</p>
-                </div>
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        $('#drop3').select2({
 
-                            placeholder: 'Please Choose',
-                            closeOnSelect: true,
-                            minimumResultsForSearch: -1
-
-                        })
-
-                    });
-                </script>
-                <select class="selecto" name="vol_capped" id="drop3" required style="width:230px;"> 
-                    <option value=""></option>
-                    <option value="vol_cap_yes">Yes</option>
-                    <option value="vol_cap_no">No</option>
-                </select>
-                <div id='input3'class="cell">
-                    <div>
-                        <p class="form_title">Volatility Window (in days):</p>
-                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
-                        <p class="form_title">Volatility Cap (in %):</p>
-                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
-                    </div>
-                </div>
-
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        $("#drop3").change(function(){
-                            $(this).find("option:selected").each(function(){
-                                if($(this).attr("value")=="vol_cap_yes"){
-                                    $("#input3").show();
-                                }
-                                else{
-                                    $("#input3").hide();
-                                }
-                            });
-                        }).change();
-                    });
-                </script>
-
-
+        </div>
+        <div id='input_cons_beta'class="cell">
+            <div>
+                <p class="form_title">Min Beta:</p>
+                <input class="other_input_2"  name="min_beta"  placeholder="Min Beta"  type="number" min="0" step="0.1" value="0" />
             </div>
+            <div>
+                <p class="form_title">Max Beta:</p>
+                <input  class="other_input_2" name="max_beta"  placeholder="Max Beta"  type="number" min="0" step="0.1" value="2"/>
+            </div>
+        </div>
 
-            <div class="row">
-             <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
-             <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#drop_cons").change(function(){
+                    $(this).find("option:selected").each(function(){
+                        if($(this).attr("value")=="Vol_C"){
+                            $("#input_cons_vol").show();
+                            $("#input_cons_beta").hide();
+                        }
+                        else if ($(this).attr("value")=="Beta_C"){
+                            $("#input_cons_vol").hide();
+                            $("#input_cons_beta").show();
+                        }
+                        else{
+                            $("#input_cons_vol").hide();
+                            $("#input_cons_beta").hide();
+                        }
+                    });
+                }).change();
+            });
+        </script>
+        <div style="padding-left: 10px">
+            <p class="form_title">Max Weight (in %):</p>
+            <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="cell">
+        <p id="select2">Volatility Cap:</p>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#drop3').select2({
+
+                placeholder: 'Please Choose',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1
+
+            })
+
+        });
+    </script>
+    <select class="selecto" name="vol_capped" id="drop3" required style="width:230px;"> 
+        <option value=""></option>
+        <option value="vol_cap_yes">Yes</option>
+        <option value="vol_cap_no">No</option>
+    </select>
+    <div id='input3'class="cell">
+        <div>
+            <p class="form_title">Volatility Window (in days):</p>
+            <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
+            <p class="form_title">Volatility Cap (in %):</p>
+            <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#drop3").change(function(){
+                $(this).find("option:selected").each(function(){
+                    if($(this).attr("value")=="vol_cap_yes"){
+                        $("#input3").show();
+                    }
+                    else{
+                        $("#input3").hide();
+                    }
+                });
+            }).change();
+        });
+    </script>
+
+
+</div>
+
+<div class="row">
+   <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
+   <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
 
 
 
-         </div>
-         <div class="row">
-             <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing Period (Days):</p>
-             <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing Period (Day)"  type="number" min="5" step="1" value="20" required/>
+</div>
+<div class="row">
+   <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing Period (Days):</p>
+   <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing Period (Day)"  type="number" min="5" step="1" value="20" required/>
 
-         </div>
-     </div>
-     <div>
-     <table style="margin-left: 38px">
-         <tr>
-             <td>
-                <div name"generate_button" style="padding-top: 5px">
-                 <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
-             </div>
-         </td>
-         <td>
-             {% if back_tested_data|length > 0 %}
-             <div name"generate_button" style="padding-top: 5px">
-                 <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
-             </div> 
-             {% endif %}
-         </td>
-     </tr>
- </table>
- </div>
+</div>
+</div>
+<div>
+   <table style="margin-left: 38px">
+       <tr>
+           <td>
+            <div name"generate_button" style="padding-top: 5px">
+               <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+           </div>
+       </td>
+       <td>
+           {% if back_tested_data|length > 0 %}
+           <div name"generate_button" style="padding-top: 5px">
+               <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
+           </div> 
+           {% endif %}
+       </td>
+   </tr>
+</table>
+</div>
 </div>
 </form> 
 {% if back_tested_data|length > 0 %}
 <div id="compostion">
- <div id="floater" >
+   <div id="floater" >
     <div id="component_list">
-     <center>
+       <center>
 
 
         {% block content %}
@@ -876,7 +1059,7 @@ tooltip: {
 </div>
 <div class="ui-layout-center">
 
- <style type="text/css">
+   <style type="text/css">
     .container {
         text-align: left;
         margin: 0px auto;
@@ -898,19 +1081,45 @@ tooltip: {
 
     }
 </style>
-<div id="chart_1" style="overflow: auto">
-    <div id="chart_test" style="height: 400px;width: 99%;min-width: 300px"></div></div>
-    <div class="container"><div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width: 50%"></div>
+<fieldset>
 
-
-    <div class="item-2" style="height: 400px;width: 50%;"><div class="container">
-        <div class="item-1"><div id="bar_chart" style="width: 100%; height: 100%"></div></div>
-        <div class="item-2">
+    <div id="chart_test" style="height: 400px;width: 99%;min-width: 300px"></div>
+    </fieldset>
+    <fieldset>
+    <div class="wrap" id="test">
+        <fieldset class="chart_volatility">
+           <div id="test" class="equal_height">
+    <div id="chart_vol" style="min-width: 500x;height: 400px;width:99%"></div>
+        </div>
+       
+        </fieldset>
+    </div>
+    <div class="wrap">
+        <fieldset class="chart_return">
+            <div class="item-1" id="chart_return" style="min-width: 500x;height: 400px;width:99%">
+        </fieldset>
+    </div>
+</fieldset>
+<fieldset>
+    <div class="wrap" id="test">
+        <fieldset class="chart_volatility">
+           <div id="test" class="equal_height">
+    <div id="bar_chart" style="width: 100%; height: 100%"></div>
+        </div>
+       
+        </fieldset>
+    </div>
+    <div class="wrap">
+        <fieldset class="chart_return">
+            <div class="item-2">
 
             {{description_df | safe}}
 
         </div>
-    </div></div></div>
+        </fieldset>
+    </div>
+</fieldset>
+    
 
 
 </div>

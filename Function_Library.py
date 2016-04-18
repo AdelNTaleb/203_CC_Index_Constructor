@@ -1,7 +1,6 @@
 # Import python libraries
 from __future__ import division
 import os
-
 import datetime
 from pandas import *
 import numpy as np
@@ -35,11 +34,8 @@ def plotrf(back_tested_df,libor):
 # # Compute returns from a dataframe of prices.
 
 def Returns_df(Prices_df):
-    
     df_return=Prices_df/Prices_df.shift(1)-1
-    #df_return=df_return.ix[1:]
-    #df_return=df_return.dropna()
-    
+    df_return=df_return.ix[1:]
     return df_return
 
 def histo_func(df):
@@ -93,7 +89,7 @@ def MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     rc_three_m_m=(three_m_m/vol)
     rc_six_m_m=(six_m_m/vol)
     
-    # Winderized our RC distributions  : 
+    # Winsorized our RC distributions  : 
     rc_three_m_m[ rc_three_m_m >= 3] = 3
     rc_three_m_m[rc_three_m_m <= -3] = -3
 
@@ -108,10 +104,10 @@ def MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     
     z_df.columns = ['z_score']
     momentum_z_score_df = z_df.iloc[:,0].map(lambda x: x+1 if x>0 else (1-x)**(-1)).to_frame()
-    momentum_z_score_df.columns = ['momentum_z_score']
+    momentum_z_score_df.columns = ['z_score']
 
     # Ranked Momentum  
-    ranked_momentum_z_score_df=momentum_z_score_df.sort(['momentum_z_score'],ascending=[False])
+    ranked_momentum_z_score_df=momentum_z_score_df.sort(['z_score'],ascending=[False])
     
     return ranked_momentum_z_score_df
     
@@ -148,14 +144,14 @@ def MSCI_Momentum_No_Ranking(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor):
     
     z_df.columns = ['z_score']
     momentum_z_score_df = z_df.iloc[:,0].map(lambda x: x+1 if x>0 else (1-x)**(-1)).to_frame()
-    momentum_z_score_df.columns = ['momentum_z_score']
+    momentum_z_score_df.columns = ['z_score']
     return momentum_z_score_df
-    
+#BAB
 
 # New Strategy
 def Beta_Strategy_Scores(Prices_df,Benchmark_df):
 
-    # Compute the beta
+# Compute the beta
     Betas = index_beta_jacobian2(Prices_df,Benchmark_df)
 
     # transform into dataframe
@@ -168,7 +164,36 @@ def Beta_Strategy_Scores(Prices_df,Benchmark_df):
     # Rank Beta
     ranked_beta_z_score_df=Betas_df.sort(['Betas'],ascending=[False])
 
-    return ranked_beta_z_score_df
+    return ranked_beta_z_score_df    
+
+
+def combine_strat_test(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,Benchmark_df,\
+    strat_list=("Momentum","test", "Beta")):
+    lt=list()
+    dict = {'strat_1':'strat_1','strat_2':'strat_2' };
+    for i in strat_list:
+        if i =="Momentum":
+            strat_1=MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+            dict['strat_1']=(strat_1-np.amin(strat_1))/(np.amax(strat_1)-np.amin(strat_1))
+            lt.append("strat_1")
+        if i =="Beta":
+            strat_2=Beta_Strategy_Scores(Prices_df,Benchmark_df)
+            dict['strat_2']=1-(strat_2-np.amin(strat_2))/(np.amax(strat_2)-np.amin(strat_2))
+            lt.append("strat_2")
+    #initiate global_score with size of the period
+    global_score=DataFrame(dict[lt[0]],columns=['init'])
+    #fill the global score dataframe
+    for i in lt:  
+        loop_df=DataFrame(dict[i])
+        global_score=concat([global_score,loop_df],join='outer',axis=1)
+    #delete the initiate column   
+    del global_score['init']
+    #compute the average score
+    global_score['z_score']=global_score.sum(axis=1)/(len(global_score.columns))
+
+    ranked_global_score=global_score.sort(['z_score'],ascending=[False]) 
+    ranked_global_score=DataFrame(ranked_global_score['z_score'])               
+    return ranked_global_score
 
 
 def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
@@ -212,15 +237,10 @@ def Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df):
         Beta_Long_PTF=np.dot(Long_PTF_df['Betas'],Long_PTF_df['Weights'])
         Beta_Short_PTF=np.dot(Short_PTF_df['Betas'],Short_PTF_df['Weights'])
 
-        print len(Beta_Long_PTF)
-        print len(Beta_Short_PTF)
-
         #print Beta_Long_PTF
         #print Beta_Short_PTF
 
         # Compute the leverage and deleverage factors
-        print ' '
-        print type(Benchmark_df)
         Lvg_Long=1/Beta_Long_PTF
         DeLvg_Short=1/Beta_Short_PTF
 
@@ -288,13 +308,13 @@ def Number_of_Securities_Index(Ranked_Zscore_df, MktCap_df):
 
     #Data_Universe = DataFrame with 2 columns : Z-Score (Ranked) / MktCap with Tickers as index
     Data_Universe=Ranked_Zscore_df.join(MktCap_df, how='inner')
-    Data_Universe=Data_Universe.sort(['momentum_z_score'],ascending=[False])
+    Data_Universe=Data_Universe.sort(['z_score'],ascending=[False])
 
     #Compute the Number of Securities in the Universe
-    Nb_Sec_Universe=len(Data_Universe["momentum_z_score"])
+    Nb_Sec_Universe=len(Data_Universe["z_score"])
     
     #Define Final_Index
-    Final_Index = DataFrame(columns=['momentum_z_score','MktCap'])
+    Final_Index = DataFrame(columns=['z_score','MktCap'])
     
     #Initialize
     Row=0
@@ -399,48 +419,16 @@ def index_beta(Prices_df,Benchmark_df,x):
 
 #Jacobian of Beta Constraint function, it actually returns the vector of the Betas (maybe can be useful)
 def index_beta_jacobian(Prices_df,Benchmark_df):
-    
-    
-
     df_return=np.nan_to_num(np.array(Returns_df(Prices_df)))
     Benchmark_return=np.array(Returns_df(Benchmark_df))
-    
-
     beta=np.zeros(len(df_return[0]))
-    #design_matrix=np.transpose(np.vstack((np.ones(200),np.ones(200))))
     design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
-
-
+    
     for i in range(len(df_return[0])):
         beta[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[1]
     
     return beta
     
-def index_beta_jacobian2(Prices_df,Benchmark_df):
-    
-    
-    Benchmark_return=np.array(Returns_df(Benchmark_df))
-        
-    df_return=np.array(Returns_df(Prices_df))
-
-    print 'length2'
-    print len(Benchmark_return)
-    print len(df_return)
-    
-
-    beta=np.zeros(len(df_return[0]))
-    #design_matrix=np.transpose(np.vstack((np.ones(200),np.ones(200))))
-    
-    #print len(Benchmark_return)
-    #print len(np.ones(df_return[:,0]))
-
-    design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
-
-
-    for i in range(len(df_return[0])):
-        beta[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[1]
-    
-    return beta
 
     
 
@@ -455,29 +443,29 @@ def index_beta_jacobian2(Prices_df,Benchmark_df):
 #Max_Vol is now optional
 
 
-def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1):
-    print  max_Beta
+def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_Weight_Allowed,\
+    MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol=100,min_Beta=0, max_Beta=1,\
+    strat_list=("momentum_z_score","test", "Betas")):
+    
     #df_return=Returns_df(Prices_df)
     #Ranking the inputed dataset
-    Ranked_Zscore_df=MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+    if Strategy=='momentum':
+        Ranked_Zscore_df=MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+        nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
+
+    if Strategy=='multi_fact':
+        Ranked_Zscore_df=combine_strat_test(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,Benchmark_df,strat_list)
+        nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
+
     # If Method is selected as Ranking.
-    nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
+    
     #Composition
 
     if Strategy=='reverse_beta':
-
-        Prices_df_252=Prices_df.tail(252)
-        Benchmark_df_252=Benchmark_df.tail(252)
-
-        Composition=Weights_for_BettingAgainstBeta(Prices_df_252,Benchmark_df_252)
-
+                
+        Composition=Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df)
+        print 'CA MARCHE JE SUIS LA '
     else:
-
-        # From now on, the Benchmark_df is a dataframe
-
-        Benchmark2_df=Benchmark_df.reset_index()
-        del Benchmark2_df['Date']
-        Benchmark_df=Benchmark2_df['values']
 
         if Method=="Ranking":   
         #if position if long then nothing changes 
@@ -485,7 +473,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
                 # Compute the optimal index as per the MSCI Methodology
                 Optimal_Index=Ranked_Zscore_df
                 # Rank the computed Z-scores
-                Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort()
+                Optimal_Index["Ranking"] = (-Optimal_Index['z_score']).argsort()
                 #generate weights
                 Optimal_Index['Weights'] = Optimal_Index['Ranking'].map(lambda x: 1 if x <nbr_sec  else 0)
                 Optimal_Index['Weights']=Optimal_Index['Weights']/np.sum(Optimal_Index['Weights']) 
@@ -495,7 +483,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
                 #if position if long/short then 50 best/50 worst
             else:
                 Optimal_Index=Ranked_Zscore_df
-                Optimal_Index["Ranking"] = (-Optimal_Index['momentum_z_score']).argsort() 
+                Optimal_Index["Ranking"] = (-Optimal_Index['z_score']).argsort() 
                 Optimal_Index['Position'] = 1
                 Optimal_Index['Position'][ Optimal_Index["Ranking"] < 50] = 1
                 Optimal_Index['Position'][(Optimal_Index["Ranking"]  > 50) & (Optimal_Index["Ranking"]  <= 175)] = 0
@@ -673,7 +661,9 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
 #Arguments to be checked when calling the function
 
 
-def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Benchmark_df,Max_Vol,min_Beta=0, max_Beta=1):
+def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
+    MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,\
+    Benchmark_df=0,min_Beta=0, max_Beta=1,strat_list=("momentum_z_score","test", "Betas")):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -684,28 +674,25 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCa
     
     #set up counter for loop    
     cnt=0
-    
+    #define size of vol output array
+    basket_days_20_vol=np.zeros(np.floor(t*20/freq)+1)
     while (cnt)*freq<=t*20:
     #set the dataset for backtest
-        
         Prices_df_bt=Prices_df.head(starting_point+freq*cnt)
-        
         Benchmark_df_bt=Benchmark_df.head(starting_point+freq*cnt)
-        
+
         #Compute Optimal Composition
+        #Weights_bt=optimal_weights(Prices_df_bt,Method,Max_Vol,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position)
+        Weights_bt=optimal_weights(Strategy,Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta,strat_list)
         
-        #Prices_df_bt_2=Prices_df_bt.tail(252)
-        #Benchmark_df_bt_2=Benchmark_df_bt.tail(252)
-        
-        Weights_bt=optimal_weights(Strategy,Prices_df_bt,Benchmark_df_bt,Method,Constraint_Type,Max_Weight_Allowed,MktCap_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,position,Max_Vol,min_Beta, max_Beta)
-
-
-
         #compute returns
         next_returns=df_return.ix[(starting_point+freq*cnt):].fillna(0)
         next_20_returns=next_returns.head(freq)
-        
+
+        next_20_returns_t=next_20_returns.transpose()
+        Weights_bt=Weights_bt.reindex(next_20_returns_t.index)
         optimum_return=np.dot(next_20_returns,Weights_bt)
+        
         
         #create return series
         if cnt == 0:
@@ -724,7 +711,8 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCa
     
     #creating base 1
     base_1_backtest=np.ones(len(return_series_date)+1)
-    
+    dilution=np.ones(len(return_series_date)+1)
+    rolling_vol_20=np.ones(len(return_series_date)-20)
     #undiluted represents the quote of risky securities in the index (the rest is assumed cash)
     undiluted=1.0
     
@@ -736,19 +724,100 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,MktCa
             #get last [vol_time] returns to compute vol
             period=information.tail(vol_time)
             #compute vol
-            hist_vol=np.std(period)*(250.0/vol_time)**0.5
+            hist_vol=np.std(period)*(250.0)**0.5
                     
             #dilute if vol above vol_cap
             if hist_vol>vol_cap:
-                undiluted=min(vol_cap/hist_vol,undiluted)
+                undiluted=(vol_cap/hist_vol)
             #end if
+            dilution[i]=undiluted
+            rolling_vol_20[i-21]=hist_vol
         #compute base 1
         base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
         #print undiluted
      
     base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
-    
+    rolling_vol_20=Series(rolling_vol_20,index=df_return.tail(t*20-20).index)
+    print rolling_vol_20
     return base_1_backtest_date
+# Simple Alpha Strategy
+    #Computes Alpha vector
+def alpha_as_phuck(Prices_df,Benchmark_df):
+    df_return=np.nan_to_num(np.array(Returns_df(Prices_df)))
+    Benchmark_return=np.array(Returns_df(Benchmark_df))
+    alpha=np.zeros(len(df_return[0]))
+    design_matrix=np.transpose(np.vstack((np.ones(len(df_return[:,0])),Benchmark_return)))
+        
+    for i in range(len(df_return[0])):
+        alpha[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[0]*100.
+    
+    stocks=list(Prices_df.columns)
+    alpha_df = DataFrame(alpha,index=stocks)
+    alpha_df.columns=["Alpha"]
+    return alpha_df
+    
+    #Computes Alpha vector and ranks
+def alpha_as_phuck_ranking(Prices_df,Benchmark_df):  
+    alpha_df=alpha_as_phuck(Prices_df,Benchmark_df)
+    ranked_alpha_df=alpha_df.sort(['Alpha'],ascending=[False])
+    return ranked_alpha_df
+
+   
+    #Graham Intrinsic Value
+def Graham(Prices_df,EPS_df,MktCap_df,Yield=3.8,sensitivity=0.2):
+
+    Growth_df=(np.array(MktCap_df)-np.array(MktCap_df.shift(252*5)))/np.array(MktCap_df.shift(252*5))
+    #Growth_df=np.array(MktCap_df)/np.array(MktCap_df.shift(252*5))
+    Today_Growth=Growth_df[len(Growth_df)-1,:]
+    Today_EPS=EPS_df.ix[len(EPS_df)-1]
+    Today_EPS=np.nan_to_num(Today_EPS)
+    Today_Price=Prices_df.ix[len(Prices_df)-1].dropna()
+    score=np.zeros(len(Today_EPS))
+    intrinsic=score
+    for s in range(len(Today_EPS)):
+        intrinsic[s]=Today_EPS.ix[s]*(8.5+2*Today_Growth[s])*4.4/Yield
+    score=intrinsic/Today_Price-1
+    for s in range(len(score)):    
+               
+        if np.abs(score[s])<sensitivity:
+            score[s]=0.
+    return score
+        
+
+
+ 
+# for inverse beta strat    
+def index_beta_jacobian2(Prices_df,Benchmark_df):
+
+    Prices_df=Prices_df.tail(252*2)
+    Benchmark_df=Benchmark_df.tail(252*2)
+    
+
+    Benchmark_return=np.array(Returns_df(Benchmark_df))
+
+    df_return=Prices_df/Prices_df.shift(1)-1
+    #df_return=np.nan_to_num(df_return)    
+    df_return=np.array(df_return)
+
+
+    df_return=np.nan_to_num(df_return)
+    Benchmark_return=np.nan_to_num(Benchmark_return)
+
+
+    beta=np.zeros(len(df_return[0]))
+#design_matrix=np.transpose(np.vstack((np.ones(200),np.ones(200))))
+
+#print len(Benchmark_return)
+#print len(np.ones(df_return[:,0]))
+
+    design_matrix=np.transpose(np.vstack((np.ones(len(Benchmark_return)),Benchmark_return)))
+
+
+    for i in range(len(df_return[0])):
+        beta[i]=np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(design_matrix),design_matrix)),np.transpose(design_matrix)),df_return[:,i])[1]
+
+    return beta
+
 
                                 #### OUTPUT STATISTICS FUNCTION ##### 
 
@@ -847,4 +916,3 @@ def OutputStats(back_tested,current_composition):
     Stats_Output_df['Statistics']['Positive Volatility (%)']=UpsideVol(back_tested_returns_df)*100
 
     return Stats_Output_df
-
