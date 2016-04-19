@@ -589,9 +589,11 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
     if Strategy=='alpha':
         Ranked_Zscore_df=alpha_ranking(Prices_df,Benchmark_df)
         Ranked_Zscore_df=Ranked_Zscore_df.rename(columns={"Alpha":"z_score"})
+        
         Non_Ranked_Zscore_df=alpha(Prices_df,Benchmark_df)
         Non_Ranked_Zscore_df=Non_Ranked_Zscore_df.rename(columns={"Alpha":"z_score"})
         nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
+
     if Strategy=='sharpe':
         Ranked_Zscore_df=sharpe_strat_ranking(Prices_df)
         Non_Ranked_Zscore_df=sharpe_strat(Prices_df)
@@ -879,6 +881,7 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
     dilution=np.ones(len(return_series_date)+1)
     rolling_vol_20=np.ones(len(return_series_date)-20)
     #undiluted represents the quote of risky securities in the index (the rest is assumed cash)
+    
     undiluted=1.0
     
     for i in range(1,len(base_1_backtest)):
@@ -906,20 +909,20 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
     return base_1_backtest_date
 
 def get_roll_vol(Price_index_df,window_len=20):
-        Returns_index=Returns_df(Price_index_df)
-        Returns_index_cnt=Returns_index.tail(len(Returns_index.index)-window_len)
-        Vol_vec=np.zeros(len(Returns_index)-window_len)
-        for i in range(window_len,len(Returns_index)):
-            Information=Returns_index.head(i)
-            Window=Information.tail(window_len)
-            Vol_vec[i-window_len]=np.std(Window.values)*252.**0.5*100.
-        Vol_df=DataFrame(Vol_vec,index=Returns_index_cnt.index)
-        return Vol_df
+    Returns_index=Returns_df(Price_index_df)
+    Returns_index_cnt=Returns_index.tail(len(Returns_index.index)-window_len)
+    Vol_vec=np.zeros(len(Returns_index)-window_len)
+    for i in range(window_len,len(Returns_index)):
+        Information=Returns_index.head(i)
+        Window=Information.tail(window_len)
+        Vol_vec[i-window_len]=np.std(Window.values)*252.**0.5*100.
+    Vol_df=DataFrame(Vol_vec,index=Returns_index_cnt.index)
+    return Vol_df
 
 def get_dil(Price_index_df,vol_cap,vol_time):
     Returns_index=Returns_df(Price_index_df)
     dilution=np.zeros(len(Returns_index))
-    
+    undiluted=1.0
     for i in range(1,len(Returns_index)-1):
         if i>vol_time:
         

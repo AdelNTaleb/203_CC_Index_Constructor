@@ -341,24 +341,24 @@ input:focus {
     color: #C77405;
 }
 .other_input:focus{
-  width: 218px;
+  width: 225px;
   height: 17px;
   background-color: #fdefad;
   border-width: 1px;
   border-color: #e1bf55;
 }
 .other_input{
-  width: 218px;
+  width: 225px;
   height: 15px;
   background-color: #f4f4f4;
 }
 .momentum_input {
-  width: 223px;
+  width: 225px;
   height: 15px;
   background-color: #f4f4f4;
 }
 .momentum_input:focus {
-  width: 223px;
+  width: 225px;
   height: 17px;
   background-color: #fdefad;
   border-width: 1px;

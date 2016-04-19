@@ -275,7 +275,6 @@ $(document).ready(function() {
                 <ul class="tabs" data-persist="true">
                     <li><a href="#view1">Index Creator</a></li>
                     <li><a href="#view2">History</a></li>
-                    <li><a href="#view3">Download</a></li>
                     <li><a href="/">Go to main menu</a></li>
                 </ul>
             </div>
@@ -319,7 +318,7 @@ $(document).ready(function() {
                         })
                     });
                 </script>
-                <select  style="width:230px;"  name="index" required id="drop_universe">
+                <select  style="width:230px;margin-bottom: 5px"  name="index" required id="drop_universe">
                     <option value=""></option>
                     <optgroup label="America">
                       <option value="S&P100" >S&P 100</option>
@@ -377,17 +376,27 @@ $(document).ready(function() {
                           <option value="momentum_long_short">Long/Short Momentum</option>
 
                       </optgroup>
+                      <optgroup label="Alpha">
+                              <option value="alpha">Long Only Alpha</option>
+                              <option value="ls_alpha">Long/Short Alpha</option>
+                          </optgroup>
                       <optgroup label="Beta">
                       <option value="lo_beta">Long Only Beta</option>
+                      <option value="ls_beta">Long/Short Beta</option>
                       <option value="lo_reverse_beta">Long Only Reverse Beta</option>
                           <option value="reverse_beta">Long/Short Reverse Beta</option>
-
+                          <option value="reverse_beta_neutral">Long/Short Reverse Beta Neutral</option>
+</optgroup>
                           <optgroup label="Multi Factor">
                               <option value="multi_fact">Multi-factor strategy</option>
 
                           </optgroup>
+                          <optgroup label="Sharpe Ratio">
+                              <option value="sharpe">Long Only Sharpe Ratio</option>
+                              <option value="ls_sharpe">Long/Short Sharpe Ratio</option>
+                          </optgroup>
 
-                      </optgroup>
+                      
                       
                   </select>
                   <script type="text/javascript">
@@ -400,14 +409,54 @@ $(document).ready(function() {
                                     $("#input1").show();
                                     $("#input5").hide();
                                 }
+                                else if($(this).attr("value")=="lo_reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="alpha"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_alpha"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="sharpe"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_sharpe"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
                                 else if($(this).attr("value")=="momentum_long_short"){
                                     $(".input").not(".momentum").hide();
-                                    $("#constrained").hide();
+                                    $("#constrained").show();
                                     $("#input1").show();
                                     $("#input5").hide();
                                 }
                                 
                                 else if($(this).attr("value")=="reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").hide();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="reverse_beta_neutral"){
                                     $(".input").not(".reverse_beta").hide();
                                     $("#constrained").hide();
                                     $("#input5").hide();
@@ -442,11 +491,16 @@ $(document).ready(function() {
                         <optgroup label="Momentum">
                         <option value="Momentum" >Momentum 3-6</option>
                         </optgroup>
+                        <optgroup label="Alpha">
+                        <option value="alpha">Alpha</option>
+                        </optgroup>
                         <optgroup label="Beta">
                         <option value="Beta">Beta</option>
                         <option value="Reverse_Beta">Reverse Beta</option>
                         </optgroup>
-
+                        <optgroup label="Sharpe">
+                        <option value="Sharpe">Sharpe Ratio</option>
+                        </optgroup>
                     </select>
                     
                 </div>
@@ -563,9 +617,9 @@ $(document).ready(function() {
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" >
                 <div class="cell">
-                    <p id="select2">Volatility Cap:</p>
+                    <p id="select2">Volatility Dilution:</p>
                 </div>
                 <script type="text/javascript">
                     $(document).ready(function(){
@@ -581,13 +635,13 @@ $(document).ready(function() {
                     <option value="vol_cap_yes">Yes</option>
                     <option value="vol_cap_no">No</option>
                 </select>
-                <div id='input3'class="cell" style="margin-left: -5px;">
-                    <div>
+                <div id='input3'class="cell" style="margin-left: -5px;width: 100%">
+                    
                         <p class="form_title">Volatility Window (in days):</p>
-                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
+                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="20" />
                         <p class="form_title">Volatility Cap (in %):</p>
-                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
-                    </div>
+                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="5" step="0.1" value="10" />
+                    
                 </div>
 
                 <script type="text/javascript">

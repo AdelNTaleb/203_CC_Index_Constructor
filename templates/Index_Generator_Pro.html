@@ -552,6 +552,41 @@ tooltip: {
                                     $("#input1").show();
                                     $("#input5").hide();
                                 }
+                                else if($(this).attr("value")=="lo_reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="alpha"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_alpha"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="sharpe"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="ls_sharpe"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").show();
+                                    $("#input5").hide();
+                                }
                                 else if($(this).attr("value")=="momentum_long_short"){
                                     $(".input").not(".momentum").hide();
                                     $("#constrained").show();
@@ -560,6 +595,11 @@ tooltip: {
                                 }
                                 
                                 else if($(this).attr("value")=="reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").hide();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="reverse_beta_neutral"){
                                     $(".input").not(".reverse_beta").hide();
                                     $("#constrained").hide();
                                     $("#input5").hide();
@@ -743,7 +783,7 @@ tooltip: {
                         <p class="form_title">Volatility Window (in days):</p>
                         <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="20" />
                         <p class="form_title">Volatility Cap (in %):</p>
-                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
+                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="5" step="0.1" value="10" />
                     </div>
                 </div>
 
