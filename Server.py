@@ -140,6 +140,26 @@ def index():
             return flask.render_template('Index_Generator_Pro.html')
         Constraint_type=flask.request.args.get('method_type')
 
+    if value_strat=='lo_reverse_beta':
+        strat_name="LO Reverse Beta"
+        strategy='lo_reverse_beta'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='lo_beta':
+        strat_name="LO Reverse Beta"
+        strategy='lo_beta'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
     if value_strat=='reverse_beta':
         strat_name="L/S Reverse Beta"
         strategy='reverse_beta'
@@ -386,7 +406,47 @@ def index_pro():
         if (flask.request.args.get('method') is None):
             return flask.render_template('Index_Generator_Pro.html')
         Constraint_type=flask.request.args.get('method_type')
- 
+
+    if value_strat=='alpha':
+        strat_name="LO Alpha"
+        strategy='alpha'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='ls_alpha':
+        strat_name="L/S Alpha"
+        strategy='alpha'
+        strat_list=("none","none", "none")
+        position='ls'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='sharpe':
+        strat_name="LO Sharpe"
+        strategy='sharpe'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='ls_sharpe':
+        strat_name="L/S Sharpe"
+        strategy='sharpe'
+        strat_list=("none","none", "none")
+        position='ls'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+          
     if value_strat=='multi_fact':
         strat_name="LO Multi Factorial"
         strategy='multi_fact'
@@ -394,6 +454,36 @@ def index_pro():
         strat_list_unparse=str(flask.request.args.getlist('strategy_combination'))
         strat_list_parsed=re.findall("'([^']*)'", strat_list_unparse)
         strat_list=tuple(strat_list_parsed)
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='lo_reverse_beta':
+        strat_name="LO Reverse Beta"
+        strategy='lo_reverse_beta'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='lo_beta':
+        strat_name="LO Beta"
+        strategy='beta'
+        strat_list=("none","none", "none")
+        position='long'
+        Method=flask.request.args.get('method')
+        if (flask.request.args.get('method') is None):
+            return flask.render_template('Index_Generator_Pro.html')
+        Constraint_type=flask.request.args.get('method_type')
+
+    if value_strat=='ls_beta':
+        strat_name="L/S Beta"
+        strategy='beta'
+        strat_list=("none","none", "none")
+        position='ls'
         Method=flask.request.args.get('method')
         if (flask.request.args.get('method') is None):
             return flask.render_template('Index_Generator_Pro.html')
@@ -407,8 +497,13 @@ def index_pro():
         Method="Ranking"
         Constraint_type='None'
 
-    if value_strat=='carry':
-        return flask.render_template('Index_Generator_Pro.html')
+    if value_strat=='reverse_beta_neutral':
+        strat_name="L/S Reverse Beta Neutral"
+        strategy='reverse_beta_neutral'
+        strat_list=("none","none", "none")
+        position='ls'
+        Method="Ranking"
+        Constraint_type='None'
 
     if value_strat=='momentum_long_short':
         strat_name="L/S Momentum"
@@ -460,7 +555,7 @@ def index_pro():
         vol_cap = (float(flask.request.args.get('vol_cap_daily')))/100
         vol_frame= int(flask.request.args.get('vol_frame'))
     else:
-        vol_cap=1
+        vol_cap=10
         vol_frame=20
 
     
@@ -485,7 +580,8 @@ def index_pro():
     #get arguments
     freq=int(flask.request.args.get('rebalance_len'))
     back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list)
-    description_df=OutputStats(back_tested,current_composition)
+    print input_benchmark
+    description_df=OutputStats(back_tested,current_composition,Benchmark_df)
     #Convert the backtest data to json
     back_tested_json = dataToJson(back_tested)
 
@@ -496,7 +592,14 @@ def index_pro():
     back_tested_df=back_tested.to_frame()
     back_tested_graph=back_tested_df.reset_index()
     back_tested_graph.columns=["date",name]
-    
+   
+    roll_vol_df=get_roll_vol(back_tested_df)
+
+    if vol_cap<>10:
+        dilution_df=get_dil(back_tested_df,vol_cap,vol_frame)
+    else:
+        dilution_df=DataFrame(np.zeros(len(back_tested_graph["date"])),index=back_tested_graph["date"]) 
+        
     
     
     #bidouille
@@ -516,16 +619,25 @@ def index_pro():
     back_tested_df_return=Returns_df(back_tested_df)
     
 
+
     description=back_tested_df_return.describe()
     description.columns=["Description"]
-
     back_tested_df_return_js=back_tested_df_return.reset_index()
-   
+
     back_tested_df_return_js.columns=['date','returns']
     back_tested_df_return_js["New Date"]=back_tested_df_return_js["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
     back_tested_df_return_json=json.dumps([[date, returns] for date, returns in zip(back_tested_df_return_js['New Date'], back_tested_df_return_js['returns'])])
+
+    roll_vol_df=roll_vol_df.reset_index()
+    roll_vol_df.columns=['date','value']
+    roll_vol_df["New Date"]=roll_vol_df["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    roll_vol_df_js=json.dumps([[date, returns] for date, returns in zip(roll_vol_df['New Date'], roll_vol_df['value'])])
     #misceleanous data for the web page
-    
+    dilution_df
+    dilution_df=dilution_df.reset_index()
+    dilution_df.columns=['date','value']
+    dilution_df["New Date"]=dilution_df["date"].map(lambda x: datetime.strptime(x, '%d/%m/%y'))
+    dilution_df_js=json.dumps([[date, returns] for date, returns in zip(dilution_df['New Date'], dilution_df['value'])])
     #backtest_date=t
     pricing_day= time.strftime("%d")
     pricing_month= time.strftime("%B")
@@ -593,15 +705,14 @@ def index_pro():
 
     Database.loc[len(Database)]=temp_data
     #compute and plot norm distribution
-    data_norm_freq_js=json.dumps(normfunction(data_hist[1],backtest_period/6))
+
+    data_norm_freq_js=json.dumps(normfunction(data_hist[1],back_tested_df_return))
     data_norm_bins_js=json.dumps(benchmark_hist[0])
     #Database_out=Database.set_index('Date')
     plotrf_df=plotrf(back_tested_graph,ThreeM_USD_libor)
 
     rf_graph_line=json.dumps([[date,val] for date, val in zip(plotrf_df['New Date'], plotrf_df["value_rf"])])
-    #rolling_vol_20_js=rolling_vol_20.reset_index()
-    #rolling_vol_20_js.columns['date','volatility']
-    #rolling_vol_20_json=json.dumps([[date, returns] for date, returns in zip(rolling_vol_20_js['date'], rolling_vol_20_js['volatility'])])
+  
     time_elapsed = (time.clock() - time_start)
     print time_elapsed
     
@@ -616,7 +727,8 @@ def index_pro():
         current_data=current_composition_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),\
         current_composition_df=current_composition_df,bar_data=current_composition_bar_chart_json,\
         back_tested_data=back_tested_json,description_df=description_df.to_html(classes='weights',float_format=lambda x: '%.3f' % x),\
-        describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x))
+        describe_data=description.to_html(classes='weights',float_format=lambda x: '%.3f' % x),roll_vol_df_js=roll_vol_df_js,\
+        dilution_df_js=dilution_df_js)
 
 #login page
 Server.secret_key="secret_key"

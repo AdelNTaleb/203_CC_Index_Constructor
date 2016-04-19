@@ -29,7 +29,8 @@ $(document).ready(function() {
     var my_data_line_3 ={{ back_tested_df_return|safe }};
     var my_data_line_4 ={{ benchmark_return|safe }};
     var my_data_line_rf ={{ rf_graph_line|safe }};
-    var my_data_line_vol ={{ rf_graph_line|safe }};
+    var my_data_line_vol ={{ roll_vol_df_js|safe }};
+    var my_data_line_dil ={{ dilution_df_js|safe }};
     $(function() {
        // Create the chart
        window.chart = new Highcharts.StockChart({
@@ -164,7 +165,7 @@ tooltip: {
             },
             selected : 5
         },
-        colors: ['#f0a800','#757b8a'],
+        colors: ['#757b8a','#368b99'],
         title : {
          text : '{{name | safe}}\'s rolling 20 days volatility',
          style:{color: "#51555f"},
@@ -172,6 +173,9 @@ tooltip: {
      series : [{
         name:"{{name | safe}}",
         data: my_data_line_vol,
+    },{
+        name:"Dilution",
+        data:my_data_line_dil,
     }],
     tooltip: {
         pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
@@ -515,16 +519,27 @@ tooltip: {
                           <option value="momentum_long_short">Long/Short Momentum</option>
 
                       </optgroup>
+                      <optgroup label="Alpha">
+                              <option value="alpha">Long Only Alpha</option>
+                              <option value="ls_alpha">Long/Short Alpha</option>
+                          </optgroup>
                       <optgroup label="Beta">
-                      <option value="reverse_beta">Long Only Reverse Beta</option>
+                      <option value="lo_beta">Long Only Beta</option>
+                      <option value="ls_beta">Long/Short Beta</option>
+                      <option value="lo_reverse_beta">Long Only Reverse Beta</option>
                           <option value="reverse_beta">Long/Short Reverse Beta</option>
-
+                          <option value="reverse_beta_neutral">Long/Short Reverse Beta Neutral</option>
+</optgroup>
                           <optgroup label="Multi Factor">
                               <option value="multi_fact">Multi-factor strategy</option>
 
                           </optgroup>
+                          <optgroup label="Sharpe Ratio">
+                              <option value="sharpe">Long Only Sharpe Ratio</option>
+                              <option value="ls_sharpe">Long/Short Sharpe Ratio</option>
+                          </optgroup>
 
-                      </optgroup>
+                      
                       
                   </select>
                   <script type="text/javascript">
@@ -539,7 +554,7 @@ tooltip: {
                                 }
                                 else if($(this).attr("value")=="momentum_long_short"){
                                     $(".input").not(".momentum").hide();
-                                    $("#constrained").hide();
+                                    $("#constrained").show();
                                     $("#input1").show();
                                     $("#input5").hide();
                                 }
@@ -579,11 +594,16 @@ tooltip: {
                         <optgroup label="Momentum">
                         <option value="Momentum" >Momentum 3-6</option>
                         </optgroup>
+                        <optgroup label="Alpha">
+                        <option value="alpha">Alpha</option>
+                        </optgroup>
                         <optgroup label="Beta">
                         <option value="Beta">Beta</option>
                         <option value="Reverse_Beta">Reverse Beta</option>
                         </optgroup>
-
+                        <optgroup label="Sharpe">
+                        <option value="Sharpe">Sharpe Ratio</option>
+                        </optgroup>
                     </select>
                     
                 </div>
@@ -702,7 +722,7 @@ tooltip: {
             </div>
             <div class="row">
                 <div class="cell">
-                    <p id="select2">Volatility Cap:</p>
+                    <p id="select2">Volatility Dilution:</p>
                 </div>
                 <script type="text/javascript">
                     $(document).ready(function(){
@@ -721,9 +741,9 @@ tooltip: {
                 <div id='input3'class="cell" style="margin-left: -5px;">
                     <div>
                         <p class="form_title">Volatility Window (in days):</p>
-                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
+                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="20" />
                         <p class="form_title">Volatility Cap (in %):</p>
-                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
+                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
                     </div>
                 </div>
 
@@ -839,24 +859,103 @@ z-index:-2;"'>
 
 </fieldset>
 {% else %}
-<div id="image_bg" style='width:100%;top:20px'>
-  <div class="slideshow">
-    <img src="../static/image/bg_sign.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_9.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_4.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_7.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_11.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_19.jpg" alt="bg_sign" id="bg_sign">
-    <img src="../static/image/bg_22.jpg" alt="bg_sign" id="bg_sign">
+<div class="altenative_content" style="height: 900px;width: 100%;position: relative;">
+<div id="test" style="min-height: 100%;width: 100%; z-index: -2; position: relative;"><div class="center-div"></div></div>
 </div>
+<style type="text/css">
+    @randomNum: `Math.ceil(Math.random() * 100)`; 
+ .center-div
+{
+    background-color: #fcfaf5;
+    box-shadow: 0 0 0 1px  #74767b, 0 0 0 1px  #81622d inset;
+  border:1px solid #3a3d44;
+    border-radius: 4px;
+     margin: 0 auto;
+     width: 60%;
+     height: 200px;
+     z-index: 10; 
+     position: relative;
+}
+
+
+@-webkit-keyframes mymove {
+    0%   {opacity: 1;}
+    100%   {opacity: 0;}
+
+}
+@keyframes mymove { 
+    0%   {opacity: 1;}
+    100%   {opacity: 0;}
+}
+
+.box{
+    position: absolute; 
+    margin: auto; 
+     background-image: url(../static/image/logo3.png);
+     background-repeat:no-repeat;
+     background-size: contain;
+    -webkit-animation: mymove 20s ; 
+    animation: mymove 20s ;
+}
+
+
+.abox{
+    position: absolute;
+    left: 50%;
+    right:50%;
+    margin: auto;
+    width:100px;
+    height: 100px;
+    background-image: url(../static/image/logo3.png);
+    background-repeat:no-repeat;
+}
+</style>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('.slideshow').cycle({
-            fx: 'fade',
-    delay: -200 // choose your transition type, ex: fade, scrollUp, shuffle, etc...
-});
-    });
+    
+    function addBox(){
+        var newbox=$("<div class='box'></div>");
+        $("#test").append(newbox); 
+
+        var newboxSize=Math.floor((Math.random() * 200) + 1);
+        var scrX=newbox.parent().width(); 
+        var scrY=newbox.parent().height();
+        var newboxX=Math.floor(( Math.random() * scrX)-(newboxSize/2) );
+        var newboxY=Math.floor(( Math.random() * scrY)-(newboxSize/2) );
+
+        newbox.css({
+            "left":newboxX +"px",
+            "top":newboxY +"px",
+            "width":newboxSize +"px",
+            "height":newboxSize +"px",
+            "background-color":get_random_color()
+        }); 
+
+        newbox.bind('webkitAnimationEnd oAnimationend msAnimationEnd animationend',   function() {
+        $(this).remove();
+        //$("#btn").click();
+        });
+    }
+
+    function get_random_color() {
+        var letters = 'ABCDE'.split('');
+        var color = '#';
+        for (var i=0; i<3; i++ ) {
+            color += 'eee';
+        }
+        return color;
+    }
+
+    function randomLoop(){
+      var rand =  Math.random() * 200;
+      setTimeout(function() {
+      addBox();
+      randomLoop(); 
+      }, rand);
+    }
+    randomLoop();
+
 </script>
+
 {% endif %}
 </div>
 
