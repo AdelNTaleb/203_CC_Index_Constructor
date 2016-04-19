@@ -9,6 +9,51 @@ from scipy.stats import norm
 
 
                                 #### General Function used ##### 
+def get_data_price(Parent_Index,liquidity_thresh):
+        Prices_df=read_csv('%s - Prices.csv' %Parent_Index,sep=';',decimal=",")
+        Prices_df=Prices_df.set_index('Date')
+        Prices_df.index.name=None
+        TradedVolume_df=read_csv('%s - Volume.csv' %Parent_Index,sep=';',decimal=",")
+        TradedVolume_df=TradedVolume_df.set_index('Date')
+        TradedVolume_df.index.name=None
+        Prices_df=Prices_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)
+        TradedVolume_df=TradedVolume_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)      
+        Dollar_TV_df=Prices_df.multiply(TradedVolume_df)
+        Dollar_TV_df=DataFrame(Dollar_TV_df.mean())
+        Threshold=liquidity_thresh
+        Dollar_TV_df=Dollar_TV_df[Dollar_TV_df>Threshold]
+        Dollar_TV_df=Dollar_TV_df.dropna()
+        Dollar_TV_df=Dollar_TV_df.transpose()
+        StocksLeft_list=list(Dollar_TV_df.columns.values)
+        Prices_df=Prices_df.transpose()
+        Prices_df=Prices_df.reset_index()
+        Prices_df = Prices_df[Prices_df['index'].isin(StocksLeft_list)].set_index('index')
+        Prices_df=Prices_df.transpose()
+        return Prices_df 
+
+def get_data_mkt(Parent_Index,liquidity_thresh):
+        Prices_df=read_csv('%s - Prices.csv' %Parent_Index,sep=';',decimal=",")
+        Prices_df=Prices_df.set_index('Date')
+        Prices_df.index.name=None
+        TradedVolume_df=read_csv('%s - Volume.csv' %Parent_Index,sep=';',decimal=",")
+        TradedVolume_df=TradedVolume_df.set_index('Date')
+        TradedVolume_df.index.name=None
+        Prices_df=Prices_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)
+        TradedVolume_df=TradedVolume_df.dropna(axis=1,how='any',thresh=len(Prices_df)/2)      
+        Dollar_TV_df=Prices_df.multiply(TradedVolume_df)
+        Dollar_TV_df=DataFrame(Dollar_TV_df.mean())
+        Threshold=liquidity_thresh
+        Dollar_TV_df=Dollar_TV_df[Dollar_TV_df>Threshold]
+        Dollar_TV_df=Dollar_TV_df.dropna()
+        Dollar_TV_df=Dollar_TV_df.transpose()
+        StocksLeft_list=list(Dollar_TV_df.columns.values)
+        MktCap_df=read_csv('%s - MktCap.csv' %Parent_Index,sep=';',decimal=",")
+        MktCap_df=MktCap_df.transpose()
+        MktCap_df=MktCap_df.reset_index()
+        MktCap_df = MktCap_df[MktCap_df['index'].isin(StocksLeft_list)].set_index('index')
+        MktCap_df=MktCap_df.transpose()     
+        return MktCap_df
+
 def normfunction(bins,n):
     sigma=0.01
     mu=0
@@ -170,16 +215,21 @@ def Beta_Strategy_Scores(Prices_df,Benchmark_df):
 def combine_strat_test(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,Benchmark_df,\
     strat_list=("Momentum","test", "Beta")):
     lt=list()
-    dict = {'strat_1':'strat_1','strat_2':'strat_2' };
+    dict = {'strat_1':'strat_1','strat_2':'strat_2' ,'strat_3':'strat_3'};
     for i in strat_list:
         if i =="Momentum":
             strat_1=MSCI_Momentum(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor)
+            strat_1=strat_1.rename(columns={'z_score':"z_score_momentum"})
             dict['strat_1']=(strat_1-np.amin(strat_1))/(np.amax(strat_1)-np.amin(strat_1))
             lt.append("strat_1")
-        if i =="Beta":
+        if i =="Reverse_Beta":
             strat_2=Beta_Strategy_Scores(Prices_df,Benchmark_df)
             dict['strat_2']=1-(strat_2-np.amin(strat_2))/(np.amax(strat_2)-np.amin(strat_2))
             lt.append("strat_2")
+        if i =="Beta":
+            strat_3=Beta_Strategy_Scores(Prices_df,Benchmark_df)
+            dict['strat_3']=(strat_3-np.amin(strat_3))/(np.amax(strat_3)-np.amin(strat_3))
+            lt.append("strat_3")   
     #initiate global_score with size of the period
     global_score=DataFrame(dict[lt[0]],columns=['init'])
     #fill the global score dataframe
@@ -192,7 +242,8 @@ def combine_strat_test(Prices_df,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,Benchmar
     global_score['z_score']=global_score.sum(axis=1)/(len(global_score.columns))
 
     ranked_global_score=global_score.sort(['z_score'],ascending=[False]) 
-    ranked_global_score=DataFrame(ranked_global_score['z_score'])               
+    ranked_global_score=DataFrame(ranked_global_score['z_score']) 
+    print global_score            
     return ranked_global_score
 
 
@@ -464,7 +515,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
     if Strategy=='reverse_beta':
                 
         Composition=Weights_for_BettingAgainstBeta(Prices_df,Benchmark_df)
-        print 'CA MARCHE JE SUIS LA '
+        
     else:
 
         if Method=="Ranking":   
@@ -620,7 +671,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
                 
                             #Extract Weights
                 Weights=res.x
-                print res
+                
                 
 
             
@@ -738,7 +789,7 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
      
     base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  
     rolling_vol_20=Series(rolling_vol_20,index=df_return.tail(t*20-20).index)
-    print rolling_vol_20
+    
     return base_1_backtest_date
 # Simple Alpha Strategy
     #Computes Alpha vector

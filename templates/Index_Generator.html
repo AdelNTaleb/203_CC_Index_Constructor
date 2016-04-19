@@ -297,91 +297,175 @@ $(document).ready(function() {
                              <div id="random" class='left'>
                                 <div>
 
-                                    <div id="background3">  
+                                        <div id="background3">
 
-                                        
-        <form id="selection_table" name="formulaire" class ="table"> 
+
+    <form id="selection_table" name="formulaire" class ="table"> 
+        <div id="generator_input">
             <div class="row">
-                <p id="strategy" class="cell">Strategy:</p>
-
+                <p id="strategy" class="cell">Parent Index:</p>
                 <script type="text/javascript">
                     $(document).ready(function(){
-                        $('#drop1').select2({
-
+                        $('#drop_universe').select2({
                             placeholder: 'Please Choose',
                             closeOnSelect: true,
                         })
-
                     });
                 </script>
-
-                <select  style="width:230px;"  name="strategy" required id="drop1">
+                <select  style="width:230px;"  name="index" required id="drop_universe">
                     <option value=""></option>
-                    <optgroup label="Momentum">
-                      <option value="momentum_long_only" >Long Only Momentum</option>
-                      <option value="momentum_long_short">Long/Short Momentum</option>
-
+                    <optgroup label="America">
+                      <option value="S&P100" >S&P 100</option>
                   </optgroup>
-                  <optgroup label="Carry">
-                      <option value="carry">Carry</option>
+                  <optgroup label="Asia">
+                      <option value="NKY225">Nikkei 225</option>
 
-                  </optgroup>
+                      <optgroup label="Europe">
+                          <option value="SX5E">EuroStoxx 50</option>
+                      </select>
 
-              </select>
-              <script type="text/javascript">
-                $(document).ready(function(){
-                    $("#drop1").change(function(){
-                        $(this).find("option:selected").each(function(){
-                            if($(this).attr("value")=="momentum_long_only"| "momentum_long_short"){
-                                $(".input").not(".momentum").hide();
-                                $("#risk_constrained").show();
-                                $("#input1").show();
-                            }
-                            else if($(this).attr("value")=="momentum_long_short"){
-                                $(".input").not(".momentum").hide();
-                                $("#risk_constrained").hide();
-                                $("#input1").show();
-                            }
-                            else if($(this).attr("value")=="carry"){
-                                $(".input").not(".carry").hide();
-                                $("#warning_msg").show();
-                            }
-                            else{
-                                $("#input1").hide();
-                            }
+
+                      <div id='daily_liquid' style='display: none;margin-left: 0px;'>
+                        <p id="strategy">Min liquidity:</p>
+                        <input  class="momentum_input" name="liquidity"  placeholder="daily volume"  type="number" min="" step="1" value="1000" required/>
+                    </div>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $("#drop_universe").change(function(){
+                                $(this).find("option:selected").each(function(){
+                                    if($(this).attr("value")=="S&P100"){
+                                        $("#daily_liquid").show();
+                                    }
+                                    else if($(this).attr("value")=="NKY225"){
+                                      $("#daily_liquid").show();
+                                  }
+
+                                  else if($(this).attr("value")=="SX5E"){
+                                    $("#daily_liquid").show();
+                                }
+                                else{
+                                    $("#daily_liquid").hide();
+                                }
+                            });
+                            }).change();
                         });
-                    }).change();
-                });
-            </script>
-            <div id='input1'style='display: none;margin-left: 0px;'class="input momentum">
-                <div>
-                    <p class="form_title">Month Number 1:</p>
-                    <input class="momentum_input"  name="NbMonth1"  placeholder="Month Number 1"  type="number" min="1" step="1" value="3" />                    
+                    </script>
                 </div>
-                <div>
-                    <p class="form_title">Month Number 2:</p>
-                    <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
+                <div class="row">
+                    <p id="strategy" class="cell">Strategy:</p>
+
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $('#drop1').select2({
+                                placeholder: 'Please Choose',
+                                closeOnSelect: true,
+                            })
+                        });
+                    </script>
+
+                    <select  style="width:230px;"  name="strategy" required id="drop1">
+                        <option value=""></option>
+                        <optgroup label="Momentum">
+                          <option value="momentum_long_only" >Long Only Momentum</option>
+                          <option value="momentum_long_short">Long/Short Momentum</option>
+
+                      </optgroup>
+                      <optgroup label="Beta">
+                          <option value="reverse_beta">Long/Short Reverse Beta</option>
+
+                          <optgroup label="Multi Factor">
+                              <option value="multi_fact">Multi-factor strategy</option>
+
+                          </optgroup>
+
+                      </optgroup>
+                      
+                  </select>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                        $("#drop1").change(function(){
+                            $(this).find("option:selected").each(function(){
+                                if($(this).attr("value")=="momentum_long_only"){
+                                    $(".input").not(".momentum").hide();
+                                    $("#constrained").show();
+                                    $("#input1").show();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="momentum_long_short"){
+                                    $(".input").not(".momentum").hide();
+                                    $("#constrained").hide();
+                                    $("#input1").show();
+                                    $("#input5").hide();
+                                }
+                                
+                                else if($(this).attr("value")=="reverse_beta"){
+                                    $(".input").not(".reverse_beta").hide();
+                                    $("#constrained").hide();
+                                    $("#input5").hide();
+                                }
+                                else if($(this).attr("value")=="multi_fact"){                                
+                                    $(".input").not(".multi_fact").hide();
+                                    $("#input1").hide();
+                                    $("#constrained").show();
+                                    $("#input5").show();
+                                }
+                                else{
+                                    $("#input1").hide();
+                                    $("#input5").hide();
+                                }
+                            });
+                        }).change();
+                    });
+                </script>
+                <div id='input5'class="cell" style="margin-left: -5px;">
+
+                    <p class="form_title">Please select the factors:</p>
+
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $('#drop5').select2({
+                                closeOnSelect: true,
+                            })
+                        });
+                    </script>
+                    <select  style="width:230px;"  name="strategy_combination" id="drop5" multiple="multiple">
+                        <option value=""></option>
+
+                        <option value="Momentum" >Momentum</option>
+
+
+                        <option value="Beta">Beta</option>
+
+
+                    </select>
+                    
+                </div>
+                
+
+                <div id='input1'style='display: none;margin-left: 0px;'class="input momentum">
+                    <div>
+                        <p class="form_title">Month Number 1:</p>
+                        <input class="momentum_input"  name="NbMonth1"  placeholder="Month Number 1"  type="number" min="1" step="1" value="3" />                    
+                    </div>
+                    <div>
+                        <p class="form_title">Month Number 2:</p>
+                        <input  class="momentum_input" name="NbMonth2"  placeholder="Month Number 2"  type="number" min="2" step="1"value="6"/>
+                    </div>
                 </div>
             </div>
-            <div id="warning_msg" style='display: none;margin-left: 0px;'class="input carry"><p class="warning_func">Function not implemented yet</p> </div>
-
-        </div>
 
 
-        <div class="row" id="constrained">
+            <div class="row" id="constrained">
                 <div class="cell">
                     <p id="select2">Constraints:</p>
                 </div>
                 <script type="text/javascript">
                     $(document).ready(function(){
                         $('#drop2').select2({
-
                             placeholder: 'Please Choose',
                             closeOnSelect: true,
                             minimumResultsForSearch: -1
-
                         })
-
                     });
                 </script>
 
@@ -415,34 +499,29 @@ $(document).ready(function() {
                         <option value="Beta_C">Beta</option>
                         <option value="Vol_C">Volatility</option>
                     </select>
+
                     <script type="text/javascript">
                         $(document).ready(function(){
                             $('#drop_cons').select2({
-
                                 placeholder: 'Please Choose',
                                 closeOnSelect: true,
                                 minimumResultsForSearch: -1
-
                             })
-
                         });
                     </script>
                     <div id='input_cons_vol'class="cell">
-                        <div>
+                        <div style="margin-left: -10px;">
                             <p class="form_title">Volatility Cap (in %):</p>
                             <input class="other_input_2"  name="vol_cap"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="10" />
                         </div>
-                        <div>
-                            <p class="form_title">Max Weight (in %):</p>
-                            <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
-                        </div>
+
                     </div>
                     <div id='input_cons_beta'class="cell">
-                        <div>
+                        <div style="margin-left: -10px;">
                             <p class="form_title">Min Beta:</p>
                             <input class="other_input_2"  name="min_beta"  placeholder="Min Beta"  type="number" min="0" step="0.1" value="0" />
                         </div>
-                        <div>
+                        <div style="margin-left: -10px;">
                             <p class="form_title">Max Beta:</p>
                             <input  class="other_input_2" name="max_beta"  placeholder="Max Beta"  type="number" min="0" step="0.1" value="2"/>
                         </div>
@@ -468,83 +547,90 @@ $(document).ready(function() {
                             }).change();
                         });
                     </script>
+                    <div>
+                        <p class="form_title">Max Weight (in %):</p>
+                        <input  class="other_input_2" name="max_weight"  placeholder="Max Weight (in %)"  type="number" min="0" step="0.1" value="20"/>
+                    </div>
                 </div>
             </div>
-        <div class="row">
-            <div class="cell">
-                <p id="select2">Volatility Cap:</p>
-            </div>
-             <script type="text/javascript">
-                $(document).ready(function(){
-                    $('#drop3').select2({
-
-                        placeholder: 'Please Choose',
-                        closeOnSelect: true,
-                        minimumResultsForSearch: -1
-
-                    })
-
-                });
-            </script>
-            <select class="selecto" name="vol_capped" id="drop3" required style="width:230px;"> 
-                <option value=""></option>
-                <option value="vol_cap_yes">Yes</option>
-                <option value="vol_cap_no">No</option>
-            </select>
-            <div id='input3'class="cell">
-                <div style="width: 100%">
-                    <p class="form_title">Volatility Window (in days):</p>
-                    <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
-                    <p class="form_title">Volatility Cap (in %):</p>
-                    <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
+            <div class="row">
+                <div class="cell">
+                    <p id="select2">Volatility Cap:</p>
                 </div>
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        $('#drop3').select2({
+                            placeholder: 'Please Choose',
+                            closeOnSelect: true,
+                            minimumResultsForSearch: -1
+                        })
+                    });
+                </script>
+                <select class="selecto" name="vol_capped" id="drop3" required style="width:230px;"> 
+                    <option value=""></option>
+                    <option value="vol_cap_yes">Yes</option>
+                    <option value="vol_cap_no">No</option>
+                </select>
+                <div id='input3'class="cell" style="margin-left: -5px;">
+                    <div>
+                        <p class="form_title">Volatility Window (in days):</p>
+                        <input class="other_input"  name="vol_frame"  placeholder="Volatility Window (in days)"  type="number" min="1" step="1" value="3" />
+                        <p class="form_title">Volatility Cap (in %):</p>
+                        <input class="other_input"  name="vol_cap_daily"  placeholder="Volatility Cap (in %)"  type="number" min="0" step="0.1" value="1" />
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        $("#drop3").change(function(){
+                            $(this).find("option:selected").each(function(){
+                                if($(this).attr("value")=="vol_cap_yes"){
+                                    $("#input3").show();
+                                }
+                                else{
+                                    $("#input3").hide();
+                                }
+                            });
+                        }).change();
+                    });
+                </script>
+
+
             </div>
 
-            <script type="text/javascript">
-                $(document).ready(function(){
-                    $("#drop3").change(function(){
-                        $(this).find("option:selected").each(function(){
-                            if($(this).attr("value")=="vol_cap_yes"){
-                                $("#input3").show();
-                            }
-                            else{
-                                $("#input3").hide();
-                            }
-                        });
-                    }).change();
-                });
-            </script>
-
-
-        </div>
-
-        <div class="row">
-           <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
-           <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
+            <div class="row">
+             <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
+             <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
 
 
 
-       </div>
-       <div class="row">
-           <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing Period (Days):</p>
-           <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing Period (Day)"  type="number" min="5" step="1" value="20" required/>
+         </div>
+         <div class="row">
+             <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Rebalancing Period (Days):</p>
+             <input  class="rc_input" name="rebalance_len"  placeholder="Rebalancing Period (Day)"  type="number" min="5" step="1" value="20" required/>
 
-           <div name"generate_button" style="padding-top: 10px">
-               <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
-           </div>
-           {% if back_tested_data|length > 0 %}
-           <div name"generate_button" style="padding-top: 10px">
-
-               <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download_doc';"/>
-
-
-           </div> 
-           {% endif %}
-
-       </div>
-
-</form>
-                                   </div>
+         </div>
+     </div>
+     <div>
+         <table style="margin-left: 38px">
+             <tr>
+                 <td>
+                    <div name"generate_button" style="padding-top: 5px">
+                     <input class="btn_generator" id="submit_btn" type="submit" value="Generate" style="text-align: right" onclick="loading();"/>
+                 </div>
+             </td>
+             <td>
+                 {% if back_tested_data|length > 0 %}
+                 <div name"generate_button" style="padding-top: 5px">
+                     <input class="btn_download" id="submit_btn" type="button" value="Download" style="text-align: right" onclick="location.href='/download';"/>
+                 </div> 
+                 {% endif %}
+             </td>
+         </tr>
+     </table>
+ </div>
+</form> 
+</div>
                                </div>
                            </div>
 
@@ -570,7 +656,13 @@ $(document).ready(function() {
                                                             </tr>
                                                             <tr>
                                                                <td id="line" width="160" align="left">Parent Index:</td>
-                                                               <td id="line" align="left"><a href="http://us.spindices.com/indices/equity/sp-100">{{underlying | safe}}</a></td>   
+                                                               {% if underlying== 'SX5E'%}
+                                                               <td id="line" align="left"><a href="https://www.stoxx.com/index-details?symbol=sx5e">{{underlying | safe}}</a></td>  
+                                                                {% elif underlying=='S&P100'%}
+                                                                <td id="line" align="left"><a href="http://eu.spindices.com/indices/equity/sp-500">{{underlying | safe}}</a></td>
+                                                                {% elif underlying=='NKY225'%}
+                                                                <td id="line" align="left"><a href="http://indexes.nikkei.co.jp/en/nkave/index/profile">{{underlying | safe}}</a></td>
+                                                                {% endif%}
                                                            </tr>
                                                            <tr>
                                                               <td id="line" width="160" align="left">Number of Components:</td> 
@@ -669,32 +761,32 @@ $(document).ready(function() {
                                                                 <td id="line" align="left"> {{number_observation_bt | safe}}</td>
                                                             </tr>
                                                             <tr>
-                                                               <td id="line" width="200" align="left">Average daily return observed:</td>
+                                                               <td id="line" width="200" align="left">Average daily return (ann.):</td>
                                                                <td id="line" align="left">{{average_level_bt | safe}} %</td>   
                                                            </tr>
                                                            <tr>
-                                                              <td id="line" width="200" align="left">Average volatility:</td> 
+                                                              <td id="line" width="200" align="left">Volatility (ann.):</td> 
                                                               <td id="line" align="left"> {{volatility_bt | safe}} %</td>
                                                           </tr>
                                                           <tr>
-                                                              <td id="line" width="200" align="left">Maximum level reached:</td> 
-                                                              <td id="line" align="left"> {{maximum_bt | safe}} </td>
+                                                              <td id="line" width="200" align="left">Maximum Drawdown:</td> 
+                                                              <td id="line" align="left"> {{maximum_bt | safe}} %</td>
                                                           </tr>
                                                           <tr>
-                                                              <td id="line" width="200" align="left">Max drawdown:</td> 
-                                                              <td id="line" align="left"> {{minimum_bt | safe}} %</td>
-                                                          </tr>
-                                                          <tr>
-                                                              <td id="line" width="200" align="left">25th Percentile:</td> 
+                                                            <td id="line" width="200" align="left">Sharpe Ratio:</td> 
                                                               <td id="line" align="left"> {{pt25_bt | safe}} </td>
                                                           </tr>
                                                           <tr>
-                                                              <td id="line" width="200" align="left">50th Percentile:</td> 
+                                                              <td id="line" width="200" align="left">Sortino Ratio:</td> 
+                                                              <td id="line" align="left"> {{minimum_bt | safe}}</td>
+                                                          </tr>
+                                                          <tr>
+                                                              <td id="line" width="200" align="left">Number of positive returns:</td> 
                                                               <td id="line" align="left"> {{pt50_bt | safe}} </td>
                                                           </tr>
                                                           <tr>
-                                                              <td id="line" width="200" align="left">75th Percentile:</td> 
-                                                              <td id="line" align="left"> {{pt75_bt | safe}} </td>
+                                                              <td id="line" width="200" align="left">Average positive return:</td> 
+                                                              <td id="line" align="left"> {{pt75_bt | safe}} %</td>
                                                           </tr>
                                                       </tbody>
 
@@ -704,7 +796,7 @@ $(document).ready(function() {
                                                         <tbody>
                                                             <tr>
                                                                 <td class="warningLabel" style="vertical-align: top;padding: 4px"><span class="iconWarning"></span></td>
-                                                                <td id="resultWarning" style="vertical-align: middle;">The Backtest displayed above is for illustration purposes only and is not calculated using current market data. It has been computed using monthly rebalancement. It is not possible, yet, to change the frequence of the rebalancement.</td> 
+                                                                <td id="resultWarning" style="vertical-align: middle;">The Backtest displayed above is for illustration purposes only and is not calculated using current market data.</td> 
                                                             </tr>   
                                                         </tbody>
                                                     </table>
@@ -750,7 +842,10 @@ $(document).ready(function() {
 
 
                                         </td>
-                                        <td>
+                                        {% if number_neg_comp > 0 %}
+                                       
+                                {% else%}
+                                         <td>
                                             <div id="smartdisplay" >
                                                 <span class="smartitle">{{name | safe}}'s composition</span>
                                                 {% if current_composition_df|length < 11 %}
@@ -771,6 +866,7 @@ $(document).ready(function() {
                                         </div>
                                     </div>
                                 </td>
+                                {% endif %}
                                 <td>
 
                                     <div id="smartdisplay">
@@ -798,7 +894,6 @@ $(document).ready(function() {
             <div id="view2">
             <div id="container" style="width: 100%">
             {{ Database|safe}}
-            <a href="/delete">test delete</a>
             </div>
             </div>
             <div id="view3">
