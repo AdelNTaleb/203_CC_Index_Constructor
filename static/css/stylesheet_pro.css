@@ -2,7 +2,33 @@
     padding: 0px;
     margin: 0px;
 }
+.panel {
+        width:400px;
+        float:left;
+        height:100%;
+        background:#d9dada;
+        position:relative;
+        left:-403px;
 
+    }
+    .slider-arrow {
+        padding:5px;
+        width:10px;
+        float:left;
+        background-color: #fbfbfb;
+        border-top:solid 1px #e1e1e1;
+        border-right:solid 1px #e1e1e1;
+        border-bottom:solid 1px #e1e1e1;
+        -webkit-box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+        box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+        height:100%;
+        font:400 12px Arial, Helvetica, sans-serif;
+        color:#000;
+        text-decoration:none;
+        position:relative;
+        left:-403px;
+    }
 div.wrap {
     float: left;
     width: 50%;
@@ -225,7 +251,7 @@ select {
     cursor:pointer;
 }
 #main_body{
-  background:#6a6b74;
+  background:#fbfbfb;
   font-family:Arial;
 }
 
@@ -360,7 +386,7 @@ input:focus {
 
 .rc_input {
   width: 225px;
-  height: 15px;
+  height: 17px;
   background-color: #f4f4f4;
 }
 .rc_input:focus {
@@ -375,24 +401,24 @@ input:focus {
     color: #C77405;
 }
 .other_input:focus{
-  width: 220px;
+  width: 225px;
   height: 17px;
   background-color: #fdefad;
   border-width: 1px;
   border-color: #e1bf55;
 }
 .other_input{
-  width: 220px;
-  height: 15px;
+  width: 225px;
+  height: 17px;
   background-color: #f4f4f4;
 }
 .other_input_2{
-  width: 213px;
-  height: 15px;
+  width: 225px;
+  height: 17px;
   background-color: #f4f4f4;
 }
 .other_input_2:focus{
-  width: 213px;
+  width: 225px;
   height: 17px;
   background-color: #fdefad;
   border-width: 1px;
@@ -400,7 +426,7 @@ input:focus {
 }
 .momentum_input {
   width: 225px;
-  height: 15px;
+  height: 17px;
   background-color: #f4f4f4;
 }
 .momentum_input:focus {
@@ -537,9 +563,10 @@ box-shadow: inset 1px 10px 5px -3px rgba(97,97,97,0.39);
   border-radius: 3px;
   min-height: 170px;
   width: 100%;
- -webkit-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
--moz-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.75);
+
 }
 #table_selection{
   padding-top: 1px;
