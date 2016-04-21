@@ -279,7 +279,14 @@ def index():
         vol_cap=10
         vol_frame=20
 
-    
+    leverage_in=flask.request.args.get('leverage')
+    if (flask.request.args.get('leverage') is None):
+        return flask.render_template('Index_Generator.html')
+
+    if leverage_in=="yes_leverage":
+        leverage=float(flask.request.args.get('leverage_value'))
+    else:
+        leverage=1
 
                                     ##compute the composition of the selected index as of now##
 
@@ -300,10 +307,10 @@ def index():
     
     #get arguments
     freq=int(flask.request.args.get('rebalance_len'))
-    back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list)
+    back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list,leverage)
     print input_benchmark
     description_df=OutputStats(back_tested,current_composition,Benchmark_df)
-    #Convert the backtest data to json
+    #Convert the _test data to json
     back_tested_json = dataToJson(back_tested)
 
 
@@ -321,6 +328,7 @@ def index():
     else:
         dilution_df=DataFrame(np.zeros(len(back_tested_graph["date"])),index=back_tested_graph["date"]) 
         
+    leverage_in=flask.request.args.get('leverage')
     
     
     #bidouille
@@ -622,7 +630,6 @@ def index_pro():
     vol_cap_imposed=flask.request.args.get('vol_capped')
     if (flask.request.args.get('vol_frame') is None):
         return flask.render_template('Index_Generator_Pro.html')
-
     if vol_cap_imposed=="vol_cap_yes":
         vol_cap = (float(flask.request.args.get('vol_cap_daily')))/100
         vol_frame= int(flask.request.args.get('vol_frame'))
@@ -630,7 +637,14 @@ def index_pro():
         vol_cap=10
         vol_frame=20
 
-    
+    leverage_in=flask.request.args.get('leverage')
+    if (flask.request.args.get('leverage') is None):
+        return flask.render_template('Index_Generator_Pro.html')
+
+    if leverage_in=="yes_leverage":
+        leverage=float(flask.request.args.get('leverage_value'))
+    else:
+        leverage=1
 
                                     ##compute the composition of the selected index as of now##
 
@@ -651,7 +665,7 @@ def index_pro():
     
     #get arguments
     freq=int(flask.request.args.get('rebalance_len'))
-    back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list)
+    back_tested = back_test(strategy,Prices_df,Method,Constraint_type,Max_Weight_Allowed,MktCap_df,backtest_period,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap,freq,vol_frame,position,Max_Vol,input_benchmark,Min_Beta, Max_Beta,strat_list,leverage)
     print input_benchmark
     description_df=OutputStats(back_tested,current_composition,Benchmark_df)
     #Convert the backtest data to json

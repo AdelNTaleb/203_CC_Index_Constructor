@@ -589,7 +589,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
     if Strategy=='alpha':
         Ranked_Zscore_df=alpha_ranking(Prices_df,Benchmark_df)
         Ranked_Zscore_df=Ranked_Zscore_df.rename(columns={"Alpha":"z_score"})
-        
+
         Non_Ranked_Zscore_df=alpha(Prices_df,Benchmark_df)
         Non_Ranked_Zscore_df=Non_Ranked_Zscore_df.rename(columns={"Alpha":"z_score"})
         nbr_sec=Number_of_Securities_Index(Ranked_Zscore_df,MktCap_df)
@@ -780,7 +780,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
                 A=[-beta_vector,beta_vector]
                 b=[-min_Beta,max_Beta]
                 A_e=[np.ones(len(Weights_0))]
-                b_e=0.
+                b_e=1.
                 c=np.ravel(Non_Ranked_Zscore_df)
                 res=linprog(c=-c,A_ub=A,b_ub=b,A_eq=A_e,b_eq=b_e,bounds=bnds)#,options=dict(bland=True, tol=1e-19))
                 
@@ -829,7 +829,7 @@ def optimal_weights(Strategy,Prices_df,Benchmark_df,Method,Constraint_Type,Max_W
 
 def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
     MktCap_df,t,Nb_Month_1,Nb_Month_2,ThreeM_USD_libor,vol_cap, freq, vol_time,position,Max_Vol=100,\
-    Benchmark_df=0,min_Beta=0, max_Beta=1,strat_list=("momentum_z_score","test", "Betas")):
+    Benchmark_df=0,min_Beta=0, max_Beta=1,strat_list=("momentum_z_score","test", "Betas"),leverage=1):
       
     # vol_time : new input : number of days used to compute previous volatility
 
@@ -901,7 +901,7 @@ def back_test(Strategy,Prices_df,Method,Constraint_Type,Max_Weight_Allowed,\
             dilution[i]=undiluted
             rolling_vol_20[i-21]=hist_vol
         #compute base 1
-        base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted)
+        base_1_backtest[i]=base_1_backtest[i-1]*(1+return_series_date[i-1]*undiluted*leverage)
         #print undiluted
      
     base_1_backtest_date=Series(base_1_backtest,index=df_return.tail(t*20+1).index)  

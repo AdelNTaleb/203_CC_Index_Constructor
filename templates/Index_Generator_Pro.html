@@ -804,7 +804,45 @@ tooltip: {
 
 
             </div>
+            <div class="row">
+            <script type="text/javascript">
+                    $(document).ready(function(){
+                        $('#drop7').select2({
+                            placeholder: 'Please Choose',
+                            closeOnSelect: true,
+                            minimumResultsForSearch: -1
+                        })
+                    });
+                </script>
+             <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Leverage :</p>
+             <select class="selecto" name="leverage" id="drop7" required style="width:230px;"> 
+                    <option value=""></option>
+                    <option value="yes_leverage">Yes</option>
+                    <option value="no_leverage">No</option>
+                </select>
+            
+                    <div id='input7'>
+                        <p class="form_title">Leverage Ratio:</p>
+                        <input class="other_input"  name="leverage_value"  placeholder="Leverage Ratio (X)"  type="number" min="1" max="10" step="0.1" value="2" />
+                    </div>
+                
 
+         </div>
+
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        $("#drop7").change(function(){
+                            $(this).find("option:selected").each(function(){
+                                if($(this).attr("value")=="yes_leverage"){
+                                    $("#input7").show();
+                                }
+                                else{
+                                    $("#input7").hide();
+                                }
+                            });
+                        }).change();
+                    });
+                </script>
             <div class="row">
              <p style="font-size: 12px;font-family: Arial, Helvetica, sans-serif;width: 100px;color:#58534d;"class="cell">Backtest Duration (Months):</p>
              <input  class="rc_input" name="backtest_len"  placeholder="Backtest Duration (Month)"  type="number" min="6" step="1" value="6" required/>
